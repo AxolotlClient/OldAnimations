@@ -3,7 +3,7 @@
 	"id": "axolotlclient-oldanimations",
 	"version": "${version}",
 	"name": "Old Animations",
-	"description": "Old Animations mod (extracted from Sol Client). Provides options for 1.7 visuals with AxolotlClient integration.",
+	"description": "Old animations mod providing options for 1.7 visuals. Integrates into AxolotlClient's menus if the mod is present!",
 	"authors": [
 		"TheKodeToad",
 		"moehreag"
