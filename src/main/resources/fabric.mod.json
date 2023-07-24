@@ -13,7 +13,7 @@
 		"sources": "https://github.com/AxolotlClient/OldAnimations/"
 	},
 	"license": "LGPL-3.0-or-later",
-	"icon": "assets/axolotlclient/icon.png",
+	"icon": "assets/axolotlclient-oldanimations/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"client": [
@@ -29,9 +29,6 @@
 	"mixins": [
 		"oldanimations.mixins.json"
 	],
-	"custom": {
-		"modmenu:clientsideOnly": true
-	},
 	"depends": {
 		"fabricloader": ">=0.14.7",
 		"minecraft": "1.8.9"
