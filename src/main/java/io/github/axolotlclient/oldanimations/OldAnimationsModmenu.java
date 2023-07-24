@@ -21,18 +21,14 @@ package io.github.axolotlclient.oldanimations;
 import java.util.function.Function;
 
 import io.github.axolotlclient.AxolotlClientConfig.AxolotlClientConfigManager;
+import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
 import net.minecraft.client.gui.screen.Screen;
 
 public class OldAnimationsModmenu implements ModMenuApi {
 
 	@Override
-	public String getModId() {
-		return OldAnimations.MODID;
-	}
-
-	@Override
-	public Function<Screen, ? extends Screen> getConfigScreenFactory() {
+	public ConfigScreenFactory<?> getModConfigScreenFactory	() {
 		if (OldAnimations.AXOLOTLCLIENT) {
 			return screen -> null;
 		}

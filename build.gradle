@@ -23,6 +23,10 @@ repositories {
 		name = "legacy-fabric"
 		url = "https://repo.legacyfabric.net/repository/legacyfabric/"
 	}
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+	}
 	mavenCentral()
 }
 
@@ -36,14 +40,14 @@ dependencies {
 
 	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader}"
 
-	modCompileOnly ("io.github.axolotlclient:AxolotlClient:${project.client}+${project.minecraft_18}") {
+	modCompileOnly("io.github.axolotlclient:AxolotlClient:${project.client}+${project.minecraft_18}") {
 		transitive = false
 	}
 	modImplementation "io.github.axolotlclient:AxolotlClient-config:${project.config}+${project.minecraft_18}"
 	include "io.github.axolotlclient:AxolotlClient-config:${project.config}+${project.minecraft_18}"
 	modImplementation "io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.config}"
 
-	modCompileOnlyApi(files("libs/legacy-modmenu-1.2.0+1.8.9-dev.jar"))
+	modImplementation "maven.modrinth:legacy-mod-menu:1.1.0"
 }
 
 processResources {
