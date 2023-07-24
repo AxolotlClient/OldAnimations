@@ -1,0 +1,37 @@
+# gradle
+.gradle/
+build/
+out/
+classes/
+
+# Quilt Loom
+remappedSrc/
+run/
+
+# Eclipse
+>>>>>>> Stashed changes
+*.launch
+
+# idea
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Fleet
+.fleet/
+
+# Visual Studio Code
+.settings/
+.vscode/
+bin/
+.classpath
+.project
+
+# Eclipse JDT LS
+workspace/
+
+# macOS
+*.DS_Store
+src/main/resources/assets/minecraft/textures/entity/alex.png
+src/main/resources/assets/minecraft/textures/entity/steve.png

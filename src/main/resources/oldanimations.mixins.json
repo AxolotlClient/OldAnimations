@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"package": "io.github.axolotlclient.oldanimations.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"client": [
+		"ArmorFeatureRendererMixin",
+		"GameRendererMixin",
+		"ItemRendererMixin",
+		"LivingEntityAccessor",
+		"MinecraftClientAccessor",
+		"MinecraftClientMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
