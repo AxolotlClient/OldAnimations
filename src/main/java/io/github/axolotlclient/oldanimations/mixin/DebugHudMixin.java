@@ -79,7 +79,7 @@ public class DebugHudMixin {
 		text.drawWithShadow(String.format("x: %.5f (%d) // c: %d (%d)", x, xFloor, xFloor >> 4, xFloor & 15), 2, 64,
 			0xE0E0E0);
 		text.drawWithShadow(String.format("y: %.3f (feet pos, %.3f eyes pos)", y,
-			y), 2, 72, 0xE0E0E0);
+			y + client.player.getEyeHeight()), 2, 72, 0xE0E0E0);
 		text.drawWithShadow(String.format("z: %.5f (%d) // c: %d (%d)", z, zFloor, zFloor >> 4, zFloor & 15), 2, 80,
 			0xE0E0E0);
 
