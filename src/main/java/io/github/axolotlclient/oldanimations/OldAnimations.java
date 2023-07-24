@@ -60,6 +60,8 @@ public class OldAnimations implements ClientModInitializer {
 	public final BooleanOption armourDamage = new BooleanOption("armorDamage", true);
 	public final BooleanOption sneaking = new BooleanOption("sneaking", true);
 
+	public final BooleanOption debugOverlay = new BooleanOption("debugOverlay", true);
+
 	public static final String MODID = "axolotlclient-oldanimations";
 
 	private MinecraftClient mc;
@@ -74,6 +76,7 @@ public class OldAnimations implements ClientModInitializer {
 					return Lists.newArrayList(category);
 				}
 			});
+			AxolotlClientConfigManager.getInstance().save(MODID);
 		} else {
 			AxolotlClient.CONFIG.rendering.add(category);
 		}
