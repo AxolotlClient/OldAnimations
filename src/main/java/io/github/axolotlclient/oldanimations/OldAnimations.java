@@ -59,7 +59,6 @@ public class OldAnimations implements ClientModInitializer {
 	public final BooleanOption rod = new BooleanOption("rod", true);
 	public final BooleanOption armourDamage = new BooleanOption("armorDamage", true);
 	public final BooleanOption sneaking = new BooleanOption("sneaking", true);
-
 	public final BooleanOption debugOverlay = new BooleanOption("debugOverlay", true);
 
 	public static final String MODID = "axolotlclient-oldanimations";
@@ -67,7 +66,7 @@ public class OldAnimations implements ClientModInitializer {
 	private MinecraftClient mc;
 
 	public OldAnimations() {
-		category.add(enabled, useAndMine, particles, blocking, eatingAndDrinking, bow, rod, armourDamage, sneaking);
+		category.add(enabled, useAndMine, particles, blocking, eatingAndDrinking, bow, rod, armourDamage, sneaking, debugOverlay);
 
 		if (!AXOLOTLCLIENT) {
 			AxolotlClientConfigManager.getInstance().registerConfig(MODID, new ConfigHolder() {
