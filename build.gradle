@@ -91,7 +91,7 @@ publishing {
 
 modrinth {
 	token = System.getenv("MODRINTH_TOKEN")
-	projectId = ""
+	projectId = "UD5CuiYt"
 	versionNumber = "${project.version}"
 	versionType = "release"
 	uploadFile = remapJar
