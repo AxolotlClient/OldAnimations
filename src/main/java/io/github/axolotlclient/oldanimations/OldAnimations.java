@@ -45,12 +45,12 @@ public class OldAnimations implements ClientModInitializer {
 	public static boolean AXOLOTLCLIENT;
 
 	@Getter
-	public static OldAnimations instance = new OldAnimations();
+	private final static OldAnimations instance = new OldAnimations();
 
 	@Getter
 	private final OptionCategory category = new OptionCategory("oldAnimations");
 
-	public final BooleanOption enabled = new BooleanOption("enabled", false);
+	public final BooleanOption enabled = new BooleanOption("enabled", true);
 	public final BooleanOption useAndMine = new BooleanOption("useAndMine", true);
 	public final BooleanOption particles = new BooleanOption("particles", true);
 	public final BooleanOption blocking = new BooleanOption("blocking", true);

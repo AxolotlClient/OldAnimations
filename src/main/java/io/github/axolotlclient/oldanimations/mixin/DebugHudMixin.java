@@ -32,6 +32,7 @@ import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -132,6 +133,7 @@ public class DebugHudMixin {
 			0xE0E0E0);
 	}
 
+	@Unique
 	private static int getHeightValue(World world, int x, int y) {
 		if (x >= -30000000 && y >= -30000000 && x < 30000000 && y < 30000000) {
 			if (!world.getChunkProvider().chunkExists(x >> 4, y >> 4))
@@ -147,10 +149,12 @@ public class DebugHudMixin {
 	@Shadow
 	private @Final MinecraftClient client;
 
+	@Unique
 	private static final String[] DIRECTIONS = {"SOUTH", "WEST", "NORTH", "EAST"};
 
+	@Unique
 	private static boolean active() {
-		return OldAnimations.instance.debugOverlay.get();
+		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().debugOverlay.get();
 	}
 
 }
