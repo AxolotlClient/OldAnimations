@@ -19,9 +19,6 @@
 		"client": [
 			"io.github.axolotlclient.oldanimations.OldAnimations::getInstance"
 		],
-		"axolotlclient.module": [
-			"io.github.axolotlclient.oldanimations.OldAnimations::instance"
-		],
 		"modmenu": [
 			"io.github.axolotlclient.oldanimations.OldAnimationsModmenu"
 		]
