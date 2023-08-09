@@ -67,6 +67,7 @@ public class OldAnimations implements ClientModInitializer {
 
 	public OldAnimations() {
 		category.add(enabled, useAndMine, particles, blocking, eatingAndDrinking, bow, rod, armourDamage, sneaking, debugOverlay);
+		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
 
 		if (!AXOLOTLCLIENT) {
 			AxolotlClientConfigManager.getInstance().registerConfig(MODID, new ConfigHolder() {
@@ -83,7 +84,7 @@ public class OldAnimations implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
+
 	}
 
 	public void tick() {
