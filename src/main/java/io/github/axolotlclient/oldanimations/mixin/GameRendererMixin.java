@@ -19,7 +19,7 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import io.github.axolotlclient.oldanimations.OldAnimations;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public abstract class GameRendererMixin {
 
 	@Shadow
-	private MinecraftClient client;
+	private Minecraft minecraft;
 
 	@Unique
 	private float eyeHeightSubtractor;
@@ -42,7 +42,7 @@ public abstract class GameRendererMixin {
 	@ModifyVariable(method = "transformCamera", at = @At(value = "STORE"), ordinal = 1)
 	private float oldanimations$modifyEyeHeight(float eyeHeight) {
 
-		Entity entity = this.client.getCameraEntity();
+		Entity entity = this.minecraft.getCamera();
 
 		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().sneaking.get()) {
 			float height = eyeHeight;

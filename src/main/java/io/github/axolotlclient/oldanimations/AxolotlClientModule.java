@@ -16,21 +16,21 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations.mixin;
+package io.github.axolotlclient.oldanimations;
 
-import io.github.axolotlclient.oldanimations.OldAnimations;
-import net.minecraft.client.render.entity.layer.AbstractArmorLayer;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.modules.AbstractModule;
 
-@Mixin(AbstractArmorLayer.class)
-public class ArmorFeatureRendererMixin {
-
-	@Inject(method = "usesInnerModel", at = @At("HEAD"), cancellable = true)
-	public void oldArmour(CallbackInfoReturnable<Boolean> callback) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().armourDamage.get())
-			callback.setReturnValue(true);
+public class AxolotlClientModule extends AbstractModule {
+	@Override
+	public void init() {
+		Object con = AxolotlClient.CONFIG;
+		try {
+			OptionCategory rendering = (OptionCategory) con.getClass().getField("rendering").get(con);
+			rendering.add(OldAnimations.getInstance().getCategory().includeInParentTree(false));
+		} catch (IllegalAccessException | NoSuchFieldException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

@@ -19,9 +19,9 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import io.github.axolotlclient.oldanimations.OldAnimations;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.item.HeldItemRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.living.player.ClientPlayerEntity;
+import net.minecraft.client.render.HeldItemRenderer;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,40 +33,40 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HeldItemRenderer.class)
 public abstract class ItemRendererMixin {
-	@Redirect(method = "renderArmHoldingItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyEquipAndSwingOffset(FF)V"))
+	@Shadow
+	private ItemStack item;
+
+	@Shadow
+	protected abstract void appyFirstPersonTransform(float f, float g);
+
+	@Redirect(method = "renderInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;appyFirstPersonTransform(FF)V"))
 	public void allowUseAndSwing(HeldItemRenderer instance, float equipProgress, float swingProgress) {
-		applyEquipAndSwingOffset(equipProgress,
-				swingProgress == 0.0F && OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().useAndMine.get()
-						? client.player.getHandSwingProgress(((MinecraftClientAccessor) client).getTicker().tickDelta)
-						: swingProgress);
+		appyFirstPersonTransform(equipProgress,
+			swingProgress == 0.0F && OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().useAndMine.get()
+				? minecraft.player.getHandSwingProcess(((MinecraftClientAccessor) minecraft).getTicker().tickDelta)
+				: swingProgress);
 	}
 
-	@Inject(method = "applySwordBlockTransformation", at = @At("RETURN"))
+	@Inject(method = "applySwordBlocking", at = @At("RETURN"))
 	public void oldBlocking(CallbackInfo callback) {
 		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().blocking.get()) {
 			OldAnimations.oldBlocking();
 		}
 	}
 
-	@Inject(method = "applyEatOrDrinkTransformation", at = @At("HEAD"), cancellable = true)
-	public void oldDrinking(AbstractClientPlayerEntity clientPlayer, float partialTicks, CallbackInfo callback) {
+	@Inject(method = "applyConsuming", at = @At("HEAD"), cancellable = true)
+	public void oldDrinking(ClientPlayerEntity clientPlayer, float partialTicks, CallbackInfo callback) {
 		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().eatingAndDrinking.get()) {
 			callback.cancel();
-			OldAnimations.oldDrinking(mainHand, clientPlayer, partialTicks);
+			OldAnimations.oldDrinking(item, clientPlayer, partialTicks);
 		}
 	}
 
-	@Inject(method = "applyEquipAndSwingOffset", at = @At("HEAD"))
+	@Inject(method = "appyFirstPersonTransform", at = @At("HEAD"))
 	private void oldanimations$transformSwing(float f, float g, CallbackInfo ci) {
-		OldAnimations.getInstance().transformItem(mainHand.getItem());
+		OldAnimations.getInstance().transformItem(item.getItem());
 	}
 
 	@Shadow
-	protected abstract void applyEquipAndSwingOffset(float equipProgress, float swingProgress);
-
-	@Shadow
-	private @Final MinecraftClient client;
-
-	@Shadow
-	private ItemStack mainHand;
+	private @Final Minecraft minecraft;
 }

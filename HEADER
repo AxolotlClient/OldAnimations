@@ -14,5 +14,4 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 For more information, see the LICENSE file.
 
-;;year_selection: file
-;;year_display: project
+#year_selection file

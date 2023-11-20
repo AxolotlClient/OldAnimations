@@ -1,4 +1,4 @@
-oldAnimations=Old Animations
+axolotlclient-oldanimations=Old Animations
 
 useAndMine=Use/Mine
 particles=Particles
@@ -9,3 +9,4 @@ rod=Rod
 armorDamage=Armour Damage
 sneaking=Sneaking
 debugOverlay=Debug Overlay
+enabled=Enabled

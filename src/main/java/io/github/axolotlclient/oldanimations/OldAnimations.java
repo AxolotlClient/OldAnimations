@@ -18,27 +18,25 @@
 
 package io.github.axolotlclient.oldanimations;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.AxolotlClientConfigManager;
-import io.github.axolotlclient.AxolotlClientConfig.common.ConfigHolder;
-import io.github.axolotlclient.AxolotlClientConfig.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
+import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
+import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.oldanimations.mixin.LivingEntityAccessor;
 import lombok.Getter;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.HitResult;
 
 public class OldAnimations implements ClientModInitializer {
 
@@ -48,7 +46,7 @@ public class OldAnimations implements ClientModInitializer {
 	private final static OldAnimations instance = new OldAnimations();
 
 	@Getter
-	private final OptionCategory category = new OptionCategory("oldAnimations");
+	final OptionCategory category = OptionCategory.create(MODID);
 
 	public final BooleanOption enabled = new BooleanOption("enabled", true);
 	public final BooleanOption useAndMine = new BooleanOption("useAndMine", true);
@@ -63,22 +61,17 @@ public class OldAnimations implements ClientModInitializer {
 
 	public static final String MODID = "axolotlclient-oldanimations";
 
-	private MinecraftClient mc;
+	private Minecraft mc;
 
 	public OldAnimations() {
 		category.add(enabled, useAndMine, particles, blocking, eatingAndDrinking, bow, rod, armourDamage, sneaking, debugOverlay);
 		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
 
 		if (!AXOLOTLCLIENT) {
-			AxolotlClientConfigManager.getInstance().registerConfig(MODID, new ConfigHolder() {
-				@Override
-				public List<io.github.axolotlclient.AxolotlClientConfig.common.options.OptionCategory> getCategories() {
-					return Lists.newArrayList(category);
-				}
-			});
-			AxolotlClientConfigManager.getInstance().save(MODID);
-		} else {
-			AxolotlClient.CONFIG.rendering.add(category);
+			ConfigManager manager = new JsonConfigManager(
+				FabricLoader.getInstance().getConfigDir().resolve(MODID + ".json"), category);
+			AxolotlClientConfig.getInstance().register(manager);
+			manager.save();
 		}
 	}
 
@@ -89,48 +82,48 @@ public class OldAnimations implements ClientModInitializer {
 
 	public void tick() {
 		if (mc == null) {
-			mc = MinecraftClient.getInstance();
+			mc = Minecraft.getInstance();
 		}
-		if (mc.player != null && mc.player.abilities.allowModifyWorld && enabled.get() && useAndMine.get() && mc.result != null
-				&& mc.result.type == BlockHitResult.Type.BLOCK && mc.player != null && mc.options.attackKey.isPressed()
-				&& mc.options.useKey.isPressed() && mc.player.getItemUseTicks() > 0) {
+		if (mc.player != null && mc.player.abilities.canModifyWorld && enabled.get() && useAndMine.get() && mc.crosshairTarget != null
+			&& mc.crosshairTarget.type == HitResult.Type.BLOCK && mc.player != null && mc.options.attackKey.isPressed()
+			&& mc.options.usekey.isPressed() && mc.player.getItemUseTimer() > 0) {
 			if ((!mc.player.handSwinging
-					|| mc.player.handSwingTicks >= ((LivingEntityAccessor) mc.player).getArmSwingAnimationEnd()
-					/ 2
-					|| mc.player.handSwingTicks < 0)) {
+				|| mc.player.handSwingTicks >= ((LivingEntityAccessor) mc.player).getArmSwingAnimationEnd()
+				/ 2
+				|| mc.player.handSwingTicks < 0)) {
 				mc.player.handSwingTicks = -1;
 				mc.player.handSwinging = true;
 			}
 
 			if (particles.get()) {
-				mc.particleManager.addBlockBreakingParticles(mc.result.getBlockPos(), mc.result.direction);
+				mc.particleManager.addBlockMiningParticles(mc.crosshairTarget.getPos(), mc.crosshairTarget.face);
 			}
 		}
 	}
 
-	public static void oldDrinking(ItemStack itemToRender, AbstractClientPlayerEntity clientPlayer,
+	public static void oldDrinking(ItemStack itemToRender, ClientPlayerEntity clientPlayer,
 								   float partialTicks) {
-		float var14 = clientPlayer.getItemUseTicks() - partialTicks + 1.0F;
-		float var15 = 1.0F - var14 / itemToRender.getMaxUseTime();
+		float var14 = clientPlayer.getItemUseTimer() - partialTicks + 1.0F;
+		float var15 = 1.0F - var14 / itemToRender.getUseDuration();
 		float var16 = 1.0F - var15;
 		var16 = var16 * var16 * var16;
 		var16 = var16 * var16 * var16;
 		var16 = var16 * var16 * var16;
 		var16 -= 0.05F;
 		float var17 = 1.0F - var16;
-		GlStateManager.translate(0.0F, MathHelper.abs(MathHelper.cos(var14 / 4F * (float) Math.PI) * 0.11F)
-				* (var15 > 0.2D ? 1 : 0), 0.0F);
-		GlStateManager.translate(var17 * 0.6F, -var17 * 0.5F, 0.0F);
-		GlStateManager.rotate(var17 * 90.0F, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate(var17 * 10.0F, 1.0F, 0.0F, 0.0F);
-		GlStateManager.rotate(var17 * 30.0F, 0.0F, 0.0F, 1.0F);
-		GlStateManager.translate(0, -0.0F, 0.06F);
-		GlStateManager.rotate(-4F, 1, 0, 0);
+		GlStateManager.translatef(0.0F, MathHelper.abs(MathHelper.cos(var14 / 4F * (float) Math.PI) * 0.11F)
+			* (var15 > 0.2D ? 1 : 0), 0.0F);
+		GlStateManager.translatef(var17 * 0.6F, -var17 * 0.5F, 0.0F);
+		GlStateManager.rotatef(var17 * 90.0F, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotatef(var17 * 10.0F, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotatef(var17 * 30.0F, 0.0F, 0.0F, 1.0F);
+		GlStateManager.translatef(0, -0.0F, 0.06F);
+		GlStateManager.rotatef(-4F, 1, 0, 0);
 	}
 
 	public static void oldBlocking() {
-		GlStateManager.scale(0.83F, 0.88F, 0.85F);
-		GlStateManager.translate(-0.3F, 0.1F, 0.0F);
+		GlStateManager.scalef(0.83F, 0.88F, 0.85F);
+		GlStateManager.translatef(-0.3F, 0.1F, 0.0F);
 	}
 
 	public void transformItem(Item item) {
@@ -139,12 +132,12 @@ public class OldAnimations implements ClientModInitializer {
 		}
 
 		// https://github.com/sp614x/optifine/issues/2098
-		if (mc.player.isUsingItem() && item instanceof BowItem) {
+		if (mc.player.isHoldingItem() && item instanceof BowItem) {
 			if (bow.get())
-				GlStateManager.translate(-0.01f, 0.05f, -0.06f);
+				GlStateManager.translatef(-0.01f, 0.05f, -0.06f);
 		} else if ((item instanceof FishingRodItem) && rod.get()) {
-			GlStateManager.translate(0.08f, -0.027f, -0.33f);
-			GlStateManager.scale(0.93f, 1.0f, 1.0f);
+			GlStateManager.translatef(0.08f, -0.027f, -0.33f);
+			GlStateManager.scalef(0.93f, 1.0f, 1.0f);
 		}
 	}
 }

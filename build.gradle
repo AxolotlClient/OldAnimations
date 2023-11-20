@@ -1,11 +1,11 @@
 plugins {
 	id 'java'
-	id 'io.github.juuxel.loom-quiltflower' version '1.8.+'
-	id 'fabric-loom' version "1.3.+"
+	id 'fabric-loom' version "1.4.+"
+	id 'ploceus' version "1.4.+"
 	id 'maven-publish'
 	id 'com.modrinth.minotaur' version "2.+"
 	id 'io.freefair.lombok' version "8.1.+"
-	id 'org.quiltmc.gradle.licenser' version "1.+"
+	id "dev.yumi.gradle.licenser" version "1.0.+"
 }
 
 group = project.maven_group
@@ -20,34 +20,68 @@ repositories {
 		url = "https://moehreag.duckdns.org/maven/releases"
 	}
 	maven {
-		name = "legacy-fabric"
-		url = "https://repo.legacyfabric.net/repository/legacyfabric/"
-	}
-	maven {
 		name = "Modrinth"
 		url = "https://api.modrinth.com/maven"
 	}
+	mavenLocal()
 	mavenCentral()
 }
 
 loom {
-	setIntermediaryUrl('https://maven.legacyfabric.net/net/fabricmc/intermediary/%1$s/intermediary-%1$s-v2.jar')
+	mods {
+		"axolotlclient-oldanimations" {
+			sourceSet("main")
+		}
+	}
 }
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_18}"
-	mappings "net.legacyfabric:yarn:${project.mappings_18}"
+	mappings "net.ornithemc:feather:${project.mappings_18}"
 
 	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader}"
 
 	modCompileOnly("io.github.axolotlclient:AxolotlClient:${project.client}+${project.minecraft_18}") {
 		transitive = false
 	}
-	modImplementation "io.github.axolotlclient:AxolotlClient-config:${project.config}+${project.minecraft_18}"
+	modCompileOnly("io.github.axolotlclient:common:${project.client}") {
+		transitive = false
+	}
+	ploceus.dependOsl(project.osl)
+	modImplementation ("io.github.axolotlclient:AxolotlClient-config:${project.config}+${project.minecraft_18}"){
+		exclude group: "org.lwjgl"
+		exclude group: "org.slf4j"
+	}
 	include "io.github.axolotlclient:AxolotlClient-config:${project.config}+${project.minecraft_18}"
-	modImplementation "io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.config}"
+	modImplementation ("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.config}"){
+		exclude group: "org.lwjgl"
+		exclude group: "org.slf4j"
+	}
 
-	modImplementation "maven.modrinth:legacy-mod-menu:1.1.0"
+	api("org.lwjgl:lwjgl-nanovg:3.3.2")
+	runtimeOnly('org.lwjgl:lwjgl-nanovg:3.3.2:natives-linux')
+	runtimeOnly('org.lwjgl:lwjgl-nanovg:3.3.2:natives-linux-arm64')
+	runtimeOnly('org.lwjgl:lwjgl-nanovg:3.3.2:natives-windows')
+	runtimeOnly('org.lwjgl:lwjgl-nanovg:3.3.2:natives-windows-arm64')
+	runtimeOnly('org.lwjgl:lwjgl-nanovg:3.3.2:natives-macos')
+	runtimeOnly('org.lwjgl:lwjgl-nanovg:3.3.2:natives-macos-arm64')
+
+	modCompileOnly("com.github.zarzelcow:legacy-lwjgl3:1.1.1") {
+		exclude group: 'org.lwjgl', module: 'lwjgl-glfw'
+		exclude group: 'org.lwjgl', module: 'lwjgl-openal'
+		exclude group: 'org.lwjgl', module: 'lwjgl-opengl'
+		exclude group: 'org.lwjgl', module: 'lwjgl'
+		exclude group: 'net.fabricmc'
+	}
+	modRuntimeOnly("com.github.zarzelcow:legacy-lwjgl3:1.1.1:all-remapped") {
+		exclude group: 'org.lwjgl', module: 'lwjgl-glfw'
+		exclude group: 'org.lwjgl', module: 'lwjgl-openal'
+		exclude group: 'org.lwjgl', module: 'lwjgl-opengl'
+		exclude group: 'org.lwjgl', module: 'lwjgl'
+		exclude group: 'net.fabricmc'
+	}
+
+	modImplementation "com.terraformersmc:modmenu:0.1.0+mc1.8.9"
 }
 
 processResources {

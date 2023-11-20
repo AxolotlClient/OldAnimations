@@ -21,6 +21,9 @@
 		],
 		"modmenu": [
 			"io.github.axolotlclient.oldanimations.OldAnimationsModmenu"
+		],
+		"axolotlclient.module": [
+			"io.github.axolotlclient.oldanimations.AxolotlClientModule"
 		]
 	},
 	"mixins": [

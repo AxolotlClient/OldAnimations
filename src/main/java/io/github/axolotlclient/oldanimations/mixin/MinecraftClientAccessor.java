@@ -18,14 +18,14 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.ClientTickTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.TickTimer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public interface MinecraftClientAccessor {
 
-	@Accessor
-	ClientTickTracker getTicker();
+	@Accessor("timer")
+	TickTimer getTicker();
 }
