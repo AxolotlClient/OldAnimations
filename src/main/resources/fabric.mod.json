@@ -16,8 +16,8 @@
 	"icon": "assets/axolotlclient-oldanimations/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"client": [
-			"io.github.axolotlclient.oldanimations.OldAnimations::getInstance"
+		"client-init": [
+			"io.github.axolotlclient.oldanimations.OldAnimations"
 		],
 		"modmenu": [
 			"io.github.axolotlclient.oldanimations.OldAnimationsModmenu"

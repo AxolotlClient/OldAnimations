@@ -19,7 +19,6 @@
 package io.github.axolotlclient.oldanimations;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -27,7 +26,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManag
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.oldanimations.mixin.LivingEntityAccessor;
 import lombok.Getter;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
@@ -37,13 +35,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.HitResult;
+import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 
 public class OldAnimations implements ClientModInitializer {
 
 	public static boolean AXOLOTLCLIENT;
 
 	@Getter
-	private final static OldAnimations instance = new OldAnimations();
+	private static OldAnimations instance;
 
 	@Getter
 	final OptionCategory category = OptionCategory.create(MODID);
@@ -64,20 +63,20 @@ public class OldAnimations implements ClientModInitializer {
 	private Minecraft mc;
 
 	public OldAnimations() {
+		if (instance != null) {
+			throw new IllegalStateException("Re-Instantiation of Singleton Class!");
+		}
+		instance = this;
 		category.add(enabled, useAndMine, particles, blocking, eatingAndDrinking, bow, rod, armourDamage, sneaking, debugOverlay);
 		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
-
-		if (!AXOLOTLCLIENT) {
-			ConfigManager manager = new JsonConfigManager(
-				FabricLoader.getInstance().getConfigDir().resolve(MODID + ".json"), category);
-			AxolotlClientConfig.getInstance().register(manager);
-			manager.save();
-		}
 	}
 
 	@Override
-	public void onInitializeClient() {
-
+	public void initClient() {
+		ConfigManager manager = new JsonConfigManager(
+			FabricLoader.getInstance().getConfigDir().resolve(MODID + ".json"), category);
+		AxolotlClientConfig.getInstance().register(manager);
+		manager.load();
 	}
 
 	public void tick() {
