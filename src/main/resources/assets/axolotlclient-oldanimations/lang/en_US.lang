@@ -4,6 +4,7 @@ useAndMine=Use/Mine
 particles=Particles
 blocking=Blocking
 eatingAndDrinking=Eating/Drinking
+itemPositions=Item Positions
 bow=Bow
 rod=Rod
 armorDamage=Armour Damage

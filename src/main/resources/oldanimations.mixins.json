@@ -4,12 +4,16 @@
 	"compatibilityLevel": "JAVA_8",
 	"client": [
 		"ArmorFeatureRendererMixin",
+		"BiPedModelMixin",
+		"DebugHudMixin",
+		"FishingBobberEntityRendererMixin",
 		"GameRendererMixin",
+		"HeldItemRendererMixin",
 		"ItemRendererMixin",
 		"LivingEntityAccessor",
+		"LivingEntityRendererMixin",
 		"MinecraftClientAccessor",
-		"MinecraftClientMixin",
-		"DebugHudMixin"
+		"MinecraftClientMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

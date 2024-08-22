@@ -21,7 +21,6 @@ package io.github.axolotlclient.oldanimations;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.AxolotlClientConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.common.ConfigHolder;
@@ -32,13 +31,7 @@ import lombok.Getter;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.FishingRodItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.MathHelper;
 
 public class OldAnimations implements ClientModInitializer {
 
@@ -52,9 +45,10 @@ public class OldAnimations implements ClientModInitializer {
 
 	public final BooleanOption enabled = new BooleanOption("enabled", true);
 	public final BooleanOption useAndMine = new BooleanOption("useAndMine", true);
-	public final BooleanOption particles = new BooleanOption("particles", true);
+	public final BooleanOption particles = new BooleanOption("particles", true); /* use and mine particles */
 	public final BooleanOption blocking = new BooleanOption("blocking", true);
 	public final BooleanOption eatingAndDrinking = new BooleanOption("eatingAndDrinking", true);
+	public final BooleanOption itemPositions = new BooleanOption("itemPositions", true);
 	public final BooleanOption bow = new BooleanOption("bow", true);
 	public final BooleanOption rod = new BooleanOption("rod", true);
 	public final BooleanOption armourDamage = new BooleanOption("armorDamage", true);
@@ -66,7 +60,19 @@ public class OldAnimations implements ClientModInitializer {
 	private MinecraftClient mc;
 
 	public OldAnimations() {
-		category.add(enabled, useAndMine, particles, blocking, eatingAndDrinking, bow, rod, armourDamage, sneaking, debugOverlay);
+		category.add(
+			enabled,
+			useAndMine,
+			particles,
+			blocking,
+			eatingAndDrinking,
+			itemPositions,
+			bow,
+			rod,
+			armourDamage,
+			sneaking,
+			debugOverlay
+		);
 		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
 
 		if (!AXOLOTLCLIENT) {
@@ -105,46 +111,6 @@ public class OldAnimations implements ClientModInitializer {
 			if (particles.get()) {
 				mc.particleManager.addBlockBreakingParticles(mc.result.getBlockPos(), mc.result.direction);
 			}
-		}
-	}
-
-	public static void oldDrinking(ItemStack itemToRender, AbstractClientPlayerEntity clientPlayer,
-								   float partialTicks) {
-		float var14 = clientPlayer.getItemUseTicks() - partialTicks + 1.0F;
-		float var15 = 1.0F - var14 / itemToRender.getMaxUseTime();
-		float var16 = 1.0F - var15;
-		var16 = var16 * var16 * var16;
-		var16 = var16 * var16 * var16;
-		var16 = var16 * var16 * var16;
-		var16 -= 0.05F;
-		float var17 = 1.0F - var16;
-		GlStateManager.translate(0.0F, MathHelper.abs(MathHelper.cos(var14 / 4F * (float) Math.PI) * 0.11F)
-				* (var15 > 0.2D ? 1 : 0), 0.0F);
-		GlStateManager.translate(var17 * 0.6F, -var17 * 0.5F, 0.0F);
-		GlStateManager.rotate(var17 * 90.0F, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate(var17 * 10.0F, 1.0F, 0.0F, 0.0F);
-		GlStateManager.rotate(var17 * 30.0F, 0.0F, 0.0F, 1.0F);
-		GlStateManager.translate(0, -0.0F, 0.06F);
-		GlStateManager.rotate(-4F, 1, 0, 0);
-	}
-
-	public static void oldBlocking() {
-		GlStateManager.scale(0.83F, 0.88F, 0.85F);
-		GlStateManager.translate(-0.3F, 0.1F, 0.0F);
-	}
-
-	public void transformItem(Item item) {
-		if (!(bow.get() || rod.get())) {
-			return;
-		}
-
-		// https://github.com/sp614x/optifine/issues/2098
-		if (mc.player.isUsingItem() && item instanceof BowItem) {
-			if (bow.get())
-				GlStateManager.translate(-0.01f, 0.05f, -0.06f);
-		} else if ((item instanceof FishingRodItem) && rod.get()) {
-			GlStateManager.translate(0.08f, -0.027f, -0.33f);
-			GlStateManager.scale(0.93f, 1.0f, 1.0f);
 		}
 	}
 }

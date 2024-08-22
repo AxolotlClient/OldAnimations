@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MinecraftClientMixin {
 
 	@Inject(method = "tick", at = @At("TAIL"))
-	private void oldanimations$tick(CallbackInfo ci) {
-		OldAnimations.getInstance().tick();
+	private void axolotlclient$tick(CallbackInfo ci) {
+		OldAnimations.getInstance().tick(); /* updates useAndMine */
 	}
 }
