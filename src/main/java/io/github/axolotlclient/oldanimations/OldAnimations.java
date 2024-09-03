@@ -53,6 +53,7 @@ public class OldAnimations implements ClientModInitializer {
 	public final BooleanOption rod = new BooleanOption("rod", true);
 	public final BooleanOption armourDamage = new BooleanOption("armorDamage", true);
 	public final BooleanOption sneaking = new BooleanOption("sneaking", true);
+	public final BooleanOption heartFlashing = new BooleanOption("heartFlashing", true);
 	public final BooleanOption debugOverlay = new BooleanOption("debugOverlay", true);
 
 	public static final String MODID = "axolotlclient-oldanimations";
@@ -71,6 +72,7 @@ public class OldAnimations implements ClientModInitializer {
 			rod,
 			armourDamage,
 			sneaking,
+			heartFlashing,
 			debugOverlay
 		);
 		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
