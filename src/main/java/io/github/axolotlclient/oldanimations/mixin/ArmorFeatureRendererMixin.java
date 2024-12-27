@@ -22,15 +22,15 @@ import io.github.axolotlclient.oldanimations.OldAnimations;
 import net.minecraft.client.render.entity.layer.AbstractArmorLayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractArmorLayer.class)
 public class ArmorFeatureRendererMixin {
 
-	@ModifyArg(method = "getModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/layer/AbstractArmorLayer;usesInnerModel(I)Z"))
-	private int oldArmour(int i) {
+	@Inject(method = "colorsWhenDamaged", at = @At("HEAD"), cancellable = true)
+	public void axolotlclient$oldArmour(CallbackInfoReturnable<Boolean> callback) {
 		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().armourDamage.get())
-			return 2;
-		return i;
+			callback.setReturnValue(true);
 	}
 }

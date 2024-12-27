@@ -41,8 +41,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class DebugHudMixin {
 
 	@Inject(method = "drawGameInfo", at = @At("HEAD"), cancellable = true)
-	public void render(CallbackInfo callback) {
-		if (!active())
+	public void axolotlclient$renderLeftDebugText(CallbackInfo callback) {
+		if (!isDebugOverlayEnabled())
 			return;
 
 		callback.cancel();
@@ -111,8 +111,8 @@ public class DebugHudMixin {
 	}
 
 	@Inject(method = "drawSystemInfo", at = @At("HEAD"), cancellable = true)
-	public void render(Window window, CallbackInfo callback) {
-		if (!active())
+	public void axolotlclient$renderRightDebugText(Window window, CallbackInfo callback) {
+		if (!isDebugOverlayEnabled())
 			return;
 
 		callback.cancel();
@@ -147,13 +147,14 @@ public class DebugHudMixin {
 	}
 
 	@Shadow
-	private @Final Minecraft minecraft;
+	@Final
+	private Minecraft minecraft;
 
 	@Unique
 	private static final String[] DIRECTIONS = {"SOUTH", "WEST", "NORTH", "EAST"};
 
 	@Unique
-	private static boolean active() {
+	private static boolean isDebugOverlayEnabled() {
 		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().debugOverlay.get();
 	}
 

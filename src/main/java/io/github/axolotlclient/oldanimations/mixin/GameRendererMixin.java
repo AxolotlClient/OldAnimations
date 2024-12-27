@@ -19,6 +19,7 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.ducks.Sneaky;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
@@ -26,45 +27,70 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
-public abstract class GameRendererMixin {
+public abstract class GameRendererMixin implements Sneaky {
 
 	@Shadow
+	/* why you not final :( */
 	private Minecraft minecraft;
 
 	@Unique
-	private float eyeHeightSubtractor;
+	private float lastCameraY;
+
 	@Unique
-	private long lastEyeHeightUpdate;
+	private float cameraY;
+
+	@Unique
+	private float eyeHeight;
+
+	@Inject(method = "setupCamera", at = @At("HEAD"))
+	protected void axolotlclient$lerpCamera(float partialTicks, int pass, CallbackInfo ci) {
+		/* eye height is interpolated between the last and current camera Y positions */
+		if (isSneakingEnabled()) eyeHeight = lerp(partialTicks, lastCameraY, cameraY);
+	}
 
 	@ModifyVariable(method = "transformCamera", at = @At(value = "STORE"), ordinal = 1)
-	private float oldanimations$modifyEyeHeight(float eyeHeight) {
+	private float axolotlclient$useLerpEyeHeight(float eyeHeight) {
+		return isSneakingEnabled() ? axolotlclient$getEyeHeight() : eyeHeight; /* player eye height */
+	}
 
-		Entity entity = this.minecraft.getCamera();
+	@ModifyArg(method = "renderAxisIndicators", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"), index = 1)
+	public float axolotlclient$useLerpEyeHeight_Debug(float x) {
+		return isSneakingEnabled() ? axolotlclient$getEyeHeight() : x; /* debug crosshair parity */
+	}
 
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().sneaking.get()) {
-			float height = eyeHeight;
-			if (entity.isSneaking()) {
-				height += 0.08F;
-			}
-			float actualEyeHeightSubtractor = entity.isSneaking() ? 0.08F : 0;
-			long sinceLastUpdate = System.currentTimeMillis() - lastEyeHeightUpdate;
-			lastEyeHeightUpdate = System.currentTimeMillis();
-			if (actualEyeHeightSubtractor > eyeHeightSubtractor) {
-				eyeHeightSubtractor += sinceLastUpdate / 500f;
-				if (actualEyeHeightSubtractor < eyeHeightSubtractor) {
-					eyeHeightSubtractor = actualEyeHeightSubtractor;
-				}
-			} else if (actualEyeHeightSubtractor < eyeHeightSubtractor) {
-				eyeHeightSubtractor -= sinceLastUpdate / 500f;
-				if (actualEyeHeightSubtractor > eyeHeightSubtractor) {
-					eyeHeightSubtractor = actualEyeHeightSubtractor;
-				}
-			}
-			return height - eyeHeightSubtractor;
+	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;updateHeldItem()V")) /* placed below null check */
+	private void axolotlclient$updateCameraY(CallbackInfo ci) {
+		/* updates the current eye height */
+		if (!isSneakingEnabled()) {
+			return;
 		}
-		return entity.getEyeHeight();
+		Entity entity = minecraft.getCamera();
+		float eyeHeight = entity.getEyeHeight();
+		lastCameraY = cameraY;
+		if (eyeHeight < cameraY)
+			cameraY = eyeHeight;
+		else
+			cameraY += (eyeHeight - cameraY) * 0.5f;
+	}
+
+	@Unique
+	private static float lerp(float delta, float start, float end) { /* taken straight from modern minecraft */
+		return start + delta * (end - start);
+	}
+
+	@Unique
+	private static boolean isSneakingEnabled() {
+		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().sneaking.get();
+	}
+
+	@Override
+	public float axolotlclient$getEyeHeight() {
+		return eyeHeight;
 	}
 }

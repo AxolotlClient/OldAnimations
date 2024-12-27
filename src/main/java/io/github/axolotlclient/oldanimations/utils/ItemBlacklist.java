@@ -16,20 +16,26 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations.mixin;
+package io.github.axolotlclient.oldanimations.utils;
 
-import io.github.axolotlclient.oldanimations.OldAnimations;
-import net.minecraft.client.Minecraft;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.item.BannerItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SkullItem;
 
-@Mixin(Minecraft.class)
-public abstract class MinecraftClientMixin {
+import java.util.HashMap;
+import java.util.Map;
 
-	@Inject(method = "tick", at = @At("TAIL"))
-	private void axolotlclient$tick(CallbackInfo ci) {
-		OldAnimations.getInstance().tick(); /* updates useAndMine */
-	}
+public class ItemBlacklist {
+
+    // map to store blacklisted items
+    // some items are not quite compatible with 1.7's item position
+    private static final Map<Class<?>, Boolean> blacklistedItems = new HashMap<Class<?>, Boolean>() {{
+        put(SkullItem.class, true);
+        put(BannerItem.class, true);
+    }};
+
+    // method to check if an item is blacklisted
+    public static boolean isPresent(ItemStack stack) {
+        return blacklistedItems.containsKey(stack.getItem().getClass());
+    }
 }
