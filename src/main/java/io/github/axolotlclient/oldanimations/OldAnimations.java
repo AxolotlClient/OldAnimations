@@ -18,8 +18,11 @@
 
 package io.github.axolotlclient.oldanimations;
 
-import io.github.axolotlclient.AxolotlClient;
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
+import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -35,11 +38,10 @@ public class OldAnimations implements ClientModInitializer {
 	public static final String MODID = "axolotlclient-oldanimations";
 	public static boolean AXOLOTLCLIENT;
 
-	@Getter
-	private final static OldAnimations instance = new OldAnimations();
+	private static OldAnimations instance;
 
 	@Getter
-	private final OptionCategory category = OptionCategory.create(MODID);
+	private final OptionCategory category = OptionCategory.create(MODID).includeInParentTree(false);
 
 	public final BooleanOption enabled = new BooleanOption("enabled", true);
 	public final BooleanOption useAndMine = new BooleanOption("useAndMine", true);
@@ -54,10 +56,36 @@ public class OldAnimations implements ClientModInitializer {
 	public final BooleanOption heartFlashing = new BooleanOption("heartFlashing", true);
 	public final BooleanOption debugOverlay = new BooleanOption("debugOverlay", true);
 
-
 	private Minecraft mc;
 
+	// Since AxolotlClient may initialize this class as a module before it gets loaded as a mod by fabric we have to defer the former to run after the latter.
+	// But since the load order is non-deterministic this may not always be the case
+	private static boolean loadedByFabric;
+	private static final List<Runnable> tasks = new ArrayList<>();
+
 	public OldAnimations() {
+		if (instance != null) {
+			throw new IllegalStateException();
+		}
+		loadedByFabric = true;
+		instance = this;
+		tasks.forEach(Runnable::run);
+		tasks.clear();
+	}
+
+	public static OldAnimations getInstance() {
+		return OldAnimations.instance;
+	}
+
+	public static void runAfterFabricLoad(Runnable task) {
+		if (loadedByFabric) {
+			task.run();
+		} else tasks.add(task);
+	}
+
+	@Override
+	public void initClient() {
+
 		category.add(
 			enabled,
 			useAndMine,
@@ -72,20 +100,13 @@ public class OldAnimations implements ClientModInitializer {
 			heartFlashing,
 			debugOverlay
 		);
-		category.includeInParentTree(false);
+
 		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
 
-
-		if (AXOLOTLCLIENT) {
-			// TODO once we have 3.1.0 on the maven this can be uncommented again
-			//AxolotlClient.CONFIG.rendering.add(category);
-		}
-	}
-
-	@Override
-	public void initClient() {
-		AxolotlClientConfig.getInstance().register(new VersionedJsonConfigManager(FabricLoader.getInstance().getConfigDir().resolve(MODID + ".json"),
-			category, 1, (configVersion, configVersion1, optionCategory, jsonObject) -> jsonObject));
+		ConfigManager configManager = new VersionedJsonConfigManager(FabricLoader.getInstance().getConfigDir().resolve(MODID + ".json"),
+			category, 1, (configVersion, configVersion1, optionCategory, jsonObject) -> jsonObject);
+		AxolotlClientConfig.getInstance().register(configManager);
+		configManager.load();
 	}
 
 	public void tick() {
@@ -108,4 +129,5 @@ public class OldAnimations implements ClientModInitializer {
 			}
 		}
 	}
+
 }

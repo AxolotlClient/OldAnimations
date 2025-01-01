@@ -26,6 +26,12 @@ repositories {
 		name = "Modrinth"
 		url = "https://api.modrinth.com/maven"
 	}*/
+	maven {
+		url = "https://repo.hypixel.net/repository/Hypixel/"
+		content {
+			includeGroup("net.hypixel")
+		}
+	}
 	mavenLocal()
 	mavenCentral()
 }
@@ -44,12 +50,14 @@ dependencies {
 
 	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader}"
 
-	modCompileOnly("io.github.axolotlclient:AxolotlClient:${project.client}+${project.minecraft_18}") {
+	modImplementation("io.github.axolotlclient:AxolotlClient:${project.client}+${project.minecraft_18}") {
 		transitive = false
 	}
-	compileOnly("io.github.axolotlclient:common:${project.client}") {
+	implementation("io.github.axolotlclient.AxolotlClient:AxolotlClient-common:${project.client}") {
 		transitive = false
 	}
+	modApi("io.github.moehreag:search-in-resources:1.0.6+1.8.9")
+	implementation("net.hypixel:mod-api:1.0.1")
 	ploceus.dependOsl(project.osl)
 	modImplementation ("io.github.axolotlclient:AxolotlClient-config:${project.config}+${project.minecraft_18}")
 	include "io.github.axolotlclient:AxolotlClient-config:${project.config}+${project.minecraft_18}"

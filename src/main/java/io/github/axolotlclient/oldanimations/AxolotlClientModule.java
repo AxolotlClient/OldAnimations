@@ -19,18 +19,11 @@
 package io.github.axolotlclient.oldanimations;
 
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.modules.AbstractModule;
 
 public class AxolotlClientModule extends AbstractModule {
 	@Override
 	public void init() {
-		Object con = AxolotlClient.CONFIG;
-		try {
-			OptionCategory rendering = (OptionCategory) con.getClass().getField("rendering").get(con);
-			rendering.add(OldAnimations.getInstance().getCategory().includeInParentTree(false));
-		} catch (IllegalAccessException | NoSuchFieldException e) {
-			throw new RuntimeException(e);
-		}
+		OldAnimations.runAfterFabricLoad(() -> AxolotlClient.CONFIG.rendering.add(OldAnimations.getInstance().getCategory()));
 	}
 }
