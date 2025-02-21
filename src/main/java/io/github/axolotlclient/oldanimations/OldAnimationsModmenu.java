@@ -26,9 +26,6 @@ public class OldAnimationsModmenu implements ModMenuApi {
 
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {
-		if (OldAnimations.AXOLOTLCLIENT) {
-			return screen -> null;
-		}
 		return screen -> ConfigStyles.createScreen(screen, OldAnimations.getInstance().getCategory());
 	}
 }

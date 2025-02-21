@@ -12,9 +12,6 @@ group = project.maven_group
 version = project.version
 archivesBaseName = "AxolotlClient-OldAnimations"
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
 repositories {
 	maven {
 		url = "https://moehreag.duckdns.org/maven/snapshots"
@@ -61,7 +58,7 @@ dependencies {
 	ploceus.dependOsl(project.osl)
 	modImplementation ("io.github.axolotlclient:AxolotlClient-config:${project.config}+${project.minecraft_18}")
 	include "io.github.axolotlclient:AxolotlClient-config:${project.config}+${project.minecraft_18}"
-	implementation "io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:3.0.0-beta.62"
+	implementation "io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.config}"
 
 	def lwjglVersion = "3.3.5"
 	api("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
@@ -72,14 +69,14 @@ dependencies {
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:$lwjglVersion:natives-macos")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:$lwjglVersion:natives-macos-arm64")
 
-	modCompileOnly("io.github.moehreag:legacy-lwjgl3:1.2.1+1.8.9") {
+	modCompileOnly("io.github.moehreag:legacy-lwjgl3:1.2.3+1.8.9") {
 		exclude group: 'org.lwjgl', module: 'lwjgl-glfw'
 		exclude group: 'org.lwjgl', module: 'lwjgl-openal'
 		exclude group: 'org.lwjgl', module: 'lwjgl-opengl'
 		exclude group: 'org.lwjgl', module: 'lwjgl'
 		exclude group: 'net.fabricmc'
 	}
-	modRuntimeOnly("io.github.moehreag:legacy-lwjgl3:1.2.1+1.8.9:all-remapped") {
+	modRuntimeOnly("io.github.moehreag:legacy-lwjgl3:1.2.3+1.8.9:all-remapped") {
 		exclude group: 'org.lwjgl', module: 'lwjgl-glfw'
 		exclude group: 'org.lwjgl', module: 'lwjgl-openal'
 		exclude group: 'org.lwjgl', module: 'lwjgl-opengl'
@@ -100,6 +97,9 @@ processResources {
 
 java {
 	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 license {
