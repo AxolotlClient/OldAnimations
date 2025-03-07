@@ -47,26 +47,26 @@ public class OldAnimations implements ClientModInitializer {
 	public final BooleanOption useAndMine = new BooleanOption("useAndMine", true);
 	public final BooleanOption particles = new BooleanOption("particles", true);
 	public final BooleanOption blocking = new BooleanOption("blocking", true);
+	public final BooleanOption blockingArm = new BooleanOption("blockingArm", true);
 	public final BooleanOption eatingAndDrinking = new BooleanOption("eatingAndDrinking", true);
 	public final BooleanOption itemPositions = new BooleanOption("itemPositions", true);
-	public final BooleanOption bow = new BooleanOption("bow", true);
-	public final BooleanOption rod = new BooleanOption("rod", true);
+	public final BooleanOption itemPositionsThird = new BooleanOption("itemPositionsThird", true);
+	public final BooleanOption replaceRodWithStick = new BooleanOption("replaceRodWithStick", true);
+	public final BooleanOption mirrorProjectiles = new BooleanOption("mirrorProjectiles", true);
+	public final BooleanOption oldGlint = new BooleanOption("oldGlint", true);
+	public final BooleanOption oldPotionGlint = new BooleanOption("oldPotionGlint", true);
 	public final BooleanOption armourDamage = new BooleanOption("armorDamage", true);
 	public final BooleanOption sneaking = new BooleanOption("sneaking", true);
-	public final BooleanOption heartFlashing = new BooleanOption("heartFlashing", true);
-	public final BooleanOption debugOverlay = new BooleanOption("debugOverlay", true);
-
-	//todo: out of order. need to order it better :c
-	public final BooleanOption oldPotionGlint = new BooleanOption("oldPotionGlint", true);
-	public final BooleanOption blockingArm = new BooleanOption("blockingArm", true);
-	public final BooleanOption mirrorProjectiles = new BooleanOption("mirrorProjectiles", true);
+	public final BooleanOption sneakingThird = new BooleanOption("sneakingThird", true);
 	public final BooleanOption flameOffset = new BooleanOption("flameOffset", true);
-	public final BooleanOption tabOverlay = new BooleanOption("tabOverlay", false);
 	public final BooleanOption oldSkinRendering = new BooleanOption("oldSkinRendering", false);
-	public final BooleanOption disableTitles = new BooleanOption("disableTitles", false);
 	public final BooleanOption oldItemPickup = new BooleanOption("oldItemPickup", true);
 	public final BooleanOption fixArmItemRotation = new BooleanOption("fixArmItemRotation", true);
 	public final BooleanOption oldRenderTickDelay = new BooleanOption("oldRenderTickDelay", true);
+	public final BooleanOption heartFlashing = new BooleanOption("heartFlashing", true);
+	public final BooleanOption disableTitles = new BooleanOption("disableTitles", false);
+	public final BooleanOption debugOverlay = new BooleanOption("debugOverlay", true);
+	public final BooleanOption tabOverlay = new BooleanOption("tabOverlay", false);
 	public final BooleanOption centerGuiSelection = new BooleanOption("centerGuiSelection", true);
 
 	public static final String MODID = "axolotlclient-oldanimations";
@@ -79,25 +79,26 @@ public class OldAnimations implements ClientModInitializer {
 			useAndMine,
 			particles,
 			blocking,
+			blockingArm,
 			eatingAndDrinking,
 			itemPositions,
-			bow,
-			rod,
+			itemPositionsThird,
+			replaceRodWithStick,
+			mirrorProjectiles,
+			oldGlint,
+			oldPotionGlint,
 			armourDamage,
 			sneaking,
-			heartFlashing,
-			debugOverlay,
-
-			oldPotionGlint,
-			blockingArm,
-			mirrorProjectiles,
+			sneakingThird,
 			flameOffset,
-			tabOverlay,
 			oldSkinRendering,
-			disableTitles,
 			oldItemPickup,
 			fixArmItemRotation,
 			oldRenderTickDelay,
+			heartFlashing,
+			disableTitles,
+			debugOverlay,
+			tabOverlay,
 			centerGuiSelection
 		);
 		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
@@ -117,7 +118,7 @@ public class OldAnimations implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-
+		// Hi
 	}
 
 	public void tick() {
@@ -127,10 +128,7 @@ public class OldAnimations implements ClientModInitializer {
 		if (mc.player != null && mc.player.abilities.allowModifyWorld && enabled.get() && useAndMine.get() && mc.result != null
 				&& mc.result.type == BlockHitResult.Type.BLOCK && mc.player != null && mc.options.attackKey.isPressed()
 				&& mc.options.useKey.isPressed() && mc.player.getItemUseTicks() > 0) {
-			if ((!mc.player.handSwinging
-					|| mc.player.handSwingTicks >= ((LivingEntityAccessor) mc.player).getArmSwingAnimationEnd()
-					/ 2
-					|| mc.player.handSwingTicks < 0)) {
+			if ((!mc.player.handSwinging || mc.player.handSwingTicks >= ((LivingEntityAccessor) mc.player).getArmSwingAnimationEnd() / 2 || mc.player.handSwingTicks < 0)) {
 				mc.player.handSwingTicks = -1;
 				mc.player.handSwinging = true;
 			}

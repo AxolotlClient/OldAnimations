@@ -16,26 +16,15 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations.utils;
+package io.github.axolotlclient.oldanimations.util;
 
-import net.minecraft.item.BannerItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SkullItem;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.ClientPlayerEntity;
 
-import java.util.HashMap;
-import java.util.Map;
+public class PlayerUtils {
 
-public class ItemBlacklist {
-
-    // map to store blacklisted items
-    // some items are not quite compatible with 1.7's item position
-    private static final Map<Class<?>, Boolean> blacklistedItems = new HashMap<Class<?>, Boolean>() {{
-        put(SkullItem.class, true);
-        put(BannerItem.class, true);
-    }};
-
-    // method to check if an item is blacklisted
-    public static boolean isPresent(ItemStack stack) {
-        return blacklistedItems.containsKey(stack.getItem().getClass());
-    }
+	public static boolean isSelf(Entity entity) {
+		return entity instanceof ClientPlayerEntity && MinecraftClient.getInstance().player.getEntityId() == entity.getEntityId();
+	}
 }

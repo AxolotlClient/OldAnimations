@@ -21,7 +21,7 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.ducks.Sneaky;
-import io.github.axolotlclient.oldanimations.utils.PlayerUtils;
+import io.github.axolotlclient.oldanimations.util.PlayerUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.entity.LivingEntity;
@@ -35,7 +35,7 @@ public abstract class LivingEntityRendererMixin {
 
 	@Inject(method = "render(Lnet/minecraft/entity/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translate(FFF)V"))
     private void axolotlclient$addSneakingTranslation(LivingEntity livingEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().sneaking.get() && PlayerUtils.isSelf(livingEntity)) {
+		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().sneakingThird.get() && PlayerUtils.isSelf(livingEntity)) {
 			if (livingEntity.isSneaking()) {
 				GlStateManager.translate(0.0F, -0.2F, 0.0F);
 			}

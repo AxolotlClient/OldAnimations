@@ -41,7 +41,9 @@ public class FishingBobberEntityRendererMixin {
 
 	@ModifyConstant(method = "render(Lnet/minecraft/entity/projectile/FishingBobberEntity;DDDFF)V", constant = @Constant(doubleValue = 0.8D))
 	public double axolotlclient$moveLinePosition(double constant) {
-		if (isRodEnabled()) constant += 0.05D;
+		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().itemPositionsThird.get()) {
+			constant += 0.05D;
+		}
 		return constant;
 	}
 
@@ -52,7 +54,7 @@ public class FishingBobberEntityRendererMixin {
 
 	@Redirect(method = "render(Lnet/minecraft/entity/projectile/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getEyeHeight()F"))
 	public float axolotlclient$useLerpEyeHeight_Fish(PlayerEntity instance) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().rod.get()) {
+		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().sneaking.get()) {
 			return ((Sneaky) MinecraftClient.getInstance().gameRenderer).axolotlclient$getEyeHeight();
 		}
 		return instance.getEyeHeight();
@@ -60,6 +62,6 @@ public class FishingBobberEntityRendererMixin {
 
 	@Unique
 	private static boolean isRodEnabled() {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().rod.get();
+		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().itemPositions.get();
 	}
 }

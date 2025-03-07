@@ -20,7 +20,7 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.OldAnimations;
-import io.github.axolotlclient.oldanimations.utils.ItemBlacklist;
+import io.github.axolotlclient.oldanimations.util.ItemBlacklist;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.feature.HeldItemRenderer;
@@ -62,7 +62,7 @@ public abstract class HeldItemRendererMixin_Layer {
 	//todo: delegate this to its own option
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;<init>(Lnet/minecraft/item/Item;I)V"), index = 0)
 	private Item axolotlclient$changeToStick(Item item) {
-		return areItemPositionsEnabled() ? Items.STICK : item;
+		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().replaceRodWithStick.get() ? Items.STICK : item;
 	}
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getBlockType()I"))
@@ -122,7 +122,7 @@ public abstract class HeldItemRendererMixin_Layer {
 
 	@Unique
 	private static boolean areItemPositionsEnabled() {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().itemPositions.get();
+		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().itemPositionsThird.get();
 	}
 
 	@Unique

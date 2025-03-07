@@ -20,7 +20,7 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.OldAnimations;
-import io.github.axolotlclient.oldanimations.utils.PlayerUtils;
+import io.github.axolotlclient.oldanimations.util.PlayerUtils;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.entity.Entity;
 import org.objectweb.asm.Opcodes;

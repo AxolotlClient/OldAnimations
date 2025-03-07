@@ -1,4 +1,4 @@
-package io.github.axolotlclient.oldanimations.utils;
+package io.github.axolotlclient.oldanimations.util;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
