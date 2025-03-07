@@ -11,3 +11,15 @@ armorDamage=Armour Damage
 sneaking=Sneaking
 heartFlashing=Heart Flashing
 debugOverlay=Debug Overlay
+
+oldPotionGlint=Potion Glint Layers
+blockingArm=Blocking Arm
+mirrorProjectiles=Mirrored Projectiles
+flameOffset=Flame Offset
+tabOverlay=Player List Overlay
+oldSkinRendering=Old Skin Rendering
+disableTitles=Disable Titles
+oldItemPickup=Item Pickup
+fixArmItemRotation=Arm Item Rotation
+oldRenderTickDelay=Damage Tick Delay
+centerGuiSelection=Centered Gui Elements

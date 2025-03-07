@@ -1,22 +1,32 @@
 {
-  "required": true,
-  "package": "io.github.axolotlclient.oldanimations.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "client": [
-    "ArmorFeatureRendererMixin",
-    "BiPedModelMixin",
-    "DebugHudMixin",
-    "FishingBobberEntityRendererMixin",
-    "GameRendererMixin",
-    "HeldItemRendererMixin",
-    "InGameHudMixin",
-    "ItemRendererMixin",
-    "LivingEntityAccessor",
-    "LivingEntityRendererMixin",
-    "MinecraftClientAccessor",
-    "MinecraftClientMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
+	"required": true,
+	"package": "io.github.axolotlclient.oldanimations.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"client": [
+		"ArmorFeatureRendererMixin",
+		"BiPedModelMixin",
+		"ClientPlayNetworkHandlerMixin",
+		"DebugHudMixin",
+		"EntityRenderDispatcherMixin",
+		"EntityRendererMixin",
+		"FishingBobberEntityRendererMixin",
+		"FlyingItemEntityRendererMixin",
+		"GameRendererMixin",
+		"HeldItemRendererMixin",
+		"HeldItemRendererMixin_Layer",
+		"InGameHudMixin",
+		"ItemPickupParticleMixin",
+		"ItemRendererMixin",
+		"ListWidgetMixin",
+		"LivingEntityAccessor",
+		"LivingEntityRendererMixin",
+		"MinecraftClientAccessor",
+		"MinecraftClientMixin",
+		"ModelLoaderMixin",
+		"PlayerEntityRendererMixin",
+		"PlayerListHudMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
 	}
 }

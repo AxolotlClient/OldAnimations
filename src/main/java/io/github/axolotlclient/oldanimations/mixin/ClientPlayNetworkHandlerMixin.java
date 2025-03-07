@@ -19,17 +19,27 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import io.github.axolotlclient.oldanimations.OldAnimations;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MinecraftClient.class)
-public abstract class MinecraftClientMixin {
+@Mixin(ClientPlayNetworkHandler.class)
+public class ClientPlayNetworkHandlerMixin {
 
-	@Inject(method = "tick", at = @At("TAIL"))
-	private void axolotlclient$tick(CallbackInfo ci) {
-		OldAnimations.getInstance().tick();
+	@ModifyConstant(method = "onChunkRenderDistanceCenter", constant = @Constant(floatValue = 0.5F))
+	private float axolotlclient$oldItemPickup(float original) {
+		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().oldItemPickup.get() ? -0.5F : original;
+	}
+
+	@Inject(method = "onTitle", at = @At("HEAD"), cancellable = true)
+	private void axolotlclient$disableTitlesPacket(TitleS2CPacket titleS2CPacket, CallbackInfo ci) {
+		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().oldItemPickup.get()) {
+			ci.cancel();
+		}
 	}
 }

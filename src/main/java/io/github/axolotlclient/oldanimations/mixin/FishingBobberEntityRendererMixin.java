@@ -34,7 +34,6 @@ public class FishingBobberEntityRendererMixin {
 	@ModifyArgs(method = "render(Lnet/minecraft/entity/projectile/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;<init>(DDD)V"))
 	private void axolotlclient$modifyLinePosition(Args args) {
 		if (isRodEnabled()) {
-			/* original values from 1.7 */
 			args.set(0, (double) args.get(0) - 0.24D);
 			args.set(2, (double) args.get(2) + 0.45D);
 		}
@@ -42,7 +41,6 @@ public class FishingBobberEntityRendererMixin {
 
 	@ModifyConstant(method = "render(Lnet/minecraft/entity/projectile/FishingBobberEntity;DDDFF)V", constant = @Constant(doubleValue = 0.8D))
 	public double axolotlclient$moveLinePosition(double constant) {
-		/* original value from 1.7 */
 		if (isRodEnabled()) constant += 0.05D;
 		return constant;
 	}

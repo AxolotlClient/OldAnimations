@@ -45,7 +45,7 @@ public class OldAnimations implements ClientModInitializer {
 
 	public final BooleanOption enabled = new BooleanOption("enabled", true);
 	public final BooleanOption useAndMine = new BooleanOption("useAndMine", true);
-	public final BooleanOption particles = new BooleanOption("particles", true); /* use and mine particles */
+	public final BooleanOption particles = new BooleanOption("particles", true);
 	public final BooleanOption blocking = new BooleanOption("blocking", true);
 	public final BooleanOption eatingAndDrinking = new BooleanOption("eatingAndDrinking", true);
 	public final BooleanOption itemPositions = new BooleanOption("itemPositions", true);
@@ -55,6 +55,19 @@ public class OldAnimations implements ClientModInitializer {
 	public final BooleanOption sneaking = new BooleanOption("sneaking", true);
 	public final BooleanOption heartFlashing = new BooleanOption("heartFlashing", true);
 	public final BooleanOption debugOverlay = new BooleanOption("debugOverlay", true);
+
+	//todo: out of order. need to order it better :c
+	public final BooleanOption oldPotionGlint = new BooleanOption("oldPotionGlint", true);
+	public final BooleanOption blockingArm = new BooleanOption("blockingArm", true);
+	public final BooleanOption mirrorProjectiles = new BooleanOption("mirrorProjectiles", true);
+	public final BooleanOption flameOffset = new BooleanOption("flameOffset", true);
+	public final BooleanOption tabOverlay = new BooleanOption("tabOverlay", false);
+	public final BooleanOption oldSkinRendering = new BooleanOption("oldSkinRendering", false);
+	public final BooleanOption disableTitles = new BooleanOption("disableTitles", false);
+	public final BooleanOption oldItemPickup = new BooleanOption("oldItemPickup", true);
+	public final BooleanOption fixArmItemRotation = new BooleanOption("fixArmItemRotation", true);
+	public final BooleanOption oldRenderTickDelay = new BooleanOption("oldRenderTickDelay", true);
+	public final BooleanOption centerGuiSelection = new BooleanOption("centerGuiSelection", true);
 
 	public static final String MODID = "axolotlclient-oldanimations";
 
@@ -73,7 +86,19 @@ public class OldAnimations implements ClientModInitializer {
 			armourDamage,
 			sneaking,
 			heartFlashing,
-			debugOverlay
+			debugOverlay,
+
+			oldPotionGlint,
+			blockingArm,
+			mirrorProjectiles,
+			flameOffset,
+			tabOverlay,
+			oldSkinRendering,
+			disableTitles,
+			oldItemPickup,
+			fixArmItemRotation,
+			oldRenderTickDelay,
+			centerGuiSelection
 		);
 		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
 

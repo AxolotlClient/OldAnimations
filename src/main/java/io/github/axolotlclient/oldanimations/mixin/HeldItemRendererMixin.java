@@ -21,119 +21,91 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.utils.ItemBlacklist;
-import net.minecraft.block.Block;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.entity.feature.HeldItemRenderer;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.item.HeldItemRenderer;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HeldItemRenderer.class)
 public abstract class HeldItemRendererMixin {
+	@Shadow
+	@Final
+	private ItemRenderer itemRenderer;
+
+	@Shadow
+	private ItemStack mainHand;
 
 	@Unique
-	private ItemStack itemStack;
+	private Float h;
 
-	@ModifyVariable(method = "render", at = @At("STORE"), index = 9)
-	private ItemStack axolotlclient$captureLocalItemStack(ItemStack value) {
-		itemStack = value;
+	@ModifyVariable(method = "renderArmHoldingItem", at = @At("STORE"), index = 4)
+	private float axolotlclient$captureLocalH(float value) {
+		h = value;
 		return value;
 	}
 
-	@Inject(method = "render", at = @At("TAIL"))
-	private void axolotlclient$releaseCapturedLocal(LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
-		itemStack = null; /* big brain time */
+	@ModifyArg(method = "renderArmHoldingItem",
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyEquipAndSwingOffset(FF)V"),
+		slice = @Slice(
+			from = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyEatOrDrinkTransformation(Lnet/minecraft/client/network/AbstractClientPlayerEntity;F)V"),
+			to = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;applyBowTransformation(FLnet/minecraft/client/network/AbstractClientPlayerEntity;)V")
+		),
+		index = 1
+	)
+	public float axolotlclient$allowUseAndSwing(float g) {
+		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().blocking.get() ? h : g;
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/BiPedModel;setArmAngle(F)V"))
-	private void axolotlclient$addSneakTranslation(LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
-		if (isSneakingEnabled() && livingEntity.isSneaking())
-			GlStateManager.translate(0.0F, 0.2F, 0.0F);
-	}
-
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSneaking()Z"))
-	private boolean axolotlclient$disableSneakTranslation(LivingEntity instance) {
-		return (!isSneakingEnabled()) && instance.isSneaking();
-	}
-
-	//todo: delegate this to its own option
-	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;<init>(Lnet/minecraft/item/Item;I)V"), index = 0)
-	private Item axolotlclient$changeToStick(Item item) {
-		return areItemPositionsEnabled() ? Items.STICK : item;
-	}
-
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getBlockType()I"))
-	private int axolotlclient$disableBlockTypeCheck(Block instance) {
-		/* we need to stop these transformations from applying  */
-		return areItemPositionsEnabled() ? 3 : instance.getBlockType();
-	}
-
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformation$Mode;)V"))
-    private void axolotlclient$applyHeldItemLayerTransforms(LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
-		if (!areItemPositionsEnabled()) return;
-		if (ItemBlacklist.isPresent(itemStack)) return;
-		Item item = itemStack.getItem();
-		float var7;
-		/* original transformations from 1.7 */
-		if (item instanceof BlockItem && MinecraftClient.getInstance().getItemRenderer().hasDepth(itemStack)) {
-			var7 = 0.375F;
-			GlStateManager.translate(0.0F, 0.1875F, -0.3125F);
-			GlStateManager.rotate(20.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-			GlStateManager.scale(-var7, -var7, var7);
-		} else if (item == Items.BOW) {
-			var7 = 0.625F;
-			GlStateManager.translate(0.0F, 0.125F, 0.3125F);
-			GlStateManager.rotate(-20.0F, 0.0F, 1.0F, 0.0F);
-			GlStateManager.scale(var7, -var7, var7);
-			GlStateManager.rotate(-100.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-		} else if (item.isHandheld()) {
-			var7 = 0.625F;
-			if (item.shouldRotate()) {
-				GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-				GlStateManager.translate(0.0F, -0.125F, 0.0F);
-			}
-			if (livingEntity instanceof PlayerEntity && ((PlayerEntity) livingEntity).getItemUseTicks() > 0 && ((PlayerEntity) livingEntity).method_2611() /* is blocking */) {
-				GlStateManager.translate(0.05F, 0.0F, -0.1F);
-				GlStateManager.rotate(-50.0F, 0.0F, 1.0F, 0.0F);
-				GlStateManager.rotate(-10.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.rotate(-60.0F, 0.0F, 0.0F, 1.0F);
-			}
-			GlStateManager.translate(0.0F, 0.1875F, 0.0F);
-			GlStateManager.scale(var7, -var7, var7);
-			GlStateManager.rotate(-100.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-		} else {
-			var7 = 0.375F;
-			GlStateManager.translate(0.25F, 0.1875F, -0.1875F);
-			GlStateManager.scale(var7, var7, var7);
-			GlStateManager.rotate(60.0F, 0.0F, 0.0F, 1.0F);
-			GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotate(20.0F, 0.0F, 0.0F, 1.0F);
+	@Inject(method = "applyBowTransformation", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scale(FFF)V"))
+	private void axolotlclient$preBowTransform(float f, AbstractClientPlayerEntity abstractClientPlayerEntity, CallbackInfo ci) {
+		if (areItemPositionsEnabled()) {
+			GlStateManager.rotate(-335.0F, 0.0F, 0.0F, 1.0F);
+			GlStateManager.rotate(-50.0F, 0.0F, 1.0F, 0.0F);
 		}
-    }
+	}
 
-	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformation$Mode;)V"), index = 2)
+	@Inject(method = "applyBowTransformation", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scale(FFF)V", shift = At.Shift.AFTER))
+	private void axolotlclient$postBowTransform(float f, AbstractClientPlayerEntity abstractClientPlayerEntity, CallbackInfo ci) {
+		if (areItemPositionsEnabled()) {
+			GlStateManager.rotate(50.0F, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotate(335.0F, 0.0F, 0.0F, 1.0F);
+		}
+	}
+
+	@Inject(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/client/render/model/json/ModelTransformation$Mode;)V"))
+	private void axolotlclient$applyHeldItemTransforms(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Mode mode, CallbackInfo ci) {
+		if (!areItemPositionsEnabled()) return;
+		if (itemRenderer.hasDepth(itemStack) || ItemBlacklist.isPresent(itemStack)) return;
+		GlStateManager.translate(0.0F, -0.3F, 0.0F);
+		GlStateManager.scale(1.5F, 1.5F, 1.5F);
+		GlStateManager.rotate(50.0F, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate(335.0F, 0.0F, 0.0F, 1.0F);
+		GlStateManager.translate(-0.9375F, -0.0625F, 0.0F);
+		GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+		GlStateManager.translate(-0.5F, 0.5F, 0.03125F);
+	}
+
+	@Inject(method = "renderArmHoldingItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformation$Mode;)V"))
+	private void axolotlclient$applyRodRotation(float partialTicks, CallbackInfo ci) {
+		if (areItemPositionsEnabled() && mainHand.getItem().shouldRotate())
+			GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+	}
+
+	@ModifyArg(method = "renderArmHoldingItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/HeldItemRenderer;renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformation$Mode;)V"), index = 2)
 	private ModelTransformation.Mode axolotlclient$changeTransformType(ModelTransformation.Mode mode) {
-		return areItemPositionsEnabled() && !ItemBlacklist.isPresent(itemStack) ? ModelTransformation.Mode.NONE : mode;
+		return areItemPositionsEnabled() && !ItemBlacklist.isPresent(mainHand) ? ModelTransformation.Mode.NONE : mode;
 	}
 
 	@Unique
 	private static boolean areItemPositionsEnabled() {
 		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().itemPositions.get();
-	}
-
-	@Unique
-	private static boolean isSneakingEnabled() {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().sneaking.get();
 	}
 }

@@ -21,10 +21,10 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.ducks.Sneaky;
+import io.github.axolotlclient.oldanimations.utils.PlayerUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,17 +35,11 @@ public abstract class LivingEntityRendererMixin {
 
 	@Inject(method = "render(Lnet/minecraft/entity/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translate(FFF)V"))
     private void axolotlclient$addSneakingTranslation(LivingEntity livingEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
-        /* in order to match 1.7, we need to elevate the player model while sneaking */
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().sneaking.get() &&
-			livingEntity instanceof PlayerEntity && livingEntity.getName().equals(MinecraftClient.getInstance().player.getName())) {
+		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().sneaking.get() && PlayerUtils.isSelf(livingEntity)) {
 			if (livingEntity.isSneaking()) {
-				/* we need to remove the already existing sneaking offset */
-				/* which is present in BiPedModel#render, PlayerEntityModel#render, and related classes */
 				GlStateManager.translate(0.0F, -0.2F, 0.0F);
 			}
 			float eyeHeightOffset = 1.62F - ((Sneaky) MinecraftClient.getInstance().gameRenderer).axolotlclient$getEyeHeight();
-			/* the elevation will be the difference between the player's sneaking eyeheight and their actual eyeheight (1.62 meters) */
-			/* the player model should now move 1:1 with the crosshair */
 			GlStateManager.translate(0.0F, eyeHeightOffset, 0.0F);
 		}
     }

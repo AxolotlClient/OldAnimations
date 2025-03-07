@@ -18,18 +18,30 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
-import io.github.axolotlclient.oldanimations.OldAnimations;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MinecraftClient.class)
-public abstract class MinecraftClientMixin {
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
-	@Inject(method = "tick", at = @At("TAIL"))
-	private void axolotlclient$tick(CallbackInfo ci) {
-		OldAnimations.getInstance().tick();
-	}
+@Mixin(ModelLoader.class)
+public abstract class ModelLoaderMixin {
+
+	@Shadow
+	private Map<Item, List<String>> modelVariantNames;
+
+	@Inject(method = "method_10402", at = @At("TAIL"))
+    private void axolotlclient$registerCustomModels(CallbackInfo ci) {
+        List<String> originalPotions = modelVariantNames.get(Items.POTION);
+        List<String> potionComponents = Arrays.asList("bottle_drinkable_empty", "bottle_overlay", "bottle_splash_empty");
+        originalPotions.addAll(potionComponents);
+        modelVariantNames.put(Items.POTION, originalPotions);
+    }
 }

@@ -18,6 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import io.github.axolotlclient.oldanimations.OldAnimations;
 import net.minecraft.client.render.entity.model.BiPedModel;
 import net.minecraft.client.render.model.ModelPart;
 import net.minecraft.entity.Entity;
@@ -43,6 +44,8 @@ public abstract class BiPedModelMixin {
 		)
     )
     private void axolotlclient$oldArmPosition(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn, CallbackInfo ci) {
-		rightArm.posY = 0.0f;
+		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().blockingArm.get()) {
+			rightArm.posY = 0.0f;
+		}
     }
 }

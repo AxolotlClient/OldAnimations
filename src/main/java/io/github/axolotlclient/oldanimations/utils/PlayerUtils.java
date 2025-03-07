@@ -16,20 +16,15 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations.mixin;
+package io.github.axolotlclient.oldanimations.utils;
 
-import io.github.axolotlclient.oldanimations.OldAnimations;
 import net.minecraft.client.MinecraftClient;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.ClientPlayerEntity;
 
-@Mixin(MinecraftClient.class)
-public abstract class MinecraftClientMixin {
+public class PlayerUtils {
 
-	@Inject(method = "tick", at = @At("TAIL"))
-	private void axolotlclient$tick(CallbackInfo ci) {
-		OldAnimations.getInstance().tick();
+	public static boolean isSelf(Entity entity) {
+		return entity instanceof ClientPlayerEntity && MinecraftClient.getInstance().player.getEntityId() == entity.getEntityId();
 	}
 }

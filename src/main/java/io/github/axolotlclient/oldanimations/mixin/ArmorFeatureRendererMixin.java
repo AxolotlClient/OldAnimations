@@ -30,7 +30,8 @@ public class ArmorFeatureRendererMixin {
 
 	@Inject(method = "combineTextures", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$oldArmour(CallbackInfoReturnable<Boolean> callback) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().armourDamage.get())
+		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().armourDamage.get()) {
 			callback.setReturnValue(true);
+		}
 	}
 }

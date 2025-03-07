@@ -20,14 +20,11 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.util.Window;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
@@ -45,7 +42,7 @@ public abstract class InGameHudMixin {
 		index = 4
 	)
 	private boolean axolotlclient$disableFlashingCheck(boolean value) {
-		bl = value; /* heart flashing local*/
+		bl = value;
 		return false;
 	}
 
@@ -60,11 +57,6 @@ public abstract class InGameHudMixin {
 	)
 	private int axolotlclient$enableFlashingCheck(int par1) {
 		return par1 + (isHeartFlashingEnabled() && bl ? 1 : 0) * 9;
-	}
-
-	@Inject(method = "renderStatusBars", at = @At("TAIL"))
-	private void axolotlclient$releaseCapturedLocal(Window window, CallbackInfo ci) {
-		bl = false; /* big brain time */
 	}
 
 	@Unique
