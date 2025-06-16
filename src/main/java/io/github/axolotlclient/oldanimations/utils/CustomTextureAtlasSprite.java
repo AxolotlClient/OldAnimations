@@ -16,22 +16,24 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations.mixin;
+package io.github.axolotlclient.oldanimations.utils;
 
-import io.github.axolotlclient.oldanimations.OldAnimations;
-import net.minecraft.client.render.entity.layer.AbstractArmorLayer;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import net.minecraft.client.render.texture.TextureAtlasSprite;
 
-@Mixin(AbstractArmorLayer.class)
-public class ArmorFeatureRendererMixin {
+public final class CustomTextureAtlasSprite extends TextureAtlasSprite {
+    public static final CustomTextureAtlasSprite INSTANCE = new CustomTextureAtlasSprite();
 
-	@Inject(method = "colorsWhenDamaged", at = @At("HEAD"), cancellable = true)
-	public void axolotlclient$oldArmour(CallbackInfoReturnable<Boolean> callback) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().armourDamage.get()) {
-			callback.setReturnValue(true);
-		}
-	}
+    private CustomTextureAtlasSprite() {
+        super(null);
+    }
+
+    @Override
+    public float getU(double u) {
+        return (float) (-u / 16.0);
+    }
+
+    @Override
+    public float getV(double v) {
+        return (float) (v / 16.0);
+    }
 }

@@ -16,22 +16,18 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations.mixin;
+package io.github.axolotlclient.oldanimations.utils;
 
-import io.github.axolotlclient.oldanimations.OldAnimations;
-import net.minecraft.client.render.entity.layer.AbstractArmorLayer;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import net.minecraft.client.resource.model.BakedModel;
+import net.minecraft.client.resource.model.BasicBakedModel;
 
-@Mixin(AbstractArmorLayer.class)
-public class ArmorFeatureRendererMixin {
+import java.util.HashMap;
 
-	@Inject(method = "colorsWhenDamaged", at = @At("HEAD"), cancellable = true)
-	public void axolotlclient$oldArmour(CallbackInfoReturnable<Boolean> callback) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().armourDamage.get()) {
-			callback.setReturnValue(true);
-		}
-	}
+public final class GlintModel {
+    private static final HashMap<HashedModel, BakedModel> glintMap = new HashMap<>();
+
+    public static BakedModel getModel(BakedModel model) {
+        return glintMap.computeIfAbsent(new HashedModel(model),
+                key -> new BasicBakedModel.Builder(model, CustomTextureAtlasSprite.INSTANCE).build());
+    }
 }

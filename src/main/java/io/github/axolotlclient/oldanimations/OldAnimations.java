@@ -18,20 +18,17 @@
 
 package io.github.axolotlclient.oldanimations;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.oldanimations.mixin.LivingEntityAccessor;
 import lombok.Getter;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.HitResult;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OldAnimations implements ClientModInitializer {
 
@@ -45,7 +42,7 @@ public class OldAnimations implements ClientModInitializer {
 
 	public final BooleanOption enabled = new BooleanOption("enabled", true);
 	public final BooleanOption useAndMine = new BooleanOption("useAndMine", true);
-	public final BooleanOption particles = new BooleanOption("particles", true); /* use and mine particles */
+	public final BooleanOption useAndMineParticles = new BooleanOption("useAndMineParticles", true); /* use and mine particles */
 	public final BooleanOption blocking = new BooleanOption("blocking", true);
 	public final BooleanOption eatingAndDrinking = new BooleanOption("eatingAndDrinking", true);
 	public final BooleanOption itemPositions = new BooleanOption("itemPositions", true);
@@ -56,7 +53,21 @@ public class OldAnimations implements ClientModInitializer {
 	public final BooleanOption heartFlashing = new BooleanOption("heartFlashing", true);
 	public final BooleanOption debugOverlay = new BooleanOption("debugOverlay", true);
 
-	private Minecraft mc;
+	public final BooleanOption blockingArm = new BooleanOption("blockingArm", true);
+	public final BooleanOption fastItems = new BooleanOption("fastItems", true);
+	public final BooleanOption mirroredProjectiles = new BooleanOption("mirroredProjectiles", true);
+	public final BooleanOption disableAlexModel = new BooleanOption("disableAlexModel", true);
+	public final BooleanOption flameOffset = new BooleanOption("flameOffset", true);
+	public final BooleanOption disableTitles = new BooleanOption("disableTitles", true);
+	public final BooleanOption oldItemPickup = new BooleanOption("oldItemPickup", true);
+	public final BooleanOption oldPickupArm = new BooleanOption("oldPickupArm", true);
+	public final BooleanOption oldGlint = new BooleanOption("oldGlint", true);
+	public final BooleanOption oldGlintColor = new BooleanOption("oldGlintColor", true);
+	public final BooleanOption centeredSelectionMenus = new BooleanOption("centeredSelectionMenus", true);
+
+	public final BooleanOption oldDamageTick = new BooleanOption("oldDamageTick", true);
+	public final BooleanOption oldSwingVisual = new BooleanOption("oldSwingVisual", true); /* use and mine particles */
+	public final BooleanOption oldSwingVisualParticles = new BooleanOption("oldSwingVisualParticles", true); /* use and mine particles */
 
 	// Since AxolotlClient may initialize this class as a module before it gets loaded as a mod by fabric we have to defer the former to run after the latter.
 	// But since the load order is non-deterministic this may not always be the case
@@ -89,7 +100,7 @@ public class OldAnimations implements ClientModInitializer {
 		category.add(
 			enabled,
 			useAndMine,
-			particles,
+			useAndMineParticles,
 			blocking,
 			eatingAndDrinking,
 			itemPositions,
@@ -98,7 +109,23 @@ public class OldAnimations implements ClientModInitializer {
 			armourDamage,
 			sneaking,
 			heartFlashing,
-			debugOverlay
+			debugOverlay,
+
+			blockingArm,
+			fastItems,
+			mirroredProjectiles,
+			disableAlexModel,
+			flameOffset,
+			disableTitles,
+			oldItemPickup,
+			oldPickupArm,
+			oldGlint,
+			oldGlintColor,
+			centeredSelectionMenus,
+
+			oldDamageTick,
+			oldSwingVisual,
+			oldSwingVisualParticles
 		);
 
 		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
@@ -108,26 +135,4 @@ public class OldAnimations implements ClientModInitializer {
 		AxolotlClientConfig.getInstance().register(configManager);
 		configManager.load();
 	}
-
-	public void tick() {
-		if (mc == null) {
-			mc = Minecraft.getInstance();
-		}
-		if (mc.player != null && mc.player.abilities.canModifyWorld && enabled.get() && useAndMine.get() && mc.crosshairTarget != null
-			&& mc.crosshairTarget.type == HitResult.Type.BLOCK && mc.player != null && mc.options.attackKey.isPressed()
-			&& mc.options.usekey.isPressed() && mc.player.getItemUseTimer() > 0) {
-			if ((!mc.player.handSwinging
-				|| mc.player.handSwingTicks >= ((LivingEntityAccessor) mc.player).getArmSwingAnimationEnd()
-				/ 2
-				|| mc.player.handSwingTicks < 0)) {
-				mc.player.handSwingTicks = -1;
-				mc.player.handSwinging = true;
-			}
-
-			if (particles.get()) {
-				mc.particleManager.addBlockMiningParticles(mc.crosshairTarget.getPos(), mc.crosshairTarget.face);
-			}
-		}
-	}
-
 }

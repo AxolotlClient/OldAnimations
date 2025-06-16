@@ -18,20 +18,29 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.axolotlclient.oldanimations.OldAnimations;
-import net.minecraft.client.render.entity.layer.AbstractArmorLayer;
+import net.minecraft.client.network.handler.ClientPlayNetworkHandler;
+import net.minecraft.network.packet.s2c.play.TitlesS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(AbstractArmorLayer.class)
-public class ArmorFeatureRendererMixin {
+@Mixin(ClientPlayNetworkHandler.class)
+public abstract class ClientPlayNetworkHandlerMixin {
 
-	@Inject(method = "colorsWhenDamaged", at = @At("HEAD"), cancellable = true)
-	public void axolotlclient$oldArmour(CallbackInfoReturnable<Boolean> callback) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().armourDamage.get()) {
-			callback.setReturnValue(true);
+	@ModifyExpressionValue(method = "handleEntityPickup", at = @At(value = "CONSTANT", args = "floatValue=0.5"))
+	private float axolotlclient$oldItemPickup(float original) {
+		/* taken from 1.7 */
+		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().oldItemPickup.get() ? -0.5F : original;
+	}
+
+	@Inject(method = "handleTitles", at = @At("HEAD"), cancellable = true)
+	private void axolotlclient$disableTitlesPacket(TitlesS2CPacket packet, CallbackInfo ci) {
+		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().disableTitles.get()) {
+			/* 1.7 doesn't have titles */
+			ci.cancel();
 		}
 	}
 }

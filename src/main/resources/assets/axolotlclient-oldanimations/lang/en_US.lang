@@ -1,7 +1,7 @@
 axolotlclient-oldanimations=Old Animations
 
 useAndMine=Use/Mine
-particles=Particles
+useAndMineParticles=Particles
 blocking=Blocking
 eatingAndDrinking=Eating/Drinking
 itemPositions=Item Positions
@@ -12,3 +12,19 @@ sneaking=Sneaking
 heartFlashing=Heart Flashing
 debugOverlay=Debug Overlay
 enabled=Enabled
+
+blockingArm=Blocking Arm
+fastItems=Fast Items
+mirroredProjectiles=Mirrored Projectiles
+disableAlexModel=Disable Alex Model
+flameOffset=Flame Offset
+disableTitles=Disable Titles
+oldItemPickup=Old Item Pickup
+oldPickupArm=Old Pickup Arm
+oldGlint=Old Glint
+oldGlintColor=Old Glint Color
+centeredSelectionMenus=Centered Selection Menus
+
+oldDamageTick=Old Damage Tick
+oldSwingVisual=Old Swing Visual
+oldSwingVisualParticles=Old Swing Visual Particles

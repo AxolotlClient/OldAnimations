@@ -18,6 +18,9 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.ducks.Sneaky;
 import net.minecraft.client.Minecraft;
@@ -40,24 +43,23 @@ public class FishingBobberEntityRendererMixin {
 		}
 	}
 
-	@ModifyConstant(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", constant = @Constant(doubleValue = 0.8D))
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "CONSTANT", args = "doubleValue=0.8D"))
 	public double axolotlclient$moveLinePosition(double constant) {
-		/* original value from 1.7 */
-		if (isRodEnabled()) constant += 0.05D;
-		return constant;
+		/* original values from 1.7 */
+		return constant + (isRodEnabled() ? 0.05D : 0.0D);
 	}
 
-	@Redirect(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;isSneaking()Z"))
-	public boolean axolotlclient$removeSneakTranslation(PlayerEntity instance) {
-		return !isRodEnabled() && instance.isSneaking();
+	@WrapOperation(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;isSneaking()Z"))
+	public boolean axolotlclient$removeSneakTranslation(PlayerEntity instance, Operation<Boolean> original) {
+		return !isRodEnabled() && original.call(instance);
 	}
 
-	@Redirect(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;getEyeHeight()F"))
-	public float axolotlclient$useLerpEyeHeight_Fish(PlayerEntity instance) {
+	@WrapOperation(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;getEyeHeight()F"))
+	public float axolotlclient$useLerpEyeHeight_Fish(PlayerEntity instance, Operation<Float> original) {
 		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().rod.get()) {
 			return ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight();
 		}
-		return instance.getEyeHeight();
+		return original.call(instance);
 	}
 
 	@Unique

@@ -18,6 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.ducks.Sneaky;
@@ -25,6 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.entity.living.player.PlayerEntity;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -49,4 +51,14 @@ public abstract class LivingEntityRendererMixin {
 			GlStateManager.translatef(0.0F, eyeHeightOffset, 0.0F);
 		}
     }
+
+	@ModifyExpressionValue(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;hurtTime:I"))
+	private int axolotlclient$oldDamageTick(int original) {
+		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().oldDamageTick.get()) {
+			return Math.max(original - 1, 0);
+		}
+		return original;
+	}
+
+	//TODO: 1.7 Damage Tint Color
 }

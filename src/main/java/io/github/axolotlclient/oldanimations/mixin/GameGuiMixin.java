@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameGui.class)
-public abstract class InGameHudMixin {
+public abstract class GameGuiMixin {
 
 	//todo: find a better way to do this :p
 	@Unique

@@ -18,6 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import io.github.axolotlclient.oldanimations.OldAnimations;
 import net.minecraft.client.render.model.ModelPart;
 import net.minecraft.client.render.model.entity.HumanoidModel;
 import net.minecraft.entity.Entity;
@@ -30,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HumanoidModel.class)
-public abstract class BiPedModelMixin {
+public abstract class HumanoidModelMixin {
 
 	@Shadow
 	public ModelPart rightArm;
@@ -43,6 +44,9 @@ public abstract class BiPedModelMixin {
 		)
 	)
 	private void axolotlclient$oldArmPosition(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn, CallbackInfo ci) {
-		rightArm.rotationY = 0.0f;
+		//TODO: Add config option?
+		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().blockingArm.get()) {
+			rightArm.rotationY = 0.0f;
+		}
 	}
 }
