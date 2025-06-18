@@ -40,28 +40,55 @@ public class OldAnimations implements ClientModInitializer {
 	@Getter
 	private final OptionCategory category = OptionCategory.create(MODID).includeInParentTree(false);
 
+	@Getter
+	private final OptionCategory categoryBlocking = OptionCategory.create("Blocking");
+
+	@Getter
+	private final OptionCategory categorySneaking = OptionCategory.create("Sneaking");
+
+	@Getter
+	private final OptionCategory categoryItems = OptionCategory.create("Items");
+
+	@Getter
+	private final OptionCategory categoryCombat = OptionCategory.create("Combat");
+
+	@Getter
+	private final OptionCategory categoryGUI = OptionCategory.create("GUI");
+
+	@Getter
+	private final OptionCategory categoryEnchantmentGlint = OptionCategory.create("Enchantment Glint");
+
+	@Getter
+	private final OptionCategory categoryMisc = OptionCategory.create("Misc");
+
 	public final BooleanOption enabled = new BooleanOption("enabled", true);
+
 	public final BooleanOption useAndMine = new BooleanOption("useAndMine", true);
 	public final BooleanOption useAndMineParticles = new BooleanOption("useAndMineParticles", true); /* use and mine particles */
 	public final BooleanOption blocking = new BooleanOption("blocking", true);
 	public final BooleanOption eatingAndDrinking = new BooleanOption("eatingAndDrinking", true);
 	public final BooleanOption itemPositions = new BooleanOption("itemPositions", true);
-	public final BooleanOption bow = new BooleanOption("bow", true);
-	public final BooleanOption rod = new BooleanOption("rod", true);
-	public final BooleanOption armourDamage = new BooleanOption("armorDamage", true);
-	public final BooleanOption sneaking = new BooleanOption("sneaking", true);
+	public final BooleanOption secondLayerDamageTint = new BooleanOption("secondLayerDamageTint", true);
+	public final BooleanOption smoothSneaking = new BooleanOption("smoothSneaking", true);
 	public final BooleanOption heartFlashing = new BooleanOption("heartFlashing", true);
 	public final BooleanOption debugOverlay = new BooleanOption("debugOverlay", true);
 
+	public final BooleanOption thirdPersonSmoothSneaking = new BooleanOption("thirdPersonSmoothSneaking", true);
+	public final BooleanOption allowMiningCancel = new BooleanOption("allowMiningCancel", true);
+
+	public final BooleanOption damageColor = new BooleanOption("damageColor", true);
+	public final BooleanOption stickRod = new BooleanOption("stickRod", true);
 	public final BooleanOption blockingArm = new BooleanOption("blockingArm", true);
 	public final BooleanOption fastItems = new BooleanOption("fastItems", true);
 	public final BooleanOption mirroredProjectiles = new BooleanOption("mirroredProjectiles", true);
 	public final BooleanOption disableAlexModel = new BooleanOption("disableAlexModel", true);
+	public final BooleanOption disableSkinLayers = new BooleanOption("disableSkinLayers", true);
 	public final BooleanOption flameOffset = new BooleanOption("flameOffset", true);
 	public final BooleanOption disableTitles = new BooleanOption("disableTitles", true);
 	public final BooleanOption oldItemPickup = new BooleanOption("oldItemPickup", true);
 	public final BooleanOption oldPickupArm = new BooleanOption("oldPickupArm", true);
 	public final BooleanOption oldGlint = new BooleanOption("oldGlint", true);
+	public final BooleanOption oldGuiGlint = new BooleanOption("oldGuiGlint", true);
 	public final BooleanOption oldGlintColor = new BooleanOption("oldGlintColor", true);
 	public final BooleanOption centeredSelectionMenus = new BooleanOption("centeredSelectionMenus", true);
 
@@ -88,6 +115,10 @@ public class OldAnimations implements ClientModInitializer {
 		return OldAnimations.instance;
 	}
 
+	public static boolean isEnabled() {
+		return OldAnimations.instance.enabled.get();
+	}
+
 	public static void runAfterFabricLoad(Runnable task) {
 		if (loadedByFabric) {
 			task.run();
@@ -96,36 +127,58 @@ public class OldAnimations implements ClientModInitializer {
 
 	@Override
 	public void initClient() {
-
-		category.add(
-			enabled,
-			useAndMine,
-			useAndMineParticles,
+		category.add(getCategoryBlocking());
+		categoryBlocking.add(
 			blocking,
-			eatingAndDrinking,
-			itemPositions,
-			bow,
-			rod,
-			armourDamage,
-			sneaking,
-			heartFlashing,
-			debugOverlay,
-
+			useAndMine,
+			allowMiningCancel,
+			useAndMineParticles,
 			blockingArm,
-			fastItems,
+			eatingAndDrinking
+		);
+		category.add(getCategorySneaking());
+		categorySneaking.add(
+			smoothSneaking,
+			thirdPersonSmoothSneaking
+		);
+		category.add(getCategoryItems());
+		categoryItems.add(
+			itemPositions,
 			mirroredProjectiles,
-			disableAlexModel,
-			flameOffset,
-			disableTitles,
 			oldItemPickup,
-			oldPickupArm,
-			oldGlint,
-			oldGlintColor,
-			centeredSelectionMenus,
-
-			oldDamageTick,
+			fastItems,
+			stickRod
+		);
+		category.add(getCategoryCombat());
+		categoryCombat.add(
 			oldSwingVisual,
 			oldSwingVisualParticles
+		);
+		category.add(getCategoryGUI());
+		categoryGUI.add(
+			heartFlashing,
+			debugOverlay,
+			centeredSelectionMenus,
+			disableTitles
+		);
+		category.add(getCategoryEnchantmentGlint());
+		categoryEnchantmentGlint.add(
+			oldGlint,
+			oldGuiGlint,
+			oldGlintColor
+		);
+		category.add(getCategoryMisc());
+		categoryMisc.add(
+			secondLayerDamageTint,
+			damageColor,
+			disableAlexModel,
+			disableSkinLayers,
+			flameOffset,
+			oldPickupArm,
+			oldDamageTick
+		);
+		category.add(
+			enabled
 		);
 
 		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");

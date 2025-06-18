@@ -34,8 +34,8 @@ public abstract class EntityPickupParticleMixin {
 	private Entity collector;
 
 	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/Entity;prevTickY:D"))
-	private double ornitheAnimations$includeEyeHeight$PrevTickY(double original) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().oldItemPickup.get()) {
+	private double axolotlclient$includeEyeHeight$PrevTickY(double original) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().oldItemPickup.get()) {
 			/* taken from 1.7 */
 			original += collector.getEyeHeight();
 		}
@@ -43,8 +43,8 @@ public abstract class EntityPickupParticleMixin {
 	}
 
 	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/Entity;y:D", ordinal = 1))
-	private double ornitheAnimations$includeEyeHeight$Y(double original) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().oldItemPickup.get()) {
+	private double axolotlclient$includeEyeHeight$Y(double original) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().oldItemPickup.get()) {
 			/* taken from 1.7 */
 			original += collector.getEyeHeight();
 		}

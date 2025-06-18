@@ -64,10 +64,9 @@ public abstract class HeldItemLayerMixin {
 		return (!isSneakingEnabled()) && instance.isSneaking();
 	}
 
-	//todo: delegate this to its own option
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;<init>(Lnet/minecraft/item/Item;I)V"), index = 0)
 	private Item axolotlclient$changeToStick(Item item) {
-		return areItemPositionsEnabled() ? Items.STICK : item;
+		return OldAnimations.isEnabled() && OldAnimations.getInstance().stickRod.get() ? Items.STICK : item;
 	}
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getRenderType()I"))
@@ -129,11 +128,11 @@ public abstract class HeldItemLayerMixin {
 
 	@Unique
 	private static boolean areItemPositionsEnabled() {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().itemPositions.get();
+		return OldAnimations.isEnabled() && OldAnimations.getInstance().itemPositions.get();
 	}
 
 	@Unique
 	private static boolean isSneakingEnabled() {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().sneaking.get();
+		return OldAnimations.isEnabled() && OldAnimations.getInstance().smoothSneaking.get();
 	}
 }

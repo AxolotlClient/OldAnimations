@@ -13,6 +13,8 @@ heartFlashing=Heart Flashing
 debugOverlay=Debug Overlay
 enabled=Enabled
 
+allowMiningCancel=Allow Mining Cancel
+thirdPersonSneak=Third Person Smooth Sneak
 blockingArm=Blocking Arm
 fastItems=Fast Items
 mirroredProjectiles=Mirrored Projectiles

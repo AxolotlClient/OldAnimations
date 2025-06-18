@@ -69,6 +69,6 @@ public abstract class GameGuiMixin {
 
 	@Unique
 	private static boolean isHeartFlashingEnabled() {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().heartFlashing.get();
+		return OldAnimations.isEnabled() && OldAnimations.getInstance().heartFlashing.get();
 	}
 }

@@ -44,11 +44,11 @@ public abstract class HeldItemRendererMixin {
 	private ItemStack item;
 
 	@Unique
-	private Float h;
+	private Float axolotlclient$h;
 
 	@ModifyVariable(method = "renderInFirstPerson", at = @At("STORE"), index = 4)
 	private float axolotlclient$captureLocalH(float value) {
-		h = value; /* swing progress */
+		axolotlclient$h = value; /* swing progress */
 		return value;
 	}
 
@@ -61,12 +61,12 @@ public abstract class HeldItemRendererMixin {
 		index = 1
 	)
 	public float axolotlclient$allowUseAndSwing(float g) {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().blocking.get() ? h : g;
+		return OldAnimations.isEnabled() && OldAnimations.getInstance().blocking.get() ? axolotlclient$h : g;
 	}
 
 	@Inject(method = "renderInFirstPerson", at = @At("TAIL"))
 	private void axolotlclient$releaseCapturedLocal(float f, CallbackInfo ci) {
-		h = null; /* big brain time */
+		axolotlclient$h = null; /* big brain time */
 	}
 
 	@Inject(method = "applyBowNocking", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V"))
@@ -105,8 +105,9 @@ public abstract class HeldItemRendererMixin {
 	@Inject(method = "renderInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$applyRodRotation(float partialTicks, CallbackInfo ci) {
 		/* original transformation from 1.7 */
-		if (areItemPositionsEnabled() && item.getItem().shouldRotate())
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().itemPositions.get() && item.getItem().shouldRotate()) {
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
+		}
 	}
 
 	@ModifyArg(method = "renderInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"), index = 2)
@@ -116,7 +117,7 @@ public abstract class HeldItemRendererMixin {
 
 	@Unique
 	private static boolean areItemPositionsEnabled() {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().itemPositions.get();
+		return OldAnimations.isEnabled() && OldAnimations.getInstance().itemPositions.get();
 	}
 
 	//TODO: 1.7 Item Update Logic

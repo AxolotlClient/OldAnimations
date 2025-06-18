@@ -155,7 +155,7 @@ public class DebugHudMixin {
 
 	@Unique
 	private static boolean isDebugOverlayEnabled() {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().debugOverlay.get();
+		return OldAnimations.isEnabled() && OldAnimations.getInstance().debugOverlay.get();
 	}
 
 }

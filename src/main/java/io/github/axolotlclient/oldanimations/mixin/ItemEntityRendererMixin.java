@@ -41,7 +41,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
 	@ModifyArg(method = "applyItemBobbing", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V"), index = 0)
 	private float axolotlclient$itemFacePlayer(float angle, @Local boolean bl) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().fastItems.get() && !bl) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().fastItems.get() && !bl) {
 			return 180.0F - dispatcher.cameraYaw;
 		}
 		return angle;
@@ -49,12 +49,12 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
 	@ModifyArg(method = "render(Lnet/minecraft/entity/ItemEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", ordinal = 1))
 	private ModelTransformations.Type axolotlclient$replaceTransform(ModelTransformations.Type type) {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().fastItems.get() ? ModelTransformations.Type.GUI : type;
+		return OldAnimations.isEnabled() && OldAnimations.getInstance().fastItems.get() ? ModelTransformations.Type.GUI : type;
 	}
 
 	@Inject(method = "render(Lnet/minecraft/entity/ItemEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;)V", ordinal = 1))
 	private void axolotlclient$applyItemEntityPosition(ItemEntity itemEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().fastItems.get()) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().fastItems.get()) {
 			/* half of a pixel, matches 1.7's sprite rendering */
 			GlStateManager.translatef(0.0F, 0.0F, 0.03125F);
 		}

@@ -22,25 +22,37 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tessellator;
+import io.github.axolotlclient.oldanimations.OldAnimations;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.texture.TextureAtlas;
 import net.minecraft.client.render.texture.TextureManager;
 import net.minecraft.resource.Identifier;
 
+import java.awt.*;
+
 public final class GlintHandler {
 
-	public static void renderEnchantmentGlintPre(TextureManager textureManager, Identifier glintTexture) {
-	   GlStateManager.enableRescaleNormal();
-	   GlStateManager.depthFunc(518);
-	   GlStateManager.disableLighting();
-	   GlStateManager.depthMask(false);
-	   textureManager.bind(glintTexture);
-	   GlStateManager.enableAlphaTest();
-	   GlStateManager.alphaFunc(516, 0.1F);
-	   GlStateManager.enableBlend();
-	   GlStateManager.blendFuncSeparate(772, 1, 0, 0);
-	   GlStateManager.color4f(0.5F, 0.25F, 0.8F, 1.0F);
-	   GlStateManager.pushMatrix();
+	public static void renderEnchantmentGlintPre(TextureManager textureManager, Identifier glintTexture, int color) {
+		GlStateManager.enableRescaleNormal();
+	    GlStateManager.depthFunc(518);
+	    GlStateManager.disableLighting();
+	    GlStateManager.depthMask(false);
+	    textureManager.bind(glintTexture);
+	    GlStateManager.enableAlphaTest();
+	    GlStateManager.alphaFunc(516, 0.1F);
+	    GlStateManager.enableBlend();
+	    GlStateManager.blendFuncSeparate(772, 1, 0, 0);
+
+	    /* the glint color of the gui in 1.7 is what is used for the glint color in 1.8 coincidentally */
+		/* might as well add this override option anyway */
+	    if (OldAnimations.isEnabled() && OldAnimations.getInstance().oldGlintColor.get()) {
+		    GlStateManager.color4f(0.5F, 0.25F, 0.8F, 1.0F);
+	    } else {
+			Color rgba = new Color(color);
+		    GlStateManager.color4f(rgba.getRed() / 255.0F, rgba.getGreen() / 255.0F, rgba.getBlue() / 255.0F, rgba.getAlpha() / 255.0F);
+	    }
+
+	    GlStateManager.pushMatrix();
 	}
 
     public static void renderEnchantmentGlintPost(TextureManager textureManager) {

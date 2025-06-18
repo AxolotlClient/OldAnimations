@@ -18,6 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import net.minecraft.client.Minecraft;
@@ -59,7 +60,7 @@ public abstract class MinecraftClientMixin {
 
 	@Inject(method = "handleBlockMining", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/LocalClientPlayerEntity;isHoldingItem()Z"))
 	private void axolotlclient$useAndMine(CallbackInfo ci, @Local(argsOnly = true) boolean bl) {
-		if (!OldAnimations.getInstance().enabled.get() || !OldAnimations.getInstance().useAndMine.get()) {
+		if (!OldAnimations.isEnabled() || !OldAnimations.getInstance().useAndMine.get()) {
 			return;
 		}
 		/* mimics the conditions used in 1.7/1.8 and plays a fake swing animation when the player is using an item and punching */
@@ -74,9 +75,20 @@ public abstract class MinecraftClientMixin {
 		}
 	}
 
+	@ModifyExpressionValue(
+		method = "doUse",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/ClientPlayerInteractionManager;isMiningBlock()Z"
+		)
+	)
+	private boolean axolotlclient$allowMiningCancel(boolean original) {
+		return (!OldAnimations.isEnabled() || !OldAnimations.getInstance().allowMiningCancel.get()) && original;
+	}
+
 	@Inject(method = "doAttack", at = @At("TAIL"))
 	private void axolotlclient$oldSwingVisual(CallbackInfo ci) {
-		if (!OldAnimations.getInstance().enabled.get() || !OldAnimations.getInstance().oldSwingVisual.get()) {
+		if (!OldAnimations.isEnabled() || !OldAnimations.getInstance().oldSwingVisual.get()) {
 			return;
 		}
 		/* mimics the conditions used in 1.7/1.8 and plays a fake swing animation when the player has an attack cooldown */

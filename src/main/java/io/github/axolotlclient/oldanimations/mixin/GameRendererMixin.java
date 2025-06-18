@@ -83,7 +83,7 @@ public abstract class GameRendererMixin implements Sneaky {
 
 	@ModifyExpressionValue(method = "applyHurtCam", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;hurtTime:I"))
 	private int axolotlclient$oldDamageTick(int original) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().oldDamageTick.get()) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().oldDamageTick.get()) {
 			return Math.max(original - 1, 0);
 		}
 		return original;
@@ -96,7 +96,7 @@ public abstract class GameRendererMixin implements Sneaky {
 
 	@Unique
 	private static boolean isSneakingEnabled() {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().sneaking.get();
+		return OldAnimations.isEnabled() && OldAnimations.getInstance().smoothSneaking.get();
 	}
 
 	@Override

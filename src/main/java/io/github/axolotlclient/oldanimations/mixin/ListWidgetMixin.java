@@ -44,7 +44,7 @@ public abstract class ListWidgetMixin {
 
 	@Inject(method = "capScrolling", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$allowNonNegativeScrolling(CallbackInfo ci) {
-		if (!OldAnimations.getInstance().enabled.get() || !OldAnimations.getInstance().centeredSelectionMenus.get()) {
+		if (!OldAnimations.isEnabled() || !OldAnimations.getInstance().centeredSelectionMenus.get()) {
 			return;
 		}
 
@@ -70,7 +70,7 @@ public abstract class ListWidgetMixin {
 
 	@ModifyArgs(method = "getMaxScroll", at = @At(value = "INVOKE", target = "Ljava/lang/Math;max(II)I"))
 	private void axolotlclient$removeNonNegativeRestriction(Args args) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().centeredSelectionMenus.get()) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().centeredSelectionMenus.get()) {
 			args.set(0, args.get(1));
 		}
 	}

@@ -36,7 +36,7 @@ public class FishingBobberEntityRendererMixin {
 
 	@ModifyArgs(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;<init>(DDD)V"))
 	private void axolotlclient$modifyLinePosition(Args args) {
-		if (isRodEnabled()) {
+		if (areItemPositionsEnabled()) {
 			/* original values from 1.7 */
 			args.set(0, (double) args.get(0) - 0.24D);
 			args.set(2, (double) args.get(2) + 0.45D);
@@ -46,24 +46,24 @@ public class FishingBobberEntityRendererMixin {
 	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "CONSTANT", args = "doubleValue=0.8D"))
 	public double axolotlclient$moveLinePosition(double constant) {
 		/* original values from 1.7 */
-		return constant + (isRodEnabled() ? 0.05D : 0.0D);
+		return constant + (areItemPositionsEnabled() ? 0.05D : 0.0D);
 	}
 
 	@WrapOperation(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;isSneaking()Z"))
 	public boolean axolotlclient$removeSneakTranslation(PlayerEntity instance, Operation<Boolean> original) {
-		return !isRodEnabled() && original.call(instance);
+		return !areItemPositionsEnabled() && original.call(instance);
 	}
 
 	@WrapOperation(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;getEyeHeight()F"))
 	public float axolotlclient$useLerpEyeHeight_Fish(PlayerEntity instance, Operation<Float> original) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().rod.get()) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().smoothSneaking.get()) {
 			return ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight();
 		}
 		return original.call(instance);
 	}
 
 	@Unique
-	private static boolean isRodEnabled() {
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().rod.get();
+	private static boolean areItemPositionsEnabled() {
+		return OldAnimations.isEnabled() && OldAnimations.getInstance().itemPositions.get();
 	}
 }

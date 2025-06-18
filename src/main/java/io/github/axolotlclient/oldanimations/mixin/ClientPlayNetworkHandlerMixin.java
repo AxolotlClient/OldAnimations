@@ -33,12 +33,12 @@ public abstract class ClientPlayNetworkHandlerMixin {
 	@ModifyExpressionValue(method = "handleEntityPickup", at = @At(value = "CONSTANT", args = "floatValue=0.5"))
 	private float axolotlclient$oldItemPickup(float original) {
 		/* taken from 1.7 */
-		return OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().oldItemPickup.get() ? -0.5F : original;
+		return OldAnimations.isEnabled() && OldAnimations.getInstance().oldItemPickup.get() ? -0.5F : original;
 	}
 
 	@Inject(method = "handleTitles", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$disableTitlesPacket(TitlesS2CPacket packet, CallbackInfo ci) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().disableTitles.get()) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().disableTitles.get()) {
 			/* 1.7 doesn't have titles */
 			ci.cancel();
 		}

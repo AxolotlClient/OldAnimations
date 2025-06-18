@@ -40,7 +40,7 @@ public abstract class EntityRendererMixin {
 
 	@ModifyExpressionValue(method = "renderOnFire", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/Entity;y:D"))
 	private double axolotlclient$includeEyeHeight$Y(double original, @Local(argsOnly = true) Entity entity) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().flameOffset.get() && isSelf(entity)) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().flameOffset.get() && isSelf(entity)) {
 			/* taken from 1.7 */
 			original += entity.getEyeHeight();
 		}
@@ -49,7 +49,7 @@ public abstract class EntityRendererMixin {
 
 	@WrapOperation(method = "postRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderer;renderOnFire(Lnet/minecraft/entity/Entity;DDDF)V"))
 	private void axolotlclient$includeEyeHeight$renderFire(EntityRenderer<?> instance, Entity entity, double dx, double dy, double dz, float tickDelta, Operation<Void> original) {
-		boolean oldFlameHeight = OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().flameOffset.get() && isSelf(entity);
+		boolean oldFlameHeight = OldAnimations.isEnabled() && OldAnimations.getInstance().flameOffset.get() && isSelf(entity);
 		if (oldFlameHeight) {
 			GlStateManager.pushMatrix();
 			/* taken from 1.7 */

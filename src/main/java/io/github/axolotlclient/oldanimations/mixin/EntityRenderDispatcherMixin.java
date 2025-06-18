@@ -50,7 +50,7 @@ public abstract class EntityRenderDispatcherMixin {
 		slice = @Slice(from = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/options/GameOptions;perspective:I"))
 	)
 	private void axolotlclient$fixCameraRotation(World world, TextRenderer textRenderer, Entity camera, Entity targetEntity, GameOptions options, float tickDelta, CallbackInfo ci) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().mirroredProjectiles.get()) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().mirroredProjectiles.get()) {
 			/* camera rotation bug. originated in 1.8 and is fixed in 1.9 */
 			cameraPitch *= -1;
 		}
@@ -62,7 +62,7 @@ public abstract class EntityRenderDispatcherMixin {
 		cancellable = true
 	)
 	private void axolotlclient$defaultToSteve(Entity entity, CallbackInfoReturnable<PlayerRenderer> cir) {
-		if (OldAnimations.getInstance().enabled.get() && OldAnimations.getInstance().disableAlexModel.get() && entity instanceof ClientPlayerEntity) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().disableAlexModel.get() && entity instanceof ClientPlayerEntity) {
 			/* 1.7 doesn't have Alex skins! */
 			cir.setReturnValue(defaultPlayerRenderer);
 		}
