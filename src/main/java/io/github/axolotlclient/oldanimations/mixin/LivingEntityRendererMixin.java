@@ -19,11 +19,13 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.ducks.Sneaky;
-import io.github.axolotlclient.oldanimations.utils.DamageTint;
-import io.github.axolotlclient.oldanimations.utils.IDamageTint;
+import io.github.axolotlclient.oldanimations.util.DamageTint;
+import io.github.axolotlclient.oldanimations.util.IDamageTint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.entity.living.LivingEntity;
@@ -35,7 +37,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.nio.FloatBuffer;
@@ -44,13 +45,7 @@ import java.nio.FloatBuffer;
 public abstract class LivingEntityRendererMixin implements IDamageTint {
 
 	@Shadow
-	protected abstract void renderHand(LivingEntity entity, float handSwing, float handSwingAmount, float age, float yaw, float pitch, float scale);
-
-	@Shadow
 	protected abstract boolean setupOverlayColor(LivingEntity entity, float tickDelta, boolean bl);
-
-	@Shadow
-	protected abstract boolean setupOverlayColor(LivingEntity entity, float tickDelta);
 
 	@Shadow
 	protected abstract void tearDownOverlayColor();
@@ -69,36 +64,36 @@ public abstract class LivingEntityRendererMixin implements IDamageTint {
 		axolotlclient$h = h;
 	}
 
-	@Redirect(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderHand(Lnet/minecraft/entity/living/LivingEntity;FFFFFF)V", ordinal = 1))
-	private void axolotlclient$cancelDamageBrightness(LivingEntityRenderer<LivingEntity> instance, LivingEntity entity, float handSwing, float handSwingAmount, float age, float yaw, float pitch, float scale) {
-		renderHand(entity, handSwing, handSwingAmount, age, yaw, pitch, scale);
+	@WrapOperation(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderHand(Lnet/minecraft/entity/living/LivingEntity;FFFFFF)V", ordinal = 1))
+	private void axolotlclient$cancelDamageBrightness(LivingEntityRenderer<?> instance, LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, Operation<Void> original) {
+		original.call(instance, livingEntity, f, g, h, i, j, k);
 
 		if (!OldAnimations.isEnabled() || !OldAnimations.getInstance().damageColor.get()) {
 			return;
 		}
 
-		if (axolotlclient$setupOverlayColor(entity, axolotlclient$h)) {
-			renderHand(entity, handSwing, handSwingAmount, age, yaw, pitch, scale);
+		if (axolotlclient$setupOverlayColor(livingEntity, axolotlclient$h)) {
+			original.call(instance, livingEntity, f, g, h, i, j, k);
 			DamageTint.unsetDamageTint();
 		}
 	}
 
-	@Redirect(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;F)Z"))
-	private boolean axolotlclient$cancelDamageBrightness(LivingEntityRenderer<LivingEntity> instance, LivingEntity entity, float tickDelta) {
+	@WrapOperation(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;F)Z"))
+	private boolean axolotlclient$cancelDamageBrightness(LivingEntityRenderer<?> instance, LivingEntity livingEntity, float f, Operation<Boolean> original) {
 		/* cancel model damage tint */
 		if (OldAnimations.isEnabled() && OldAnimations.getInstance().damageColor.get()) {
 			return false;
 		}
-		return setupOverlayColor(entity, tickDelta);
+		return original.call(instance, livingEntity, f);
 	}
 
-	@Redirect(method = "renderLayers", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z"))
-	private boolean axolotlclient$cancelDamageBrightness2(LivingEntityRenderer<LivingEntity> instance, LivingEntity entity, float tickDelta, boolean bl) {
+	@WrapOperation(method = "renderLayers", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z"))
+	private boolean axolotlclient$cancelDamageBrightness2(LivingEntityRenderer<?> instance, LivingEntity livingEntity, float f, boolean bl, Operation<Boolean> original) {
 		/* cancel layer damage tint */
 		if (OldAnimations.isEnabled() && OldAnimations.getInstance().damageColor.get()) {
 			return false;
 		}
-		return setupOverlayColor(entity, tickDelta, bl);
+		return original.call(instance, livingEntity, f, bl);
 	}
 
 	@Inject(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"))

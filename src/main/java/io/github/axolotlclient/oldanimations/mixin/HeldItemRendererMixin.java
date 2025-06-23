@@ -18,14 +18,18 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import com.llamalad7.mixinextras.expression.Expression;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.OldAnimations;
-import io.github.axolotlclient.oldanimations.utils.ItemBlacklist;
+import io.github.axolotlclient.oldanimations.util.ItemBlacklist;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.entity.living.LivingEntity;
+import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,6 +47,8 @@ public abstract class HeldItemRendererMixin {
 	@Shadow
 	private ItemStack item;
 
+	@Shadow
+	private int selectedSlot;
 	@Unique
 	private Float axolotlclient$h;
 
@@ -120,5 +126,38 @@ public abstract class HeldItemRendererMixin {
 		return OldAnimations.isEnabled() && OldAnimations.getInstance().itemPositions.get();
 	}
 
-	//TODO: 1.7 Item Update Logic
+	@Expression("? != null")
+	@ModifyExpressionValue(method = "updateHeldItem", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 1))
+	private boolean axolotlclient$compareDamage(boolean original, @Local ItemStack itemStack) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().equipLogic.get()) {
+			/* adapted from 1.7 */
+			return original && itemStack != item && itemStack.getItem() == item.getItem() && itemStack.getDamage() == item.getDamage();
+		}
+		return original;
+	}
+
+	@ModifyExpressionValue(method = "updateHeldItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEqualForHoldAnimation(Lnet/minecraft/item/ItemStack;)Z"))
+	private boolean axolotlclient$disableStackEquality(boolean original, @Local ItemStack itemStack) {
+		/* adapted from 1.7 */
+		return (!OldAnimations.isEnabled() || !OldAnimations.getInstance().equipLogic.get()) && original;
+	}
+
+	@ModifyVariable(method = "updateHeldItem", at = @At(value = "STORE", ordinal = 1), index = 3)
+	private boolean axolotlclient$updateItemStack(boolean original, @Local ItemStack itemStack) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().equipLogic.get()) {
+			/* adapted from 1.7 */
+			item = itemStack;
+			return false;
+		}
+		return original;
+	}
+
+	@ModifyVariable(method = "updateHeldItem", at = @At(value = "STORE", ordinal = 3), index = 3)
+	private boolean axolotlclient$makeAssignmentRedundant(boolean original, @Local PlayerEntity playerEntity, @Local ItemStack itemStack) {
+		if (OldAnimations.isEnabled() && OldAnimations.getInstance().equipLogic.get()) {
+			/* adapted from 1.7 */
+			return selectedSlot != playerEntity.inventory.selectedSlot || itemStack != item;
+		}
+		return original;
+	}
 }

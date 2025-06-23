@@ -18,9 +18,11 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.OldAnimations;
-import io.github.axolotlclient.oldanimations.utils.ItemBlacklist;
+import io.github.axolotlclient.oldanimations.util.ItemBlacklist;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.entity.layer.HeldItemLayer;
@@ -59,9 +61,9 @@ public abstract class HeldItemLayerMixin {
 			GlStateManager.translatef(0.0F, 0.2F, 0.0F);
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;isSneaking()Z"))
-	private boolean axolotlclient$disableSneakTranslation(LivingEntity instance) {
-		return (!isSneakingEnabled()) && instance.isSneaking();
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;isSneaking()Z"))
+	private boolean axolotlclient$disableSneakTranslation(LivingEntity instance, Operation<Boolean> original) {
+		return (!isSneakingEnabled()) && original.call(instance);
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;<init>(Lnet/minecraft/item/Item;I)V"), index = 0)
@@ -69,10 +71,10 @@ public abstract class HeldItemLayerMixin {
 		return OldAnimations.isEnabled() && OldAnimations.getInstance().stickRod.get() ? Items.STICK : item;
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getRenderType()I"))
-	private int axolotlclient$disableBlockTypeCheck(Block instance) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getRenderType()I"))
+	private int axolotlclient$disableBlockTypeCheck(Block instance, Operation<Integer> original) {
 		/* we need to stop these transformations from applying  */
-		return areItemPositionsEnabled() ? 3 : instance.getRenderType();
+		return areItemPositionsEnabled() ? 3 : original.call(instance);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))

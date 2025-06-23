@@ -16,7 +16,7 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations.utils;
+package io.github.axolotlclient.oldanimations.util;
 
 import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.client.resource.model.BakedQuad;

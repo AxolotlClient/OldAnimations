@@ -44,7 +44,6 @@ public abstract class HumanoidModelMixin {
 		)
 	)
 	private void axolotlclient$oldArmPosition(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn, CallbackInfo ci) {
-		//TODO: Add config option?
 		if (OldAnimations.isEnabled() && OldAnimations.getInstance().blockingArm.get()) {
 			rightArm.rotationY = 0.0f;
 		}

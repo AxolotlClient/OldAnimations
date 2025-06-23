@@ -44,6 +44,7 @@ public abstract class EntityRenderDispatcherMixin {
 	@Shadow
 	public float cameraPitch;
 
+	//TODO: This should be merged into AxolotlClient as they already do a translation to fix the nametags which interferes with this
 	@Inject(
 		method = "prepare",
 		at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;cameraYaw:F", ordinal = 0, shift = At.Shift.AFTER),
@@ -56,11 +57,7 @@ public abstract class EntityRenderDispatcherMixin {
 		}
 	}
 
-	@Inject(
-		method = "getRenderer(Lnet/minecraft/entity/Entity;)Lnet/minecraft/client/render/entity/EntityRenderer;",
-		at = @At("HEAD"),
-		cancellable = true
-	)
+	@Inject(method = "getRenderer(Lnet/minecraft/entity/Entity;)Lnet/minecraft/client/render/entity/EntityRenderer;", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$defaultToSteve(Entity entity, CallbackInfoReturnable<PlayerRenderer> cir) {
 		if (OldAnimations.isEnabled() && OldAnimations.getInstance().disableAlexModel.get() && entity instanceof ClientPlayerEntity) {
 			/* 1.7 doesn't have Alex skins! */

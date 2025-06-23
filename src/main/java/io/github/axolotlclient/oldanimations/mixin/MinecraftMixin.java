@@ -20,6 +20,7 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
@@ -33,6 +34,7 @@ import net.minecraft.entity.living.effect.StatusEffect;
 import net.minecraft.entity.particle.ParticleType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.HitResult;
+import org.lwjgl.opengl.Display;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -40,8 +42,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Minecraft.class)
-public abstract class MinecraftClientMixin {
+@Mixin(value = Minecraft.class, priority = 2050 /* priority needed for custom window title */)
+public abstract class MinecraftMixin {
 
 	@Shadow
 	public LocalClientPlayerEntity player;
@@ -57,6 +59,9 @@ public abstract class MinecraftClientMixin {
 
 	@Shadow
 	public ClientWorld world;
+
+	@Unique
+	private String axolotlclient$lastTitle = null;
 
 	@Inject(method = "handleBlockMining", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/LocalClientPlayerEntity;isHoldingItem()Z"))
 	private void axolotlclient$useAndMine(CallbackInfo ci, @Local(argsOnly = true) boolean bl) {
@@ -75,13 +80,7 @@ public abstract class MinecraftClientMixin {
 		}
 	}
 
-	@ModifyExpressionValue(
-		method = "doUse",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/ClientPlayerInteractionManager;isMiningBlock()Z"
-		)
-	)
+	@ModifyExpressionValue(method = "doUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientPlayerInteractionManager;isMiningBlock()Z"))
 	private boolean axolotlclient$allowMiningCancel(boolean original) {
 		return (!OldAnimations.isEnabled() || !OldAnimations.getInstance().allowMiningCancel.get()) && original;
 	}
@@ -111,6 +110,37 @@ public abstract class MinecraftClientMixin {
 					}
 				}
 			}
+		}
+	}
+
+	@Inject(method = "tick", at = @At("TAIL"))
+	private void axolotlclient$spoofTitleVersion(CallbackInfo ci) {
+		/* nostalgia! */
+		if (!OldAnimations.isEnabled() || Display.getTitle() == null) {
+			return;
+		}
+
+		String title;
+		if (OldAnimations.getInstance().show1_7_10.get()) {
+			if (OldAnimations.isClientPresent() && AxolotlClient.CONFIG.customWindowTitle.get()) {
+				title = "AxolotlClient 1.7.10";
+			} else {
+				/* hell yeah */
+				title = "Minecraft 1.7.10";
+			}
+		} else {
+			/* might as well ensure the custom title gets updated even when the show1_7_10 feature is disabled! */
+			if (AxolotlClient.CONFIG.customWindowTitle.get()) {
+				title = "AxolotlClient 1.8.9";
+			} else {
+				title = "Minecraft 1.8.9";
+			}
+		}
+
+		/* :p */
+		if (!title.equals(axolotlclient$lastTitle)) {
+			Display.setTitle(title);
+			axolotlclient$lastTitle = title;
 		}
 	}
 

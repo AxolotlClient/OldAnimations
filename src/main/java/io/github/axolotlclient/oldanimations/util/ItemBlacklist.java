@@ -16,24 +16,26 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations.utils;
+package io.github.axolotlclient.oldanimations.util;
 
-import net.minecraft.client.render.texture.TextureAtlasSprite;
+import net.minecraft.item.BannerItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SkullItem;
 
-public final class CustomTextureAtlasSprite extends TextureAtlasSprite {
-    public static final CustomTextureAtlasSprite INSTANCE = new CustomTextureAtlasSprite();
+import java.util.HashMap;
+import java.util.Map;
 
-    private CustomTextureAtlasSprite() {
-        super(null);
-    }
+public class ItemBlacklist {
 
-    @Override
-    public float getU(double u) {
-        return (float) (-u / 16.0);
-    }
+    // map to store blacklisted items
+    // some items are not quite compatible with 1.7's item position
+    private static final Map<Class<?>, Boolean> blacklistedItems = new HashMap<>() {{
+		put(SkullItem.class, true);
+		put(BannerItem.class, true);
+	}};
 
-    @Override
-    public float getV(double v) {
-        return (float) (v / 16.0);
+    // method to check if an item is blacklisted
+    public static boolean isPresent(ItemStack stack) {
+        return blacklistedItems.containsKey(stack.getItem().getClass());
     }
 }

@@ -16,7 +16,7 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations.utils;
+package io.github.axolotlclient.oldanimations.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.BufferBuilder;

@@ -32,6 +32,8 @@ import java.util.List;
 
 public class OldAnimations implements ClientModInitializer {
 
+	//TODO: Clean this class up omg
+
 	public static final String MODID = "axolotlclient-oldanimations";
 	public static boolean AXOLOTLCLIENT;
 
@@ -56,6 +58,12 @@ public class OldAnimations implements ClientModInitializer {
 	private final OptionCategory categoryGUI = OptionCategory.create("GUI");
 
 	@Getter
+	private final OptionCategory categoryDebugOverlay = OptionCategory.create("Debug Overlay");
+
+	@Getter
+	private final OptionCategory categoryTabOverlay = OptionCategory.create("Tab Overlay");
+
+	@Getter
 	private final OptionCategory categoryEnchantmentGlint = OptionCategory.create("Enchantment Glint");
 
 	@Getter
@@ -71,7 +79,13 @@ public class OldAnimations implements ClientModInitializer {
 	public final BooleanOption secondLayerDamageTint = new BooleanOption("secondLayerDamageTint", true);
 	public final BooleanOption smoothSneaking = new BooleanOption("smoothSneaking", true);
 	public final BooleanOption heartFlashing = new BooleanOption("heartFlashing", true);
-	public final BooleanOption debugOverlay = new BooleanOption("debugOverlay", true);
+	public final BooleanOption show1_7_10 = new BooleanOption("show1_7_10", true);
+	public final BooleanOption debugInfo = new BooleanOption("debugInfo", true);
+	public final BooleanOption disableDebugBackground = new BooleanOption("disableDebugBackground", true);
+	public final BooleanOption debugCrosshair = new BooleanOption("debugCrosshair", true);
+	public final BooleanOption debugTextSpacing = new BooleanOption("debugTextSpacing", true);
+	public final BooleanOption debugTextColorScheme = new BooleanOption("debugTextColorScheme", true);
+	public final BooleanOption debugTextShadow = new BooleanOption("debugTextShadow", true);
 
 	public final BooleanOption thirdPersonSmoothSneaking = new BooleanOption("thirdPersonSmoothSneaking", true);
 	public final BooleanOption allowMiningCancel = new BooleanOption("allowMiningCancel", true);
@@ -91,6 +105,13 @@ public class OldAnimations implements ClientModInitializer {
 	public final BooleanOption oldGuiGlint = new BooleanOption("oldGuiGlint", true);
 	public final BooleanOption oldGlintColor = new BooleanOption("oldGlintColor", true);
 	public final BooleanOption centeredSelectionMenus = new BooleanOption("centeredSelectionMenus", true);
+
+	public final BooleanOption tabDimensions = new BooleanOption("tabDimensions", true);
+	public final BooleanOption disableTabPlayerHeads = new BooleanOption("disableTabPlayerHeads", true);
+	public final BooleanOption disableTabHeader = new BooleanOption("disableTabHeader", true);
+	public final BooleanOption disableTabFooter = new BooleanOption("disableTabFooter", true);
+
+	public final BooleanOption equipLogic = new BooleanOption("equipLogic", true);
 
 	public final BooleanOption oldDamageTick = new BooleanOption("oldDamageTick", true);
 	public final BooleanOption oldSwingVisual = new BooleanOption("oldSwingVisual", true); /* use and mine particles */
@@ -125,6 +146,10 @@ public class OldAnimations implements ClientModInitializer {
 		} else tasks.add(task);
 	}
 
+	public static boolean isClientPresent() {
+		return FabricLoader.getInstance().getModContainer("axolotlclient").isPresent();
+	}
+
 	@Override
 	public void initClient() {
 		category.add(getCategoryBlocking());
@@ -147,7 +172,8 @@ public class OldAnimations implements ClientModInitializer {
 			mirroredProjectiles,
 			oldItemPickup,
 			fastItems,
-			stickRod
+			stickRod,
+			equipLogic
 		);
 		category.add(getCategoryCombat());
 		categoryCombat.add(
@@ -156,11 +182,31 @@ public class OldAnimations implements ClientModInitializer {
 		);
 		category.add(getCategoryGUI());
 		categoryGUI.add(
+			show1_7_10,
 			heartFlashing,
-			debugOverlay,
 			centeredSelectionMenus,
 			disableTitles
 		);
+		categoryGUI.add(getCategoryDebugOverlay());
+		categoryDebugOverlay.add(
+			debugInfo,
+			disableDebugBackground,
+			debugCrosshair,
+			debugTextSpacing,
+			debugTextColorScheme,
+			debugTextShadow
+		);
+		categoryGUI.add(getCategoryTabOverlay());
+		categoryTabOverlay.add(
+			tabDimensions,
+			disableTabHeader,
+			disableTabFooter
+		);
+		if (FabricLoader.getInstance().getModContainer("axolotlclient").isEmpty()) {
+			categoryTabOverlay.add(
+				disableTabPlayerHeads
+			);
+		}
 		category.add(getCategoryEnchantmentGlint());
 		categoryEnchantmentGlint.add(
 			oldGlint,

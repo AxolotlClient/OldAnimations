@@ -44,8 +44,7 @@ public abstract class ProjectileRendererMixin {
         return angle + (OldAnimations.isEnabled() && OldAnimations.getInstance().mirroredProjectiles.get() ? 180.0F : 0.0F);
     }
 
-    @ModifyArg(
-		method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V", ordinal = 1), index = 0)
+    @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V", ordinal = 1), index = 0)
     private float axolotlclient$useProperCameraView(float angle) {
         return angle * (OldAnimations.isEnabled() && OldAnimations.getInstance().mirroredProjectiles.get() ? -1 : 1);
     }

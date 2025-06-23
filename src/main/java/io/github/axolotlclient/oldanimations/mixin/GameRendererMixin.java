@@ -19,9 +19,12 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.ducks.Sneaky;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
 import org.objectweb.asm.Opcodes;
@@ -64,6 +67,11 @@ public abstract class GameRendererMixin implements Sneaky {
 	@ModifyArg(method = "renderAxisIndicators", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"), index = 1)
 	public float axolotlclient$useLerpEyeHeight_Debug(float x) {
 		return isSneakingEnabled() ? axolotlclient$getEyeHeight() : x; /* debug crosshair parity */
+	}
+
+	@WrapOperation(method = "renderAxisIndicators", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/LocalClientPlayerEntity;hasReducedDebugInfo()Z"))
+	private boolean axolotlclient$disableAxisIndicator(LocalClientPlayerEntity instance, Operation<Boolean> original) {
+		return (OldAnimations.isEnabled() && OldAnimations.getInstance().debugCrosshair.get()) || original.call(instance);
 	}
 
 	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;updateHeldItem()V")) /* placed below null check */

@@ -19,8 +19,8 @@
 package io.github.axolotlclient.oldanimations.mixin.mob_layers;
 
 import io.github.axolotlclient.oldanimations.OldAnimations;
-import io.github.axolotlclient.oldanimations.utils.DamageTint;
-import io.github.axolotlclient.oldanimations.utils.IDamageTint;
+import io.github.axolotlclient.oldanimations.util.DamageTint;
+import io.github.axolotlclient.oldanimations.util.IDamageTint;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.layer.AbstractArmorLayer;
 import net.minecraft.client.render.model.Model;
@@ -58,7 +58,7 @@ public abstract class AbstractArmorLayerMixin {
 	@Inject(method = "colorsWhenDamaged", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$applyDamageColor(CallbackInfoReturnable<Boolean> callback) {
 		if (OldAnimations.isEnabled() && OldAnimations.getInstance().secondLayerDamageTint.get() && !OldAnimations.getInstance().damageColor.get()) {
-			/* enables colring the second layer in 1.8 */
+			/* enables coloring the second layer in 1.8 */
 			callback.setReturnValue(true);
 		}
 	}
