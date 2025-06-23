@@ -23,7 +23,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -36,11 +36,9 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(EntityRenderer.class)
 public abstract class EntityRendererMixin {
 
-	//TODO: Sync with smooth sneaking like in 1.7
-
 	@ModifyExpressionValue(method = "renderOnFire", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/Entity;y:D"))
 	private double axolotlclient$includeEyeHeight$Y(double original, @Local(argsOnly = true) Entity entity) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().flameOffset.get() && isSelf(entity)) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.flameOffset.get() && isSelf(entity)) {
 			/* taken from 1.7 */
 			original += entity.getEyeHeight();
 		}
@@ -49,7 +47,7 @@ public abstract class EntityRendererMixin {
 
 	@WrapOperation(method = "postRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderer;renderOnFire(Lnet/minecraft/entity/Entity;DDDF)V"))
 	private void axolotlclient$includeEyeHeight$renderFire(EntityRenderer<?> instance, Entity entity, double dx, double dy, double dz, float tickDelta, Operation<Void> original) {
-		boolean oldFlameHeight = OldAnimations.isEnabled() && OldAnimations.getInstance().flameOffset.get() && isSelf(entity);
+		boolean oldFlameHeight = OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.flameOffset.get() && isSelf(entity);
 		if (oldFlameHeight) {
 			GlStateManager.pushMatrix();
 			/* taken from 1.7 */

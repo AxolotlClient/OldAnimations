@@ -21,11 +21,12 @@ package io.github.axolotlclient.oldanimations;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 
 public class OldAnimationsModmenu implements ModMenuApi {
 
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {
-		return screen -> ConfigStyles.createScreen(screen, OldAnimations.getInstance().getCategory());
+		return screen -> ConfigStyles.createScreen(screen, OldAnimationsConfig.instance.getCategory());
 	}
 }

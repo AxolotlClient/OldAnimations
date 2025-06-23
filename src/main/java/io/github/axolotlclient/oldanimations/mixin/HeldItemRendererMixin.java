@@ -22,7 +22,7 @@ import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.ItemBlacklist;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.HeldItemRenderer;
@@ -67,7 +67,7 @@ public abstract class HeldItemRendererMixin {
 		index = 1
 	)
 	public float axolotlclient$allowUseAndSwing(float g) {
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().blocking.get() ? axolotlclient$h : g;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.blockHitting.get() ? axolotlclient$h : g;
 	}
 
 	@Inject(method = "renderInFirstPerson", at = @At("TAIL"))
@@ -111,7 +111,7 @@ public abstract class HeldItemRendererMixin {
 	@Inject(method = "renderInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$applyRodRotation(float partialTicks, CallbackInfo ci) {
 		/* original transformation from 1.7 */
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().itemPositions.get() && item.getItem().shouldRotate()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() && item.getItem().shouldRotate()) {
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 		}
 	}
@@ -123,13 +123,13 @@ public abstract class HeldItemRendererMixin {
 
 	@Unique
 	private static boolean areItemPositionsEnabled() {
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().itemPositions.get();
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get();
 	}
 
 	@Expression("? != null")
 	@ModifyExpressionValue(method = "updateHeldItem", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 1))
 	private boolean axolotlclient$compareDamage(boolean original, @Local ItemStack itemStack) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().equipLogic.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.equipLogic.get()) {
 			/* adapted from 1.7 */
 			return original && itemStack != item && itemStack.getItem() == item.getItem() && itemStack.getDamage() == item.getDamage();
 		}
@@ -139,12 +139,12 @@ public abstract class HeldItemRendererMixin {
 	@ModifyExpressionValue(method = "updateHeldItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEqualForHoldAnimation(Lnet/minecraft/item/ItemStack;)Z"))
 	private boolean axolotlclient$disableStackEquality(boolean original, @Local ItemStack itemStack) {
 		/* adapted from 1.7 */
-		return (!OldAnimations.isEnabled() || !OldAnimations.getInstance().equipLogic.get()) && original;
+		return (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.equipLogic.get()) && original;
 	}
 
 	@ModifyVariable(method = "updateHeldItem", at = @At(value = "STORE", ordinal = 1), index = 3)
 	private boolean axolotlclient$updateItemStack(boolean original, @Local ItemStack itemStack) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().equipLogic.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.equipLogic.get()) {
 			/* adapted from 1.7 */
 			item = itemStack;
 			return false;
@@ -154,7 +154,7 @@ public abstract class HeldItemRendererMixin {
 
 	@ModifyVariable(method = "updateHeldItem", at = @At(value = "STORE", ordinal = 3), index = 3)
 	private boolean axolotlclient$makeAssignmentRedundant(boolean original, @Local PlayerEntity playerEntity, @Local ItemStack itemStack) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().equipLogic.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.equipLogic.get()) {
 			/* adapted from 1.7 */
 			return selectedSlot != playerEntity.inventory.selectedSlot || itemStack != item;
 		}

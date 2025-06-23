@@ -26,6 +26,7 @@ import java.util.HashMap;
 public final class GlintModel {
     private static final HashMap<HashedModel, BakedModel> glintMap = new HashMap<>();
 
+	/* custom glint model */
     public static BakedModel getModel(BakedModel model) {
         return glintMap.computeIfAbsent(new HashedModel(model),
                 key -> new BasicBakedModel.Builder(model, CustomTextureAtlasSprite.INSTANCE).build());

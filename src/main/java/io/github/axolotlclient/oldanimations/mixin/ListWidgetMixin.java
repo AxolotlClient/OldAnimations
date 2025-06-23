@@ -18,7 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.gui.widget.ListWidget;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,7 +44,7 @@ public abstract class ListWidgetMixin {
 
 	@Inject(method = "capScrolling", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$allowNonNegativeScrolling(CallbackInfo ci) {
-		if (!OldAnimations.isEnabled() || !OldAnimations.getInstance().centeredSelectionMenus.get()) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.centeredSelectionMenus.get()) {
 			return;
 		}
 
@@ -70,7 +70,7 @@ public abstract class ListWidgetMixin {
 
 	@ModifyArgs(method = "getMaxScroll", at = @At(value = "INVOKE", target = "Ljava/lang/Math;max(II)I"))
 	private void axolotlclient$removeNonNegativeRestriction(Args args) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().centeredSelectionMenus.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.centeredSelectionMenus.get()) {
 			args.set(0, args.get(1));
 		}
 	}

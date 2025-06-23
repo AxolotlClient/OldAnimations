@@ -22,7 +22,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tessellator;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.texture.TextureAtlas;
 import net.minecraft.client.render.texture.TextureManager;
@@ -45,7 +45,7 @@ public final class GlintHandler {
 
 	    /* the glint color of the gui in 1.7 is what is used for the glint color in 1.8 coincidentally */
 		/* might as well add this override option anyway */
-	    if (OldAnimations.isEnabled() && OldAnimations.getInstance().oldGlintColor.get()) {
+	    if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlintColor.get()) {
 		    GlStateManager.color4f(0.5F, 0.25F, 0.8F, 1.0F);
 	    } else {
 			Color rgba = new Color(color);

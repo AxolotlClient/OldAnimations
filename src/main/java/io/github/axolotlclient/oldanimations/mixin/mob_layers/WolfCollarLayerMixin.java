@@ -18,7 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.mixin.mob_layers;
 
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.DamageTint;
 import io.github.axolotlclient.oldanimations.util.IDamageTint;
 import net.minecraft.client.render.entity.WolfRenderer;
@@ -39,9 +39,9 @@ public abstract class WolfCollarLayerMixin {
 	private WolfRenderer parent;
 
 	@Inject(method = "render(Lnet/minecraft/entity/living/mob/passive/animal/tamable/WolfEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/Model;render(Lnet/minecraft/entity/Entity;FFFFFF)V", shift = At.Shift.AFTER))
-    public void axolotlclient$addDamageBrightness(WolfEntity wolfEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
+    private void axolotlclient$addDamageBrightness(WolfEntity wolfEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
 		/* colors the entity's layer red just like 1.7 */
-		if (!OldAnimations.isEnabled() || !OldAnimations.getInstance().damageColor.get()) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.damageColor.get()) {
 			return;
 		}
 		if (((IDamageTint) parent).axolotlclient$setupOverlayColor(wolfEntity, h)) {

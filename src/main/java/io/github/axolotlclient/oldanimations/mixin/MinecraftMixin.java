@@ -22,6 +22,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.entity.particle.ParticleManager;
@@ -65,7 +66,7 @@ public abstract class MinecraftMixin {
 
 	@Inject(method = "handleBlockMining", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/LocalClientPlayerEntity;isHoldingItem()Z"))
 	private void axolotlclient$useAndMine(CallbackInfo ci, @Local(argsOnly = true) boolean bl) {
-		if (!OldAnimations.isEnabled() || !OldAnimations.getInstance().useAndMine.get()) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.useAndMine.get()) {
 			return;
 		}
 		/* mimics the conditions used in 1.7/1.8 and plays a fake swing animation when the player is using an item and punching */
@@ -73,7 +74,7 @@ public abstract class MinecraftMixin {
 			BlockPos blockPos = crosshairTarget.getPos();
 			if (!world.isAir(blockPos)) {
 				axolotlclient$fakeSwing();
-				if (OldAnimations.getInstance().useAndMineParticles.get()) {
+				if (OldAnimationsConfig.instance.useAndMineParticles.get()) {
 					particleManager.addBlockMiningParticles(blockPos, crosshairTarget.face);
 				}
 			}
@@ -82,18 +83,18 @@ public abstract class MinecraftMixin {
 
 	@ModifyExpressionValue(method = "doUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientPlayerInteractionManager;isMiningBlock()Z"))
 	private boolean axolotlclient$allowMiningCancel(boolean original) {
-		return (!OldAnimations.isEnabled() || !OldAnimations.getInstance().allowMiningCancel.get()) && original;
+		return (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.allowMiningCancel.get()) && original;
 	}
 
 	@Inject(method = "doAttack", at = @At("TAIL"))
 	private void axolotlclient$oldSwingVisual(CallbackInfo ci) {
-		if (!OldAnimations.isEnabled() || !OldAnimations.getInstance().oldSwingVisual.get()) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.oldSwingVisual.get()) {
 			return;
 		}
 		/* mimics the conditions used in 1.7/1.8 and plays a fake swing animation when the player has an attack cooldown */
 		if (attackCooldown > 0) {
 			axolotlclient$fakeSwing();
-			if (OldAnimations.getInstance().oldSwingVisualParticles.get() && crosshairTarget != null) {
+			if (OldAnimationsConfig.instance.oldSwingVisualParticles.get() && crosshairTarget != null) {
 				Entity entity = crosshairTarget.entity;
 				if (crosshairTarget.type == HitResult.Type.ENTITY && !entity.onPunched(player)) {
 					if (player.fallDistance > 0.0F && !player.onGround && !player.isClimbing() && !player.isInWater() && !player.hasStatusEffect(StatusEffect.BLINDNESS) && player.vehicle == null && entity instanceof LivingEntity) {
@@ -116,13 +117,13 @@ public abstract class MinecraftMixin {
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void axolotlclient$spoofTitleVersion(CallbackInfo ci) {
 		/* nostalgia! */
-		if (!OldAnimations.isEnabled() || Display.getTitle() == null) {
+		if (!OldAnimationsConfig.isEnabled() || Display.getTitle() == null) {
 			return;
 		}
 
 		String title;
-		if (OldAnimations.getInstance().show1_7_10.get()) {
-			if (OldAnimations.isClientPresent() && AxolotlClient.CONFIG.customWindowTitle.get()) {
+		if (OldAnimationsConfig.instance.show1_7_10.get()) {
+			if (OldAnimations.AXOLOTLCLIENT && AxolotlClient.CONFIG.customWindowTitle.get()) {
 				title = "AxolotlClient 1.7.10";
 			} else {
 				/* hell yeah */

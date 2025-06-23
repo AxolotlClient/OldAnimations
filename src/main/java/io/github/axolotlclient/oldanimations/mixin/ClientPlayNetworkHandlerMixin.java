@@ -19,7 +19,7 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.network.handler.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.TitlesS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,12 +33,12 @@ public abstract class ClientPlayNetworkHandlerMixin {
 	@ModifyExpressionValue(method = "handleEntityPickup", at = @At(value = "CONSTANT", args = "floatValue=0.5"))
 	private float axolotlclient$oldItemPickup(float original) {
 		/* taken from 1.7 */
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().oldItemPickup.get() ? -0.5F : original;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldItemPickup.get() ? -0.5F : original;
 	}
 
 	@Inject(method = "handleTitles", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$disableTitlesPacket(TitlesS2CPacket packet, CallbackInfo ci) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().disableTitles.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableTitles.get()) {
 			/* 1.7 doesn't have titles */
 			ci.cancel();
 		}

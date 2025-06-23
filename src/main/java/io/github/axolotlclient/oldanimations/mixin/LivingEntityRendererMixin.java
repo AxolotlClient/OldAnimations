@@ -22,7 +22,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.ducks.Sneaky;
 import io.github.axolotlclient.oldanimations.util.DamageTint;
 import io.github.axolotlclient.oldanimations.util.IDamageTint;
@@ -68,7 +68,7 @@ public abstract class LivingEntityRendererMixin implements IDamageTint {
 	private void axolotlclient$cancelDamageBrightness(LivingEntityRenderer<?> instance, LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, Operation<Void> original) {
 		original.call(instance, livingEntity, f, g, h, i, j, k);
 
-		if (!OldAnimations.isEnabled() || !OldAnimations.getInstance().damageColor.get()) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.damageColor.get()) {
 			return;
 		}
 
@@ -81,7 +81,7 @@ public abstract class LivingEntityRendererMixin implements IDamageTint {
 	@WrapOperation(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;F)Z"))
 	private boolean axolotlclient$cancelDamageBrightness(LivingEntityRenderer<?> instance, LivingEntity livingEntity, float f, Operation<Boolean> original) {
 		/* cancel model damage tint */
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().damageColor.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.damageColor.get()) {
 			return false;
 		}
 		return original.call(instance, livingEntity, f);
@@ -90,7 +90,7 @@ public abstract class LivingEntityRendererMixin implements IDamageTint {
 	@WrapOperation(method = "renderLayers", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z"))
 	private boolean axolotlclient$cancelDamageBrightness2(LivingEntityRenderer<?> instance, LivingEntity livingEntity, float f, boolean bl, Operation<Boolean> original) {
 		/* cancel layer damage tint */
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().damageColor.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.damageColor.get()) {
 			return false;
 		}
 		return original.call(instance, livingEntity, f, bl);
@@ -99,7 +99,7 @@ public abstract class LivingEntityRendererMixin implements IDamageTint {
 	@Inject(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"))
     private void axolotlclient$addSneakingTranslation(LivingEntity livingEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
         /* in order to match 1.7, we need to elevate the player model while sneaking */
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().thirdPersonSmoothSneaking.get() &&
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSmoothSneaking.get() &&
 			livingEntity instanceof PlayerEntity && livingEntity.getName().equals(Minecraft.getInstance().player.getName())) {
 			if (livingEntity.isSneaking()) {
 				/* we need to remove the already existing sneaking offset */
@@ -115,7 +115,7 @@ public abstract class LivingEntityRendererMixin implements IDamageTint {
 
 	@ModifyExpressionValue(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;hurtTime:I"))
 	private int axolotlclient$oldDamageTick(int original) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().oldDamageTick.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDamageTick.get()) {
 			return Math.max(original - 1, 0);
 		}
 		return original;
@@ -132,7 +132,7 @@ public abstract class LivingEntityRendererMixin implements IDamageTint {
 		final boolean flag = (i >> 24 & 0xFF) > 0;
 
 		int hurtTime = livingEntity.hurtTime;
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().oldDamageTick.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDamageTick.get()) {
 			hurtTime = Math.max(hurtTime - 1, 0);
 		}
 		final boolean flag1 = hurtTime > 0 || livingEntity.deathTime > 0;

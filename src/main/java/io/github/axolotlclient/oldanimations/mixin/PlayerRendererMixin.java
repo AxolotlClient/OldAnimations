@@ -19,7 +19,7 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.entity.PlayerRenderer;
 import net.minecraft.client.render.model.ModelPart;
@@ -39,7 +39,7 @@ public abstract class PlayerRendererMixin {
 
 	@Inject(method = "setModelStatus", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/entity/PlayerModel;leftHandItemId:I"))
 	private void axolotlclient$reAssignShownLayer(ClientPlayerEntity entity, CallbackInfo ci) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().disableSkinLayers.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableSkinLayers.get()) {
 			/* 1.7 doesn't have any skin layers except for the headwear */
 			PlayerModel playerModel = getModel();
 			ModelPart[] wearLayers = {
@@ -57,7 +57,7 @@ public abstract class PlayerRendererMixin {
 
 	@Inject(method = {"renderPlayerLeftHandModel", "renderPlayerRightHandModel"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/PlayerRenderer;setModelStatus(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;)V", shift = At.Shift.AFTER))
 	private void axolotlclient$dontSetModelStatus(ClientPlayerEntity player, CallbackInfo ci, @Local PlayerModel playerModel) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().oldPickupArm.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldPickupArm.get()) {
 			/* don't apply third person arm rotation to first person */
 			playerModel.rightHandItemId = 0;
 		}

@@ -18,7 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.render.model.ModelPart;
 import net.minecraft.client.render.model.entity.HumanoidModel;
 import net.minecraft.entity.Entity;
@@ -44,7 +44,7 @@ public abstract class HumanoidModelMixin {
 		)
 	)
 	private void axolotlclient$oldArmPosition(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn, CallbackInfo ci) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().blockingArm.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.blockingArm.get()) {
 			rightArm.rotationY = 0.0f;
 		}
 	}

@@ -20,7 +20,7 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.ItemEntityRenderer;
@@ -41,7 +41,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
 	@ModifyArg(method = "applyItemBobbing", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V"), index = 0)
 	private float axolotlclient$itemFacePlayer(float angle, @Local boolean bl) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().fastItems.get() && !bl) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fastItems.get() && !bl) {
 			return 180.0F - dispatcher.cameraYaw;
 		}
 		return angle;
@@ -49,12 +49,12 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
 	@ModifyArg(method = "render(Lnet/minecraft/entity/ItemEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", ordinal = 1))
 	private ModelTransformations.Type axolotlclient$replaceTransform(ModelTransformations.Type type) {
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().fastItems.get() ? ModelTransformations.Type.GUI : type;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fastItems.get() ? ModelTransformations.Type.GUI : type;
 	}
 
 	@Inject(method = "render(Lnet/minecraft/entity/ItemEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;)V", ordinal = 1))
 	private void axolotlclient$applyItemEntityPosition(ItemEntity itemEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().fastItems.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fastItems.get()) {
 			/* half of a pixel, matches 1.7's sprite rendering */
 			GlStateManager.translatef(0.0F, 0.0F, 0.03125F);
 		}

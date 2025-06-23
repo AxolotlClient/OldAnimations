@@ -25,6 +25,7 @@ import net.minecraft.util.math.Direction;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/* this should ensure that our glint model is reused to ensure good performance */
 public final class HashedModel {
     private final List<Integer> data;
 

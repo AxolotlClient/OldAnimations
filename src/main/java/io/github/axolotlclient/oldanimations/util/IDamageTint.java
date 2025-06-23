@@ -22,5 +22,6 @@ import net.minecraft.entity.living.LivingEntity;
 
 public interface IDamageTint {
 
+	/* we need an easy way to use the damage overlay in other classes :p */
 	boolean axolotlclient$setupOverlayColor (LivingEntity entity, float tickDelta);
 }

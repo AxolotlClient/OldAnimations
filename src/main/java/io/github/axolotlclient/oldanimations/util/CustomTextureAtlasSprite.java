@@ -20,6 +20,7 @@ package io.github.axolotlclient.oldanimations.util;
 
 import net.minecraft.client.render.texture.TextureAtlasSprite;
 
+/* we need to negate one of the texture coords just like 1.7 did for the glint */
 public final class CustomTextureAtlasSprite extends TextureAtlasSprite {
     public static final CustomTextureAtlasSprite INSTANCE = new CustomTextureAtlasSprite();
 

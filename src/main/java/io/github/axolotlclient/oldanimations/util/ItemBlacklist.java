@@ -25,7 +25,7 @@ import net.minecraft.item.SkullItem;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ItemBlacklist {
+public final class ItemBlacklist {
 
     // map to store blacklisted items
     // some items are not quite compatible with 1.7's item position

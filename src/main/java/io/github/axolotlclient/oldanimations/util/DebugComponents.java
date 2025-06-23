@@ -18,7 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.ducks.Sneaky;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
@@ -42,7 +42,7 @@ public final class DebugComponents {
 	public static List<String> getLeft() {
 		List<String> list = new ArrayList<>();
 		/* gotta make sure it all matches haha */
-		list.add("Minecraft " + (OldAnimations.isEnabled() && OldAnimations.getInstance().show1_7_10.get() ? "1.7.10" : "1.8.9") + " (" + Minecraft.getCurrentFps() + " fps, " + RenderChunk.updateCounter + " chunk updates)");
+		list.add("Minecraft " + (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.show1_7_10.get() ? "1.7.10" : "1.8.9") + " (" + Minecraft.getCurrentFps() + " fps, " + RenderChunk.updateCounter + " chunk updates)");
 		list.add(mc.worldRenderer.getChunkDebugInfo()); /* this will return different data than in 1.7 unfortunately */
 		list.add(mc.worldRenderer.getEntityDebugInfo());
 		list.add("P: " + mc.particleManager.getParticlesDebugInfo() + ". T: " + mc.world.getEntitiesDebugInfo());

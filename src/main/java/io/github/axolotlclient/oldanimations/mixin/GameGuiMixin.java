@@ -20,7 +20,7 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.render.Window;
@@ -42,7 +42,7 @@ public abstract class GameGuiMixin {
 	@ModifyVariable(method = "renderStatusBars", at = @At(value = "STORE", ordinal = 0), index = 4)
 	private boolean axolotlclient$disableFlashingCheck(boolean value) {
 		bl = value; /* heart flashing local*/
-		return false;
+		return !isHeartFlashingEnabled() && value;
 	}
 
 	@ModifyArg(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawTexture(IIIIII)V", ordinal = 3), index = 2)
@@ -57,11 +57,11 @@ public abstract class GameGuiMixin {
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;hasCrosshair()Z"))
 	private boolean axolotlclient$enableCrosshair(GameGui instance, Operation<Boolean> original) {
-		return (OldAnimations.isEnabled() && OldAnimations.getInstance().debugCrosshair.get()) || original.call(instance);
+		return (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.debugCrosshair.get()) || original.call(instance);
 	}
 
 	@Unique
 	private static boolean isHeartFlashingEnabled() {
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().heartFlashing.get();
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.heartFlashing.get();
 	}
 }

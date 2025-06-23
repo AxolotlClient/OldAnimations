@@ -18,12 +18,7 @@
 
 package io.github.axolotlclient.oldanimations;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
-import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonConfigManager;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import lombok.Getter;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 
@@ -32,90 +27,16 @@ import java.util.List;
 
 public class OldAnimations implements ClientModInitializer {
 
-	//TODO: Clean this class up omg
+	//Multiplayer screen
+	//XP Orbs
+	//Nametag rotation shit
+	//blocks item positions
+	//sync flame with sneaking
 
 	public static final String MODID = "axolotlclient-oldanimations";
 	public static boolean AXOLOTLCLIENT;
 
 	private static OldAnimations instance;
-
-	@Getter
-	private final OptionCategory category = OptionCategory.create(MODID).includeInParentTree(false);
-
-	@Getter
-	private final OptionCategory categoryBlocking = OptionCategory.create("Blocking");
-
-	@Getter
-	private final OptionCategory categorySneaking = OptionCategory.create("Sneaking");
-
-	@Getter
-	private final OptionCategory categoryItems = OptionCategory.create("Items");
-
-	@Getter
-	private final OptionCategory categoryCombat = OptionCategory.create("Combat");
-
-	@Getter
-	private final OptionCategory categoryGUI = OptionCategory.create("GUI");
-
-	@Getter
-	private final OptionCategory categoryDebugOverlay = OptionCategory.create("Debug Overlay");
-
-	@Getter
-	private final OptionCategory categoryTabOverlay = OptionCategory.create("Tab Overlay");
-
-	@Getter
-	private final OptionCategory categoryEnchantmentGlint = OptionCategory.create("Enchantment Glint");
-
-	@Getter
-	private final OptionCategory categoryMisc = OptionCategory.create("Misc");
-
-	public final BooleanOption enabled = new BooleanOption("enabled", true);
-
-	public final BooleanOption useAndMine = new BooleanOption("useAndMine", true);
-	public final BooleanOption useAndMineParticles = new BooleanOption("useAndMineParticles", true); /* use and mine particles */
-	public final BooleanOption blocking = new BooleanOption("blocking", true);
-	public final BooleanOption eatingAndDrinking = new BooleanOption("eatingAndDrinking", true);
-	public final BooleanOption itemPositions = new BooleanOption("itemPositions", true);
-	public final BooleanOption secondLayerDamageTint = new BooleanOption("secondLayerDamageTint", true);
-	public final BooleanOption smoothSneaking = new BooleanOption("smoothSneaking", true);
-	public final BooleanOption heartFlashing = new BooleanOption("heartFlashing", true);
-	public final BooleanOption show1_7_10 = new BooleanOption("show1_7_10", true);
-	public final BooleanOption debugInfo = new BooleanOption("debugInfo", true);
-	public final BooleanOption disableDebugBackground = new BooleanOption("disableDebugBackground", true);
-	public final BooleanOption debugCrosshair = new BooleanOption("debugCrosshair", true);
-	public final BooleanOption debugTextSpacing = new BooleanOption("debugTextSpacing", true);
-	public final BooleanOption debugTextColorScheme = new BooleanOption("debugTextColorScheme", true);
-	public final BooleanOption debugTextShadow = new BooleanOption("debugTextShadow", true);
-
-	public final BooleanOption thirdPersonSmoothSneaking = new BooleanOption("thirdPersonSmoothSneaking", true);
-	public final BooleanOption allowMiningCancel = new BooleanOption("allowMiningCancel", true);
-
-	public final BooleanOption damageColor = new BooleanOption("damageColor", true);
-	public final BooleanOption stickRod = new BooleanOption("stickRod", true);
-	public final BooleanOption blockingArm = new BooleanOption("blockingArm", true);
-	public final BooleanOption fastItems = new BooleanOption("fastItems", true);
-	public final BooleanOption mirroredProjectiles = new BooleanOption("mirroredProjectiles", true);
-	public final BooleanOption disableAlexModel = new BooleanOption("disableAlexModel", true);
-	public final BooleanOption disableSkinLayers = new BooleanOption("disableSkinLayers", true);
-	public final BooleanOption flameOffset = new BooleanOption("flameOffset", true);
-	public final BooleanOption disableTitles = new BooleanOption("disableTitles", true);
-	public final BooleanOption oldItemPickup = new BooleanOption("oldItemPickup", true);
-	public final BooleanOption oldPickupArm = new BooleanOption("oldPickupArm", true);
-	public final BooleanOption oldGlint = new BooleanOption("oldGlint", true);
-	public final BooleanOption oldGuiGlint = new BooleanOption("oldGuiGlint", true);
-	public final BooleanOption oldGlintColor = new BooleanOption("oldGlintColor", true);
-	public final BooleanOption centeredSelectionMenus = new BooleanOption("centeredSelectionMenus", true);
-
-	public final BooleanOption tabDimensions = new BooleanOption("tabDimensions", true);
-	public final BooleanOption disableTabPlayerHeads = new BooleanOption("disableTabPlayerHeads", true);
-	public final BooleanOption disableTabHeader = new BooleanOption("disableTabHeader", true);
-	public final BooleanOption disableTabFooter = new BooleanOption("disableTabFooter", true);
-
-	public final BooleanOption equipLogic = new BooleanOption("equipLogic", true);
-
-	public final BooleanOption oldDamageTick = new BooleanOption("oldDamageTick", true);
-	public final BooleanOption oldSwingVisual = new BooleanOption("oldSwingVisual", true); /* use and mine particles */
-	public final BooleanOption oldSwingVisualParticles = new BooleanOption("oldSwingVisualParticles", true); /* use and mine particles */
 
 	// Since AxolotlClient may initialize this class as a module before it gets loaded as a mod by fabric we have to defer the former to run after the latter.
 	// But since the load order is non-deterministic this may not always be the case
@@ -132,106 +53,15 @@ public class OldAnimations implements ClientModInitializer {
 		tasks.clear();
 	}
 
-	public static OldAnimations getInstance() {
-		return OldAnimations.instance;
-	}
-
-	public static boolean isEnabled() {
-		return OldAnimations.instance.enabled.get();
-	}
-
 	public static void runAfterFabricLoad(Runnable task) {
 		if (loadedByFabric) {
 			task.run();
 		} else tasks.add(task);
 	}
 
-	public static boolean isClientPresent() {
-		return FabricLoader.getInstance().getModContainer("axolotlclient").isPresent();
-	}
-
 	@Override
 	public void initClient() {
-		category.add(getCategoryBlocking());
-		categoryBlocking.add(
-			blocking,
-			useAndMine,
-			allowMiningCancel,
-			useAndMineParticles,
-			blockingArm,
-			eatingAndDrinking
-		);
-		category.add(getCategorySneaking());
-		categorySneaking.add(
-			smoothSneaking,
-			thirdPersonSmoothSneaking
-		);
-		category.add(getCategoryItems());
-		categoryItems.add(
-			itemPositions,
-			mirroredProjectiles,
-			oldItemPickup,
-			fastItems,
-			stickRod,
-			equipLogic
-		);
-		category.add(getCategoryCombat());
-		categoryCombat.add(
-			oldSwingVisual,
-			oldSwingVisualParticles
-		);
-		category.add(getCategoryGUI());
-		categoryGUI.add(
-			show1_7_10,
-			heartFlashing,
-			centeredSelectionMenus,
-			disableTitles
-		);
-		categoryGUI.add(getCategoryDebugOverlay());
-		categoryDebugOverlay.add(
-			debugInfo,
-			disableDebugBackground,
-			debugCrosshair,
-			debugTextSpacing,
-			debugTextColorScheme,
-			debugTextShadow
-		);
-		categoryGUI.add(getCategoryTabOverlay());
-		categoryTabOverlay.add(
-			tabDimensions,
-			disableTabHeader,
-			disableTabFooter
-		);
-		if (FabricLoader.getInstance().getModContainer("axolotlclient").isEmpty()) {
-			categoryTabOverlay.add(
-				disableTabPlayerHeads
-			);
-		}
-		category.add(getCategoryEnchantmentGlint());
-		categoryEnchantmentGlint.add(
-			oldGlint,
-			oldGuiGlint,
-			oldGlintColor
-		);
-		category.add(getCategoryMisc());
-		categoryMisc.add(
-			secondLayerDamageTint,
-			damageColor,
-			disableAlexModel,
-			disableSkinLayers,
-			flameOffset,
-			oldPickupArm,
-			oldDamageTick
-		);
-		category.add(
-			enabled
-		);
-
+		OldAnimationsConfig.instance.initConfig();
 		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
-
-		ConfigManager configManager = new VersionedJsonConfigManager(FabricLoader.getInstance().getConfigDir().resolve(MODID + ".json"),
-			category, 1, (configVersion, configVersion1, optionCategory, jsonObject) -> jsonObject);
-		AxolotlClientConfig.getInstance().register(configManager);
-		configManager.load();
 	}
 }

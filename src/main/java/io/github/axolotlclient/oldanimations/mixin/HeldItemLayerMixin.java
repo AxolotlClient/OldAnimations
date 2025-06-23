@@ -21,7 +21,7 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.ItemBlacklist;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -68,7 +68,7 @@ public abstract class HeldItemLayerMixin {
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;<init>(Lnet/minecraft/item/Item;I)V"), index = 0)
 	private Item axolotlclient$changeToStick(Item item) {
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().stickRod.get() ? Items.STICK : item;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.stickRod.get() ? Items.STICK : item;
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getRenderType()I"))
@@ -130,11 +130,11 @@ public abstract class HeldItemLayerMixin {
 
 	@Unique
 	private static boolean areItemPositionsEnabled() {
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().itemPositions.get();
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get();
 	}
 
 	@Unique
 	private static boolean isSneakingEnabled() {
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().smoothSneaking.get();
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.smoothSneaking.get();
 	}
 }

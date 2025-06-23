@@ -21,7 +21,7 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.ducks.Sneaky;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.entity.FishingBobberRenderer;
@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(FishingBobberRenderer.class)
-public class FishingBobberEntityRendererMixin {
+public abstract class FishingBobberEntityRendererMixin {
 
 	@ModifyArgs(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;<init>(DDD)V"))
 	private void axolotlclient$modifyLinePosition(Args args) {
@@ -44,19 +44,19 @@ public class FishingBobberEntityRendererMixin {
 	}
 
 	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "CONSTANT", args = "doubleValue=0.8D"))
-	public double axolotlclient$moveLinePosition(double constant) {
+	private double axolotlclient$moveLinePosition(double constant) {
 		/* original values from 1.7 */
-		return constant + (areItemPositionsEnabled() ? 0.05D : 0.0D);
+		return constant + (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.stickRod.get() ? 0.05D : 0.0D);
 	}
 
 	@WrapOperation(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;isSneaking()Z"))
-	public boolean axolotlclient$removeSneakTranslation(PlayerEntity instance, Operation<Boolean> original) {
-		return !areItemPositionsEnabled() && original.call(instance);
+	private boolean axolotlclient$removeSneakTranslation(PlayerEntity instance, Operation<Boolean> original) {
+		return (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.stopLineTranslateSneak.get()) && original.call(instance);
 	}
 
 	@WrapOperation(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;getEyeHeight()F"))
-	public float axolotlclient$useLerpEyeHeight_Fish(PlayerEntity instance, Operation<Float> original) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().smoothSneaking.get()) {
+	private float axolotlclient$useLerpEyeHeight_Fish(PlayerEntity instance, Operation<Float> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.smoothSneaking.get()) {
 			return ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight();
 		}
 		return original.call(instance);
@@ -64,6 +64,6 @@ public class FishingBobberEntityRendererMixin {
 
 	@Unique
 	private static boolean areItemPositionsEnabled() {
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().itemPositions.get();
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get();
 	}
 }

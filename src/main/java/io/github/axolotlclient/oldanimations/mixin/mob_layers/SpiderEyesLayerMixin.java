@@ -18,7 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.mixin.mob_layers;
 
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.DamageTint;
 import io.github.axolotlclient.oldanimations.util.IDamageTint;
 import net.minecraft.client.render.entity.SpiderRenderer;
@@ -40,9 +40,9 @@ public abstract class SpiderEyesLayerMixin {
 	private SpiderRenderer<SpiderEntity> parent;
 
 	@Inject(method = "render(Lnet/minecraft/entity/living/mob/hostile/SpiderEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/Model;render(Lnet/minecraft/entity/Entity;FFFFFF)V", shift = At.Shift.AFTER))
-    public void axolotlclient$addDamageBrightness(SpiderEntity spiderEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
+    private void axolotlclient$addDamageBrightness(SpiderEntity spiderEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
 		/* colors the entity's layer red just like 1.7 */
-		if (!OldAnimations.isEnabled() || !OldAnimations.getInstance().secondLayerDamageTint.get() || !OldAnimations.getInstance().damageColor.get()) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.secondLayerDamageTint.get() || !OldAnimationsConfig.instance.damageColor.get()) {
 			return;
 		}
 		if (((IDamageTint) parent).axolotlclient$setupOverlayColor(spiderEntity, h)) {
@@ -52,8 +52,8 @@ public abstract class SpiderEyesLayerMixin {
     }
 
 	@Inject(method = "colorsWhenDamaged", at = @At("HEAD"), cancellable = true)
-	public void axolotlclient$applyDamageColor(CallbackInfoReturnable<Boolean> callback) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().secondLayerDamageTint.get() && !OldAnimations.getInstance().damageColor.get()) {
+	private void axolotlclient$applyDamageColor(CallbackInfoReturnable<Boolean> callback) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.secondLayerDamageTint.get() && !OldAnimationsConfig.instance.damageColor.get()) {
 			/* enables coloring the second layer in 1.8 */
 			callback.setReturnValue(true);
 		}

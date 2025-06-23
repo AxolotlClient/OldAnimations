@@ -19,7 +19,7 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.entity.particle.EntityPickupParticle;
 import net.minecraft.entity.Entity;
 import org.objectweb.asm.Opcodes;
@@ -35,7 +35,7 @@ public abstract class EntityPickupParticleMixin {
 
 	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/Entity;prevTickY:D"))
 	private double axolotlclient$includeEyeHeight$PrevTickY(double original) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().oldItemPickup.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldItemPickup.get()) {
 			/* taken from 1.7 */
 			original += collector.getEyeHeight();
 		}
@@ -44,7 +44,7 @@ public abstract class EntityPickupParticleMixin {
 
 	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/Entity;y:D", ordinal = 1))
 	private double axolotlclient$includeEyeHeight$Y(double original) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().oldItemPickup.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldItemPickup.get()) {
 			/* taken from 1.7 */
 			original += collector.getEyeHeight();
 		}

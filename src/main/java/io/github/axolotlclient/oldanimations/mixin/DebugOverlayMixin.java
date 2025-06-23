@@ -22,7 +22,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.DebugComponents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
@@ -48,32 +48,32 @@ public abstract class DebugOverlayMixin {
 	@ModifyExpressionValue(method = "getGameInfo", at = @At(value = "CONSTANT", args = "stringValue=Minecraft 1.8.9 ("))
 	private String axolotlclient$spoofDebugVersion(String original) {
 		/* nostalgiaaaa */
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().show1_7_10.get() ? "Minecraft 1.7.10 (" : original;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.show1_7_10.get() ? "Minecraft 1.7.10 (" : original;
 	}
 
 	@WrapOperation(method = "getGameInfo", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getGameVersion()Ljava/lang/String;"))
 	private String axolotlclient$spoofDebugVersion2(Minecraft instance, Operation<String> original) {
 		/* why does it show the game version twice!!?? */
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().show1_7_10.get() ? "1.7.10" : original.call(instance);
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.show1_7_10.get() ? "1.7.10" : original.call(instance);
 	}
 
 	@ModifyExpressionValue(method = "drawGameInfo", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/DebugOverlay;getGameInfo()Ljava/util/List;"))
 	private List<String> axolotlclient$replaceGameInfo(List<String> original) {
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().debugInfo.get() ? DebugComponents.getLeft() : original;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.debugInfo.get() ? DebugComponents.getLeft() : original;
 	}
 
 	@Inject(method = "drawGameInfo", at = @At("TAIL"), remap = false)
 	private void axolotlclient$addBottomLeftColumn(CallbackInfo ci) {
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().debugInfo.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.debugInfo.get()) {
 			/* renders the bottom left column of debug text, but in the greyish color just like 1.7 */
-			final int fontHeight = textRenderer.fontHeight - (OldAnimations.getInstance().debugTextSpacing.get() ? 1 : 0);
+			final int fontHeight = textRenderer.fontHeight - (OldAnimationsConfig.instance.debugTextSpacing.get() ? 1 : 0);
 			int top = DebugComponents.getLeft().size() * 10 + 4 /* should be 64, just like 1.7 */;
 			for (String msg : DebugComponents.getLeftBottom()) {
 				if (msg == null) continue;
-				if (!OldAnimations.getInstance().disableDebugBackground.get()) {
+				if (!OldAnimationsConfig.instance.disableDebugBackground.get()) {
 					GuiElement.fill(1, top - 1, 2 + textRenderer.getWidth(msg) + 1, top + fontHeight - 1, -1873784752);
 				}
-				textRenderer.draw(msg, 2, top, 14737632, OldAnimations.getInstance().debugTextShadow.get());
+				textRenderer.draw(msg, 2, top, 14737632, OldAnimationsConfig.instance.debugTextShadow.get());
 				top += fontHeight;
 			}
 		}
@@ -81,30 +81,30 @@ public abstract class DebugOverlayMixin {
 
 	@ModifyExpressionValue(method = "drawSystemInfo", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/DebugOverlay;getSystemInfo()Ljava/util/List;"))
 	private List<String> axolotlclient$replaceSystemInfo(List<String> original) {
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().debugInfo.get() ? DebugComponents.getRight() : original;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.debugInfo.get() ? DebugComponents.getRight() : original;
 	}
 
 	@WrapOperation(method = {"drawGameInfo", "drawSystemInfo"}, at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/render/TextRenderer;fontHeight:I"))
 	private int axolotlclient$changeFontHeight(TextRenderer instance, Operation<Integer> original) {
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().debugTextSpacing.get() ? 10 : original.call(instance);
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.debugTextSpacing.get() ? 10 : original.call(instance);
 	}
 
 	@WrapWithCondition(method = {"drawGameInfo", "drawSystemInfo"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/DebugOverlay;fill(IIIII)V"))
 	private boolean axolotlclient$removeBackgroundRectangle(int left, int top, int right, int bottom, int color) {
 		/* disable rendering the rectangular background, just like 1.7 */
-		return !OldAnimations.isEnabled() || !OldAnimations.getInstance().disableDebugBackground.get();
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableDebugBackground.get();
 	}
 
 	@WrapOperation(method = "drawSystemInfo", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;draw(Ljava/lang/String;III)I"))
 	private int axolotlclient$addTextShadow(TextRenderer instance, String text, int x, int y, int color, Operation<Integer> original) {
 		/* uses the alternative drawString method which allows text shadows, just like in 1.7 */
-		return instance.draw(text, x, y, color, OldAnimations.isEnabled() && OldAnimations.getInstance().debugTextShadow.get());
+		return instance.draw(text, x, y, color, OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.debugTextShadow.get());
 	}
 
 	@WrapOperation(method = "drawGameInfo", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;draw(Ljava/lang/String;III)I"))
 	private int axolotlclient$addTextShadow2(TextRenderer instance, String text, int x, int y, int color, Operation<Integer> original) {
 		/* same as above redirect, but the text is white, just like in 1.7 */
-		int textColor = OldAnimations.isEnabled() && OldAnimations.getInstance().debugTextColorScheme.get() ? 16777215 : 0xE0E0E0;
-		return instance.draw(text, x, y, textColor, OldAnimations.isEnabled() && OldAnimations.getInstance().debugTextShadow.get());
+		int textColor = OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.debugTextColorScheme.get() ? 16777215 : 0xE0E0E0;
+		return instance.draw(text, x, y, textColor, OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.debugTextShadow.get());
 	}
 }

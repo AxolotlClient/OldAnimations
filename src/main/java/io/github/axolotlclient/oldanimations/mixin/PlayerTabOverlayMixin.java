@@ -22,6 +22,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.OldAnimations;
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
@@ -47,21 +48,21 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 	private Minecraft minecraft;
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I", ordinal = 1))
-	public int axolotlclient$replace(List<PlayerInfo> instance, Operation<Integer> original) {
+	private int axolotlclient$replace(List<PlayerInfo> instance, Operation<Integer> original) {
 		/* renders a fixed amount of player slots just like 1.7 */
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().tabDimensions.get() ? minecraft.getNetworkHandler().maxPlayerCount : original.call(instance);
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? minecraft.getNetworkHandler().maxPlayerCount : original.call(instance);
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Ljava/lang/Math;min(II)I", ordinal = 1))
-	public int axolotlclient$staticSlotWidth(int a, int b, Operation<Integer> original) {
+	private int axolotlclient$staticSlotWidth(int a, int b, Operation<Integer> original) {
 		/* makes the slot width static just like 1.7 */
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().tabDimensions.get() ? 300 : original.call(a, b);
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? 300 : original.call(a, b);
 	}
 
 	@ModifyVariable(method = "render", at = @At("STORE"), index = 13)
 	private int axolotlclient$capSlotWidth(int value) {
 		/* caps the slot width just like 1.7 */
-		if (OldAnimations.isEnabled() && OldAnimations.getInstance().tabDimensions.get() && value > 150) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() && value > 150) {
 			value = 150;
 		}
 		return value;
@@ -76,34 +77,34 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 		))
 	private int axolotlclient$removeBackgroundSpace(int constant) {
 		/* cancels spacing */
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().tabDimensions.get() ? 0 : constant;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? 0 : constant;
 	}
 
 	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;header:Lnet/minecraft/text/Text;", ordinal = 0))
-	public Text axolotlclient$disableHeaderElement(Text original) {
+	private Text axolotlclient$disableHeaderElement(Text original) {
 		/* disables the tab header */
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().disableTabHeader.get() ? null : original;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableTabHeader.get() ? null : original;
 	}
 
 	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;footer:Lnet/minecraft/text/Text;", ordinal = 0))
-	public Text axolotlclient$disableFooterElement(Text original) {
+	private Text axolotlclient$disableFooterElement(Text original) {
 		/* disables the tab footer */
-		return OldAnimations.isEnabled() && OldAnimations.getInstance().disableTabFooter.get() ? null : original;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableTabFooter.get() ? null : original;
 	}
 
 	@ModifyVariable(method = "render", at = @At("STORE"), index = 11)
 	private boolean axolotlclient$disablePlayerHeads(boolean original) {
 		/* this option already exists in axolotlclient, so let's let it handle this feature */
-		if (OldAnimations.isClientPresent()) {
+		if (OldAnimations.AXOLOTLCLIENT) {
 			return original;
 		}
 		/* disables the rendering of player heads */
-		return (!OldAnimations.isEnabled() || !OldAnimations.getInstance().disableTabPlayerHeads.get()) && original;
+		return (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableTabPlayerHeads.get()) && original;
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;fill(IIIII)V"), index = 2)
 	private int axolotlclient$removeExtraPixels(int par1) {
 		/* corrects for an extra column of pixels added in 1.8+ */
-		return par1 - (OldAnimations.isEnabled() && OldAnimations.getInstance().tabDimensions.get() ? 1 : 0);
+		return par1 - (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? 1 : 0);
 	}
 }
