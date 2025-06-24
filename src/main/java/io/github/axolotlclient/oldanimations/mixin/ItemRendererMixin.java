@@ -19,11 +19,15 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+import io.github.axolotlclient.oldanimations.util.DummyItem;
 import io.github.axolotlclient.oldanimations.util.GlintHandler;
 import io.github.axolotlclient.oldanimations.util.GlintModel;
+import io.github.axolotlclient.oldanimations.util.ModelUtil;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.client.render.texture.TextureManager;
@@ -31,6 +35,7 @@ import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.client.resource.model.BakedQuad;
 import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.PotionItem;
 import net.minecraft.resource.Identifier;
 import net.minecraft.util.math.Direction;
 import org.objectweb.asm.Opcodes;
@@ -166,6 +171,31 @@ public abstract class ItemRendererMixin {
 			GlintHandler.renderEnchantmentGlintPre(textureManager, ENCHANTMENT_GLINT_LOCATION, axolotlclient$glintColor);
 			prepareGuiItemRender(x, y, false);
 			GlintHandler.renderEnchantmentGlintPost(textureManager);
+		}
+	}
+
+	@WrapOperation(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;render(Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/item/ItemStack;)V"))
+	private void axolotlclient$useCustomModel$layer0(ItemRenderer instance, BakedModel model, ItemStack stack, Operation<Void> original) {
+		/* renders the potion's overlay WITH the glint like in 1.7 */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldPotionGlint.get() &&
+			!axolotlclient$isGui && stack.getItem() instanceof PotionItem &&
+			/* just to be safe, let's skip rendering while projectiles and dropped items are 2d */
+			(!OldAnimationsConfig.instance.fastItems.get() || axolotlclient$isHeld)) {
+			model = ModelUtil.getModel("bottle_overlay");
+		}
+		original.call(instance, model, stack);
+	}
+
+	@Inject(method = "renderItem", at = @At(value = "INVOKE",target = "Lcom/mojang/blaze3d/platform/GlStateManager;popMatrix()V"))
+	private void axolotlclient$useCustomModel$layer1(ItemStack stack, BakedModel model, CallbackInfo ci) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldPotionGlint.get() &&
+			!model.isCustomRenderer() && !axolotlclient$isGui && stack.getItem() instanceof PotionItem &&
+			/* just to be safe, let's skip rendering while projectiles and dropped items are 2d */
+			(!OldAnimationsConfig.instance.fastItems.get() || axolotlclient$isHeld)) {
+			/* renders the splash/drinkable bottle AFTER the glint rendering like in 1.7 */
+			String id = PotionItem.isSplashPotion(stack.getMetadata()) ? "bottle_splash_empty" : "bottle_drinkable_empty";
+			/* hacky way of rendering the bottle without using the potion's overlay color */
+			render(ModelUtil.getModel(id), DummyItem.getStack());
 		}
 	}
 }

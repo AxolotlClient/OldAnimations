@@ -21,15 +21,20 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
+import io.github.axolotlclient.modules.freelook.Perspective;
+import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.ducks.Sneaky;
 import io.github.axolotlclient.oldanimations.util.DamageTint;
 import io.github.axolotlclient.oldanimations.util.IDamageTint;
+import io.github.axolotlclient.oldanimations.util.PlayerUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.entity.living.LivingEntity;
-import net.minecraft.entity.living.player.PlayerEntity;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,12 +42,17 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.nio.FloatBuffer;
 
 @Mixin(LivingEntityRenderer.class)
-public abstract class LivingEntityRendererMixin implements IDamageTint {
+public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends EntityRenderer<T> implements IDamageTint {
+
+	protected LivingEntityRendererMixin(EntityRenderDispatcher entityRenderDispatcher) {
+		super(entityRenderDispatcher);
+	}
 
 	@Shadow
 	protected abstract boolean setupOverlayColor(LivingEntity entity, float tickDelta, boolean bl);
@@ -55,6 +65,9 @@ public abstract class LivingEntityRendererMixin implements IDamageTint {
 
 	@Shadow
 	protected FloatBuffer tintBuffer;
+
+	@Shadow
+	protected abstract boolean shouldRenderNameTag(T livingEntity);
 
 	@Unique
 	private float axolotlclient$h = 0.0F;
@@ -99,8 +112,7 @@ public abstract class LivingEntityRendererMixin implements IDamageTint {
 	@Inject(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"))
     private void axolotlclient$addSneakingTranslation(LivingEntity livingEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
         /* in order to match 1.7, we need to elevate the player model while sneaking */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSmoothSneaking.get() &&
-			livingEntity instanceof PlayerEntity && livingEntity.getName().equals(Minecraft.getInstance().player.getName())) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSmoothSneaking.get() && PlayerUtil.isSelf(livingEntity)) {
 			if (livingEntity.isSneaking()) {
 				/* we need to remove the already existing sneaking offset */
 				/* which is present in BiPedModel#render, PlayerEntityModel#render, and related classes */
@@ -119,6 +131,33 @@ public abstract class LivingEntityRendererMixin implements IDamageTint {
 			return Math.max(original - 1, 0);
 		}
 		return original;
+	}
+
+	@ModifyArg(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 0), index = 1)
+	private float axolotlclient$syncNameTag(float f, @Local(argsOnly = true) LivingEntity livingEntity) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSmoothSneaking.get() && PlayerUtil.isSelf(livingEntity)) {
+			/* we must ensurethe nametag is synced with the interpolated player model position */
+			f += ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() - 1.62F;
+		}
+		return f;
+	}
+
+	@ModifyArg(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderNameTag(Lnet/minecraft/entity/Entity;DDDLjava/lang/String;FD)V"), index = 2)
+	private double axolotlclient$syncNameTag2(double par2, @Local(argsOnly = true) LivingEntity livingEntity) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSmoothSneaking.get() && PlayerUtil.isSelf(livingEntity)) {
+			/* we must ensure the nametag is synced with the interpolated player model position once again */
+			par2 += ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() - 1.62F;
+		}
+		return par2;
+	}
+
+	@Inject(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V", ordinal = 1))
+	private void axolotlclient$reverseNameplateRotation(LivingEntity livingEntity, double d, double e, double f, CallbackInfo ci) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fixCameraPitch.get() &&
+			OldAnimations.AXOLOTLCLIENT && Minecraft.getInstance().options.perspective == Perspective.THIRD_PERSON_FRONT.ordinal()) {
+			/* we need to disable the axolotlclient nameplate rotation in order to use our own! */
+			GlStateManager.rotatef(dispatcher.cameraPitch * 2, 1.0F, 0.0F, 0.0F);
+		}
 	}
 
 	@Override

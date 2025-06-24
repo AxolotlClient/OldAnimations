@@ -18,24 +18,13 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
-import net.minecraft.item.BannerItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SkullItem;
 
-import java.util.HashMap;
-import java.util.Map;
+/* the goal of this class is to literally be a placeholder LOL */
+public final class DummyItem extends Item {
 
-public final class ItemBlacklist {
-
-    /* map to store blacklisted items */
-    /* some items are not quite compatible with 1.7's item position */
-    private static final Map<Class<?>, Boolean> blacklistedItems = new HashMap<>() {{
-		put(SkullItem.class, true);
-		put(BannerItem.class, true);
-	}};
-
-    /* method to check if an item is blacklisted */
-    public static boolean isPresent(ItemStack stack) {
-        return blacklistedItems.containsKey(stack.getItem().getClass());
-    }
+	public static ItemStack getStack() {
+		return new ItemStack(new DummyItem());
+	}
 }

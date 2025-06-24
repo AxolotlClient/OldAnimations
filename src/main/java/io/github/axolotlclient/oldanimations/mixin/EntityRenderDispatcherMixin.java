@@ -51,7 +51,7 @@ public abstract class EntityRenderDispatcherMixin {
 		slice = @Slice(from = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/options/GameOptions;perspective:I"))
 	)
 	private void axolotlclient$fixCameraRotation(World world, TextRenderer textRenderer, Entity camera, Entity targetEntity, GameOptions options, float tickDelta, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.mirroredProjectiles.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fixCameraPitch.get()) {
 			/* camera rotation bug. originated in 1.8 and is fixed in 1.9 */
 			cameraPitch *= -1;
 		}

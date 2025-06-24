@@ -27,11 +27,14 @@ import java.util.List;
 
 public class OldAnimations implements ClientModInitializer {
 
-	//Multiplayer screen
-	//XP Orbs
-	//Nametag rotation shit
-	//blocks item positions
-	//sync flame with sneaking
+	/*
+	organize util folder :p
+
+	blocks item positions
+	allow resource pack transformations as an option
+	add more individual customizations?
+	add fast grass?
+	*/
 
 	public static final String MODID = "axolotlclient-oldanimations";
 	public static boolean AXOLOTLCLIENT;

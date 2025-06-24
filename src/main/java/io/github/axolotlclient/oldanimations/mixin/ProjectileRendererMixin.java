@@ -23,6 +23,7 @@ import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.render.entity.ProjectileRenderer;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -33,7 +34,7 @@ public abstract class ProjectileRendererMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"))
 	private void axolotlclient$includeEyeHeight(Entity entity, double dx, double dy, double dz, float yaw, float tickDelta, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.mirroredProjectiles.get()) {
+		if (axolotlclient$shouldMirrorProjectiles()) {
 			/* 1.7's projectile position is suspiciously raised by the player's eyeheight minus the projectile y */
 			GlStateManager.translatef(0.0F, 0.12F, 0.0F);
 		}
@@ -41,17 +42,17 @@ public abstract class ProjectileRendererMixin {
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V", ordinal = 0), index = 0)
     private float axolotlclient$rotateProjectile(float angle) {
-        return angle + (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.mirroredProjectiles.get() ? 180.0F : 0.0F);
+        return angle + (axolotlclient$shouldMirrorProjectiles() ? 180.0F : 0.0F);
     }
 
     @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V", ordinal = 1), index = 0)
     private float axolotlclient$useProperCameraView(float angle) {
-        return angle * (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.mirroredProjectiles.get() ? -1 : 1);
+        return angle * (axolotlclient$shouldMirrorProjectiles() ? -1 : 1);
     }
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$applyProjectilePosition(Entity entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.mirroredProjectiles.get()) {
+		if (axolotlclient$shouldMirrorProjectiles()) {
 			/* item entities already have this translation which matches item rendering to 1.7 */
 			GlStateManager.translatef(0.0F, 0.25F, 0.0F);
 		}
@@ -60,5 +61,12 @@ public abstract class ProjectileRendererMixin {
 			/* half of a pixel, matches 1.7's sprite rendering */
 			GlStateManager.translatef(0.0F, 0.0F, 0.03125F);
 		}
+	}
+
+	@Unique
+	private boolean axolotlclient$shouldMirrorProjectiles() {
+		/* fast items are technically only supposed to be possible while the item's south quad is shown */
+		/* that is impossible if projectiles are mirrored :p */
+		return OldAnimationsConfig.isEnabled() && (OldAnimationsConfig.instance.mirroredProjectiles.get() || OldAnimationsConfig.instance.fastItems.get());
 	}
 }

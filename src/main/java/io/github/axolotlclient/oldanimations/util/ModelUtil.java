@@ -18,24 +18,25 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
-import net.minecraft.item.BannerItem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resource.ModelIdentifier;
+import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SkullItem;
 
-import java.util.HashMap;
-import java.util.Map;
+public final class ModelUtil {
 
-public final class ItemBlacklist {
+   public static BakedModel getModel(String model) {
+      return Minecraft.getInstance().getBlockRenderDispatcher().getModelShaper().getManager().getModel(new ModelIdentifier(model, "inventory"));
+   }
 
-    /* map to store blacklisted items */
-    /* some items are not quite compatible with 1.7's item position */
-    private static final Map<Class<?>, Boolean> blacklistedItems = new HashMap<>() {{
-		put(SkullItem.class, true);
-		put(BannerItem.class, true);
-	}};
-
-    /* method to check if an item is blacklisted */
-    public static boolean isPresent(ItemStack stack) {
-        return blacklistedItems.containsKey(stack.getItem().getClass());
-    }
+   public static BakedModel getSkullModel(ItemStack stack) {
+      String model = switch (stack.getMetadata()) {
+		  case 0 -> "old_skull_skeleton";
+		  case 1 -> "old_skull_wither";
+		  case 2 -> "old_skull_zombie";
+		  case 4 -> "old_skull_creeper";
+		  default -> "old_skull_char";
+	  };
+	   return getModel(model);
+   }
 }

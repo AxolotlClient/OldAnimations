@@ -103,7 +103,7 @@ public abstract class HeldItemLayerMixin {
 				GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 				GlStateManager.translatef(0.0F, -0.125F, 0.0F);
 			}
-			if (livingEntity instanceof PlayerEntity && ((PlayerEntity) livingEntity).getItemUseTimer() > 0 && ((PlayerEntity) livingEntity).isSwordBlocking() /* is blocking */) {
+			if (livingEntity instanceof PlayerEntity && ((PlayerEntity) livingEntity).getItemUseTimer() > 0 && ((PlayerEntity) livingEntity).isSwordBlocking()) {
 				GlStateManager.translatef(0.05F, 0.0F, -0.1F);
 				GlStateManager.rotatef(-50.0F, 0.0F, 1.0F, 0.0F);
 				GlStateManager.rotatef(-10.0F, 1.0F, 0.0F, 0.0F);

@@ -1,3 +1,21 @@
+/*
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * For more information, see the LICENSE file.
+ */
+
 package io.github.axolotlclient.oldanimations.config;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
@@ -67,6 +85,13 @@ public class OldAnimationsConfig {
 	public final BooleanOption oldSwingVisualParticles = new BooleanOption("oldSwingVisualParticles", true);
 	public final BooleanOption slowUpSneak = new BooleanOption("slowUpSneak", true);
 	public final BooleanOption stopLineTranslateSneak = new BooleanOption("stopLineTranslateSneak", true);
+	public final BooleanOption fixCameraPitch = new BooleanOption("fixCameraPitch", true);
+	public final BooleanOption oldPotionGlint = new BooleanOption("oldPotionGlint", true);
+	public final BooleanOption replaceSkullModel = new BooleanOption("replaceSkullMode", true);
+	public final BooleanOption xpOrbPosition = new BooleanOption("xpOrbPosition", true);
+
+	public final BooleanOption disableServerSelectionButtons = new BooleanOption("disableServerSelectionButtons", true);
+	public final BooleanOption disableUnknownServerIcon = new BooleanOption("disableUnknownServerIcon", true);
 
 	public static boolean isEnabled() {
 		return instance.enabled.get();
@@ -98,7 +123,8 @@ public class OldAnimationsConfig {
 			fastItems,
 			stickRod,
 			stopLineTranslateSneak,
-			equipLogic
+			equipLogic,
+			replaceSkullModel
 		);
 		category.add(categoryCombat);
 		categoryCombat.add(
@@ -113,6 +139,8 @@ public class OldAnimationsConfig {
 			show1_7_10,
 			heartFlashing,
 			centeredSelectionMenus,
+			disableServerSelectionButtons,
+			disableUnknownServerIcon,
 			disableTitles
 		);
 		categoryGUI.add(categoryDebugOverlay);
@@ -140,14 +168,17 @@ public class OldAnimationsConfig {
 		categoryEnchantmentGlint.add(
 			oldGlint,
 			oldGuiGlint,
-			oldGlintColor
+			oldGlintColor,
+			oldPotionGlint
 		);
 		category.add(categoryMisc);
 		categoryMisc.add(
 			disableAlexModel,
 			disableSkinLayers,
 			flameOffset,
-			oldPickupArm
+			oldPickupArm,
+			fixCameraPitch,
+			xpOrbPosition
 		);
 
 		ConfigManager configManager = new VersionedJsonConfigManager(FabricLoader.getInstance().getConfigDir().resolve(OldAnimations.MODID + ".json"),

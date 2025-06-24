@@ -124,3 +124,21 @@ slowUpSneak.tooltip=Makes the sneaking up animation slow to match 1.7
 
 stopLineTranslateSneak=Stop Fishing Rod Line Translation while Sneaking
 stopLineTranslateSneak.tooltip=Stops the fishing rod's line from translating down while sneaking. Only viewable while in the third person perspective.
+
+fixCameraPitch=Fix Camera Pitch Bug
+fixCameraPitch.tooltip=Fixes the camera pitch being incorrect while in the third person perspective. Affects projectiles, nametags, etc. This is a bug in 1.8!
+
+oldPotionGlint=Only Render Glint On Potion Overlay
+oldPotionGlint.tooltip=Only renders the enchantment glint on the overlay of the potion. This behavior only occurs for the item while it is held in 1.7.
+
+replaceSkullModel=Use Old Skull Model
+replaceSkullModel.tooltip=Uses the old entity skull model and texture for skull items (not blocks).
+
+xpOrbPosition=XP Orb Offset
+xpOrbPosition.tooltip=Offsets the XP orb's position. This is a bug in 1.7!
+
+disableServerSelectionButtons=Disable Server List Selection Buttons
+disableServerSelectionButtons.tooltip=Disables the server list selection buttons in the multiplayer menu as they don't exist in 1.7!
+
+disableUnknownServerIcon=Remove Unknown Server Icon
+disableUnknownServerIcon.tooltip=Removes the unknown server icon in the multiplayer menu as it does not exist in 1.7.
