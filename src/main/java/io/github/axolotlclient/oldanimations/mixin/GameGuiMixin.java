@@ -21,7 +21,6 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.render.Window;
 import org.spongepowered.asm.mixin.Mixin;

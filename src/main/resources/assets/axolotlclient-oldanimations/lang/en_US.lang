@@ -3,28 +3,28 @@ axolotlclient-oldanimations=Old Animations
 enabled=Enabled
 
 useAndMine=Use and Mine Animation
-useAndMine.tooltip=Animates the item while the player holds down right mouse button then left mouse button while aiming at the ground.
+useAndMine.tooltip=Animates the item while the player holds <br>down right mouse button then left mouse <br>button while aiming at the ground.
 
 useAndMineParticles=Use and Mine Particles
-useAndMineParticles.tooltip=Visually shows mining progress particles while the player is holding both mouse buttons.
+useAndMineParticles.tooltip=Visually shows mining progress <br>particles while the player is holding both <br>mouse buttons.
 
 blockHitting=Block-Hitting Animation
-blockHitting.tooltip=Animates the item while the player clicks both mouse buttons.
+blockHitting.tooltip=Animates the item while the player <br>clicks both mouse buttons.
 
 itemPositions=Item Positions
-itemPositions.tooltip=Applies transformations to held items to place them in the same positions they were in 1.7.
+itemPositions.tooltip=Applies transformations to held items <br>to place them in the same positions <br>they were in 1.7.
 
 secondLayerDamageTint=Second Layer Damage Tint
-secondLayerDamageTint.tooltip=Applies the damage tint to the second layer of entities. This means that the player's armor, spider eyes, and endermen eyes will be tinted.
+secondLayerDamageTint.tooltip=Applies the damage tint to the <br>second layer of entities. This means that <br>the player's armor, spider eyes, and endermen <br>eyes will be tinted.
 
 smoothSneaking=Smooth Sneaking (First Person)
-smoothSneaking.tooltip=Smoothly interpolates the player's changing eye height as they sneak.
+smoothSneaking.tooltip=Smoothly interpolates the player's <br>changing eye height as they sneak.
 
 heartFlashing=Heart Flashing
-heartFlashing.tooltip=Stops the filled-in heart overlay from showing in the hotbar while taking damage.
+heartFlashing.tooltip=Stops the filled-in heart overlay <br>from showing in the hotbar while taking damage.
 
 show1_7_10=Replace 1.8.9 Text with 1.7.10
-show1_7_10.tooltip=Replaces the 1.8.9 version number with 1.7.10 within various facets of the game. This includes the debug menu, title screen, and display title!
+show1_7_10.tooltip=Replaces the 1.8.9 version number with <br>1.7.10 within various facets of the game. <br>This includes the debug menu, title screen, and display title!
 
 debugInfo=Debug Info
 debugInfo.tooltip=Use debug information found in the 1.7 debug menu.
@@ -45,34 +45,34 @@ debugTextShadow=Enable Text Shadow
 debugTextShadow.tooltip=Enables text shadow.
 
 thirdPersonSmoothSneaking=Smooth Sneaking (Third Person)
-thirdPersonSmoothSneaking.tooltip=Smoothly interpolates the player's model position as they sneak. Only viewable while in the third person perspective.
+thirdPersonSmoothSneaking.tooltip=Smoothly interpolates the player's model <br>position as they sneak. Only viewable while <br>in the third person perspective.
 
 allowMiningCancel=Cancel Mining by Using
-allowMiningCancel.tooltip=Allows the player to "cancel" their mining progress by using an item.
+allowMiningCancel.tooltip=Allows the player to "cancel" <br>their mining progress by using an item.
 
 damageColor=Damage Tint Color
-damageColor.tooltip=Applies the old damage tint color. This color is possible by porting the 1.7 damage tint rendering!
+damageColor.tooltip=Applies the old damage tint color. <br>This color is possible by porting the 1.7 damage tint rendering!
 
 stickRod=Replace Cast Fishing Rod Texture With Stick Texture
-stickRod.tooltip=Replaces the cast fishing rod texture with the stick texture while in third person mode. Weirdly a feature in 1.7.
+stickRod.tooltip=Replaces the cast fishing rod texture <br>with the stick texture while in third person mode. <br>Weirdly a feature in 1.7.
 
 blockingArm=Third Person Sword Blocking Arm
-blockingArm.tooltip=Positions the blocking arm in a manner that replicates 1.7.
+blockingArm.tooltip=Positions the blocking arm in a <br>manner that replicates 1.7.
 
 fastItems=Fast Items
-fastItems.tooltip=Flattens dropped/hotbar items to appear 2D. This may increase performance just like it did in 1.7!
+fastItems.tooltip=Flattens dropped/hotbar items to appear 2D. <br>This may increase performance just like it did in 1.7!
 
 mirroredProjectiles=Mirrored Projectiles
-mirroredProjectiles.tooltip=Mirrors projectiles so that they face the correct direction! This is a bug in 1.8.
+mirroredProjectiles.tooltip=Mirrors projectiles so that <br>they face the correct direction! <br>This is a bug in 1.8.
 
 disableAlexModel=Disable Alex Skin Model
-disableAlexModel.tooltip=Disables the alex skin model as it does not exist in vanilla 1.7!
+disableAlexModel.tooltip=Disables the alex skin model as <br>it does not exist in vanilla 1.7!
 
 disableSkinLayers=Disable Skin Layers Except Hat Layer
-disableSkinLayers.tooltip=Disables all skin layers except the hat layer, as only the hat layer exists in 1.7!
+disableSkinLayers.tooltip=Disables all skin layers except the hat layer, <br>as only the hat layer exists in 1.7!
 
 flameOffset=Player Flame Offset
-flameOffset.tooltip=Offsets the flame (when set on fire) of the player. Only viewable on your player! This is a bug in 1.7.
+flameOffset.tooltip=Offsets the flame (when set on fire) of the player. <br>Only viewable on your player! <br>This is a bug in 1.7.
 
 disableTitles=Disable In-Game Titles
 disableTitles.tooltip=Disables in-game titles as they don't exist in 1.7.
@@ -81,22 +81,22 @@ oldItemPickup=Item Pickup Offset
 oldItemPickup.tooltip=Offsets the item pickup animation to match 1.7.
 
 oldPickupArm=Fix Item Pickup Arm Rotation
-oldPickupArm.tooltip=Fixes an incorrect rotation of the player arm whenever an item is picked up while viewed from the first person perspective. This is a bug in 1.8.
+oldPickupArm.tooltip=Fixes an incorrect rotation of the player <br>arm whenever an item is picked up <br>while viewed from the first person perspective. <br>This is a bug in 1.8.
 
 oldGlint=Glint Rotation/Scale
-oldGlint.tooltip=Rotates and scales the enchantment glint's texture coordinates to match 1.7's glint rendering.
+oldGlint.tooltip=Rotates and scales the enchantment glint's <br>texture coordinates to match 1.7's glint rendering.
 
 oldGuiGlint=Glint in GUI
-oldGuiGlint.tooltip=Renders the enchantment glint in the GUI in a manner that matches 1.7.
+oldGuiGlint.tooltip=Renders the enchantment glint in <br>the GUI in a manner that matches 1.7.
 
 oldGlintColor=Glint Color Schemes
 oldGlintColor.tooltip=Uses the 1.7 enchantment glint color scheme.
 
 centeredSelectionMenus=Centered Selection Menus
-centeredSelectionMenus.tooltip=Centers selection menus such that they start from the middle of the screen. Affects the multiplayer, singleplayer, and modmenu screens!
+centeredSelectionMenus.tooltip=Centers selection menus such that <br>they start from the middle of the screen. <br>Affects the multiplayer, singleplayer, and modmenu screens!
 
 tabDimensions=Player List Dimensions
-tabDimensions.tooltip=Replicates the dimensions and behaviors of the player list menu. The boxes, width, and length mimic 1.7.
+tabDimensions.tooltip=Replicates the dimensions and behaviors <br>of the player list menu. The boxes, <br>width, and length mimic 1.7.
 
 disableTabPlayerHeads=Disable Player Heads
 disableTabPlayerHeads.tooltip=Stops rendering player heads.
@@ -108,43 +108,43 @@ disableTabFooter=Disable Footer
 disableTabFooter.tooltip=Disables the footer section.
 
 equipLogic=Item Equip Animation Logic
-equipLogic.tooltip=Replicates the equip animation played by switching items within the player's inventory or hotbar.
+equipLogic.tooltip=Replicates the equip animation played <br>by switching items within the player's inventory or hotbar.
 
 oldDamageTick=Damage Animation Logic
-oldDamageTick.tooltip=For some reason in 1.7, the damage animation (hurt tilt, damage tint, etc) are ahead slightly. This option replicates that behavior!
+oldDamageTick.tooltip=For some reason in 1.7, the damage animation <br>(hurt tilt, damage tint, etc) are ahead slightly. <br>This option replicates that behavior!
 
 oldSwingVisual=Swing During Miss Penalty
-oldSwingVisual.tooltip=Visually swings the player's arm during during the miss penalty. In 1.7, the miss penalty does not affect combat, so this option sort of emulates that behavior but without touching combat.
+oldSwingVisual.tooltip=Visually swings the player's arm during <br>during the miss penalty. In 1.7, the miss <br>penalty does not affect combat, so this option sort of <br>emulates that behavior but without touching combat.
 
 oldSwingVisualParticles=Show Particles on Missed Hits
-oldSwingVisualParticles.tooltip=Visually shows particles (criticals, sharpness, etc) during missed hits given the appropriate conditions.
+oldSwingVisualParticles.tooltip=Visually shows particles (criticals, sharpness, etc) <br>during missed hits given the appropriate conditions.
 
 slowUpSneak=Slow Sneak-Up Animation
 slowUpSneak.tooltip=Makes the sneaking up animation slow to match 1.7
 
 stopLineTranslateSneak=Stop Fishing Rod Line Translation while Sneaking
-stopLineTranslateSneak.tooltip=Stops the fishing rod's line from translating down while sneaking. Only viewable while in the third person perspective.
+stopLineTranslateSneak.tooltip=Stops the fishing rod's line from <br>translating down while sneaking. <br>Only viewable while in the third person perspective.
 
 fixCameraPitch=Fix Camera Pitch Bug
-fixCameraPitch.tooltip=Fixes the camera pitch being incorrect while in the third person perspective. Affects projectiles, nametags, etc. This is a bug in 1.8!
+fixCameraPitch.tooltip=Fixes the camera pitch being incorrect <br>while in the third person perspective. <br>Affects projectiles, nametags, etc. This is a bug in 1.8!
 
 oldPotionGlint=Only Render Glint On Potion Overlay
-oldPotionGlint.tooltip=Only renders the enchantment glint on the overlay of the potion. This behavior only occurs for the item while it is held in 1.7.
+oldPotionGlint.tooltip=Only renders the enchantment glint on <br>the overlay of the potion. This behavior only <br>occurs for the item while it is held in 1.7.
 
 replaceSkullModel=Use Old Skull Model
-replaceSkullModel.tooltip=Uses the old entity skull model and texture for skull items (not blocks).
+replaceSkullModel.tooltip=Uses the old entity skull model <br>and texture for skull items (not blocks).
 
 xpOrbPosition=XP Orb Offset
-xpOrbPosition.tooltip=Offsets the XP orb's position. This is a bug in 1.7!
+xpOrbPosition.tooltip=Offsets the XP orb's position. <br>This is a bug in 1.7!
 
 disableServerSelectionButtons=Disable Server List Selection Buttons
-disableServerSelectionButtons.tooltip=Disables the server list selection buttons in the multiplayer menu as they don't exist in 1.7!
+disableServerSelectionButtons.tooltip=Disables the server list selection <br>buttons in the multiplayer menu as <br>they don't exist in 1.7!
 
 disableUnknownServerIcon=Remove Unknown Server Icon
-disableUnknownServerIcon.tooltip=Removes the unknown server icon in the multiplayer menu as it does not exist in 1.7.
+disableUnknownServerIcon.tooltip=Removes the unknown server icon in <br>the multiplayer menu as it does not exist in 1.7.
 
 disableSkinCustomizationButton=Disable Skin Customization Button
-disableSkinCustomizationButton.tooltip=Removes the skin customization settings page within the in-game settings as skin layers don't exist in 1.7. Intended to be paired with the "disableSkinLayers" feature.
+disableSkinCustomizationButton.tooltip=Removes the skin customization settings page <br>within the in-game settings as skin layers <br>don't exist in 1.7. Intended to be paired with <br>the "disableSkinLayers" feature.
 
 oldMultiplayerSettingsPage=Old Multiplayer Settings Page
-oldMultiplayerSettingsPage.tooltip=Brings back the multiplayer settings page which replaces the chat settings page. Intended to be paired with the "disableSkinLayers" and "disableSkinCustomizationButton" features.
+oldMultiplayerSettingsPage.tooltip=Brings back the multiplayer settings <br>page which replaces the chat settings page. <br>Intended to be paired with the "disableSkinLayers" and <br>"disableSkinCustomizationButton" features.
