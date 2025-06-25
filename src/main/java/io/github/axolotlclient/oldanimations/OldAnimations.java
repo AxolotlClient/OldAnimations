@@ -28,13 +28,9 @@ import java.util.List;
 public class OldAnimations implements ClientModInitializer {
 
 	/*
-	organize util folder :p
-
-	remove skin customization button + rename chat settings to multiplayer settings
-	blocks item positions
+	blocks item positions (rotations)
 	allow resource pack transformations as an option
-	add more individual customizations?
-	add fast grass?
+	add fast grass
 	*/
 
 	public static final String MODID = "axolotlclient-oldanimations";
