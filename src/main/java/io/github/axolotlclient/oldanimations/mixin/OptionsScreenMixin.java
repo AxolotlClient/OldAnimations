@@ -34,7 +34,7 @@ public class OptionsScreenMixin {
 	@WrapWithCondition(method = "init", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 5))
 	private <E> boolean axolotlclient$disableSkinCustomizationButton(List<?> instance, E e) {
 		/* disables the rendering of the skin customization button */
-		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableServerSelectionButtons.get();
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableSkinCustomizationButton.get();
 	}
 
 	@ModifyExpressionValue(method = "init", at = @At(value = "CONSTANT", args = "stringValue=options.chat.title"))
@@ -46,6 +46,6 @@ public class OptionsScreenMixin {
 	@ModifyExpressionValue(method = "buttonClicked", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/widget/ButtonWidget;id:I", ordinal = 4))
 	private int axolotlclient$disableSkinCustomizationButton2(int original) {
 		/* disables the functionality of the skin customization button */
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableServerSelectionButtons.get() ? -1 : original;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableSkinCustomizationButton.get() ? -1 : original;
 	}
 }
