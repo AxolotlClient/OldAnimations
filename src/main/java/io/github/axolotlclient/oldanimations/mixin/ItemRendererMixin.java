@@ -24,18 +24,15 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import io.github.axolotlclient.oldanimations.util.DummyItem;
-import io.github.axolotlclient.oldanimations.util.GlintHandler;
-import io.github.axolotlclient.oldanimations.util.GlintModel;
-import io.github.axolotlclient.oldanimations.util.ModelUtil;
+import io.github.axolotlclient.oldanimations.util.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.client.render.texture.TextureManager;
 import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.client.resource.model.BakedQuad;
 import net.minecraft.entity.living.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.PotionItem;
+import net.minecraft.item.*;
 import net.minecraft.resource.Identifier;
 import net.minecraft.util.math.Direction;
 import org.objectweb.asm.Opcodes;
@@ -68,6 +65,9 @@ public abstract class ItemRendererMixin {
 
 	@Shadow
 	protected abstract void render(BakedModel model, ItemStack stack);
+
+	@Shadow
+	public abstract boolean isGui3d(ItemStack itemStack);
 
 	@Unique
 	private boolean axolotlclient$isGui;
@@ -196,6 +196,66 @@ public abstract class ItemRendererMixin {
 			String id = PotionItem.isSplashPotion(stack.getMetadata()) ? "bottle_splash_empty" : "bottle_drinkable_empty";
 			/* hacky way of rendering the bottle without using the potion's overlay color */
 			render(ModelUtil.getModel(id), DummyItem.getStack());
+		}
+	}
+
+	@Inject(method = "renderGuiItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItemModel(Lnet/minecraft/item/ItemStack;II)V"))
+	private void axolotlclient$fixDepth(ItemStack stack, int x, int y, CallbackInfo ci) {
+		/* honestly, idk why this works, but it does :p */
+		GlStateManager.enableDepthTest();
+	}
+
+	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At("HEAD"))
+	private void axolotlclient$captureStack(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, CallbackInfo ci) {
+		ItemUtil.itemStack = itemStack;
+	}
+
+	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At("TAIL"))
+	private void axolotlclient$releaseStack(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, CallbackInfo ci) {
+		ItemUtil.itemStack = null;
+	}
+
+	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
+	private void axolotlclient$reverseTransformations(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, CallbackInfo ci) {
+		/* we can replicate ModelTransformations.Type.NONE by just reversing the default transformations! */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() &&
+			!OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemBlacklist.isPresent(itemStack)) {
+			float scale;
+			float scale2 = 0.0625F;
+			if (type == ModelTransformations.Type.FIRST_PERSON && !isGui3d(itemStack)) {
+				scale = 1.0F / 1.7F;
+				GlStateManager.scalef(scale, scale, scale);
+				GlStateManager.rotatef(-25.0F, 0.0F, 0.0F, 1.0F);
+				GlStateManager.rotatef(135.0F, 0.0F, 1.0F, 0.0F);
+				GlStateManager.translatef(0.0F, -4.0F * scale2, -2.0F * scale2);
+			} else if (type == ModelTransformations.Type.THIRD_PERSON) {
+				/* fortnite, we need to talk... */
+				Item item = itemStack.getItem();
+				if (item instanceof BlockItem && Minecraft.getInstance().getItemRenderer().isGui3d(itemStack)) {
+					scale = 1.0F / 0.375F;
+					GlStateManager.scalef(scale, scale, scale);
+					GlStateManager.rotatef(-170.0F, 0.0F, 0.0F, 1.0F);
+					GlStateManager.rotatef(-10.0F, 1.0F, 0.0F, 0.0F);
+					GlStateManager.rotatef(45.0F, 0.0F, 1.0F, 0.0F);
+					GlStateManager.translatef(0.0F, -1.5F * scale2, 2.75F * scale2);
+				} else if (item == Items.BOW) {
+					GlStateManager.rotatef(45.0F, 0.0F, 0.0F, 1.0F);
+					GlStateManager.rotatef(-5.0F, 1.0F, 0.0F, 0.0F);
+					GlStateManager.rotatef(-80.0F, 0.0F, 1.0F, 0.0F);
+					GlStateManager.translatef(-0.75F * scale2, 0.0F * scale2, -0.25F * scale2);
+				} else if (item.isHandheld()) {
+					scale = 1.0F / 0.85F;
+					GlStateManager.scalef(scale, scale, scale);
+					GlStateManager.rotatef(35.0F, 0.0F, 0.0F, 1.0F);
+					GlStateManager.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+					GlStateManager.translatef(0.0F, -1.25F * scale2, 3.5F * scale2);
+				} else {
+					scale = 1.0F / 0.55F;
+					GlStateManager.scalef(scale, scale, scale);
+					GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
+					GlStateManager.translatef(0.0F, -1.0F * scale2, 3.0F * scale2);
+				}
+			}
 		}
 	}
 }

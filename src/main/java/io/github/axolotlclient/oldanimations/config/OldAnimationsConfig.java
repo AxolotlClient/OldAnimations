@@ -93,6 +93,11 @@ public class OldAnimationsConfig {
 	public final BooleanOption disableUnknownServerIcon = new BooleanOption("disableUnknownServerIcon", false);
 	public final BooleanOption disableSkinCustomizationButton = new BooleanOption("disableSkinCustomizationButton", false);
 	public final BooleanOption oldMultiplayerSettingsPage = new BooleanOption("oldMultiplayerSettingsPage", false);
+	public final BooleanOption disableResourcePackItemTransformations = new BooleanOption("disableResourcePackItemTransformations", false);
+	public final BooleanOption fixThirdPersonHeldItemSneakDeSync = new BooleanOption("fixThirdPersonHeldItemSneakDeSync", true);
+	public final BooleanOption oldRodRotation = new BooleanOption("oldRodRotation", true);
+	public final BooleanOption oldBowRotation = new BooleanOption("oldBowRotation", true);
+	public final BooleanOption swordBlockThirdPerson = new BooleanOption("swordBlockThirdPerson", true);
 
 	public static boolean isEnabled() {
 		return instance.enabled.get();
@@ -108,7 +113,8 @@ public class OldAnimationsConfig {
 			useAndMine,
 			allowMiningCancel,
 			useAndMineParticles,
-			blockingArm
+			blockingArm,
+			swordBlockThirdPerson
 		);
 		category.add(categorySneaking);
 		categorySneaking.add(
@@ -119,13 +125,17 @@ public class OldAnimationsConfig {
 		category.add(categoryItems);
 		categoryItems.add(
 			itemPositions,
+			oldRodRotation,
+			oldBowRotation,
 			mirroredProjectiles,
 			oldItemPickup,
 			fastItems,
 			stickRod,
 			stopLineTranslateSneak,
 			equipLogic,
-			replaceSkullModel
+			replaceSkullModel,
+			disableResourcePackItemTransformations,
+			fixThirdPersonHeldItemSneakDeSync
 		);
 		category.add(categoryCombat);
 		categoryCombat.add(

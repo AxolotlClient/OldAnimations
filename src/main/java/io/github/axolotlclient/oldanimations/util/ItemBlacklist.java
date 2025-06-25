@@ -18,6 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
+import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SkullItem;
@@ -36,6 +37,10 @@ public final class ItemBlacklist {
 
     /* method to check if an item is blacklisted */
     public static boolean isPresent(ItemStack stack) {
+		/* exclude SkullItem from blacklist based on config condition */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.replaceSkullModel.get() && stack.getItem() instanceof SkullItem) {
+			return false;
+		}
         return blacklistedItems.containsKey(stack.getItem().getClass());
     }
 }

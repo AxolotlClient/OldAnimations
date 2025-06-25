@@ -57,13 +57,13 @@ public abstract class HeldItemLayerMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/entity/HumanoidModel;translateRightArm(F)V"))
 	private void axolotlclient$addSneakTranslation(LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
-		if (isSneakingEnabled() && livingEntity.isSneaking())
+		if (isSneakingFixEnabled() && livingEntity.isSneaking())
 			GlStateManager.translatef(0.0F, 0.2F, 0.0F);
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;isSneaking()Z"))
 	private boolean axolotlclient$disableSneakTranslation(LivingEntity instance, Operation<Boolean> original) {
-		return (!isSneakingEnabled()) && original.call(instance);
+		return (!isSneakingFixEnabled()) && original.call(instance);
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;<init>(Lnet/minecraft/item/Item;I)V"), index = 0)
@@ -79,53 +79,55 @@ public abstract class HeldItemLayerMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$applyHeldItemLayerTransforms(LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
-		if (!areItemPositionsEnabled()) return;
-		if (ItemBlacklist.isPresent(itemStack)) return;
+		if (!OldAnimationsConfig.isEnabled() || ItemBlacklist.isPresent(itemStack)) return;
 		Item item = itemStack.getItem();
 		float var7;
 		/* original transformations from 1.7 */
-		if (item instanceof BlockItem && Minecraft.getInstance().getItemRenderer().isGui3d(itemStack)) {
-			var7 = 0.375F;
-			GlStateManager.translatef(0.0F, 0.1875F, -0.3125F);
-			GlStateManager.rotatef(20.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotatef(45.0F, 0.0F, 1.0F, 0.0F);
-			GlStateManager.scalef(-var7, -var7, var7);
-		} else if (item == Items.BOW) {
-			var7 = 0.625F;
-			GlStateManager.translatef(0.0F, 0.125F, 0.3125F);
-			GlStateManager.rotatef(-20.0F, 0.0F, 1.0F, 0.0F);
-			GlStateManager.scalef(var7, -var7, var7);
-			GlStateManager.rotatef(-100.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotatef(45.0F, 0.0F, 1.0F, 0.0F);
-		} else if (item.isHandheld()) {
-			var7 = 0.625F;
-			if (item.shouldRotate()) {
-				GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
-				GlStateManager.translatef(0.0F, -0.125F, 0.0F);
+		if (OldAnimationsConfig.instance.swordBlockThirdPerson.get() && livingEntity instanceof PlayerEntity &&
+			((PlayerEntity) livingEntity).getItemUseTimer() > 0 && ((PlayerEntity) livingEntity).isSwordBlocking()) {
+			GlStateManager.translatef(0.05F, 0.0F, -0.1F);
+			GlStateManager.rotatef(-50.0F, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(-10.0F, 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotatef(-60.0F, 0.0F, 0.0F, 1.0F);
+		}
+		if (OldAnimationsConfig.instance.itemPositions.get()) {
+			if (item instanceof BlockItem && Minecraft.getInstance().getItemRenderer().isGui3d(itemStack)) {
+				var7 = 0.375F;
+				GlStateManager.translatef(0.0F, 0.1875F, -0.3125F);
+				GlStateManager.rotatef(20.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotatef(45.0F, 0.0F, 1.0F, 0.0F);
+				GlStateManager.scalef(-var7, -var7, var7);
+			} else if (item == Items.BOW) {
+				var7 = 0.625F;
+				GlStateManager.translatef(0.0F, 0.125F, 0.3125F);
+				GlStateManager.rotatef(-20.0F, 0.0F, 1.0F, 0.0F);
+				GlStateManager.scalef(var7, -var7, var7);
+				GlStateManager.rotatef(-100.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotatef(45.0F, 0.0F, 1.0F, 0.0F);
+			} else if (item.isHandheld()) {
+				var7 = 0.625F;
+				if (item.shouldRotate()) {
+					GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
+					GlStateManager.translatef(0.0F, -0.125F, 0.0F);
+				}
+				GlStateManager.translatef(0.0F, 0.1875F, 0.0F);
+				GlStateManager.scalef(var7, -var7, var7);
+				GlStateManager.rotatef(-100.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotatef(45.0F, 0.0F, 1.0F, 0.0F);
+			} else {
+				var7 = 0.375F;
+				GlStateManager.translatef(0.25F, 0.1875F, -0.1875F);
+				GlStateManager.scalef(var7, var7, var7);
+				GlStateManager.rotatef(60.0F, 0.0F, 0.0F, 1.0F);
+				GlStateManager.rotatef(-90.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.rotatef(20.0F, 0.0F, 0.0F, 1.0F);
 			}
-			if (livingEntity instanceof PlayerEntity && ((PlayerEntity) livingEntity).getItemUseTimer() > 0 && ((PlayerEntity) livingEntity).isSwordBlocking()) {
-				GlStateManager.translatef(0.05F, 0.0F, -0.1F);
-				GlStateManager.rotatef(-50.0F, 0.0F, 1.0F, 0.0F);
-				GlStateManager.rotatef(-10.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.rotatef(-60.0F, 0.0F, 0.0F, 1.0F);
-			}
-			GlStateManager.translatef(0.0F, 0.1875F, 0.0F);
-			GlStateManager.scalef(var7, -var7, var7);
-			GlStateManager.rotatef(-100.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotatef(45.0F, 0.0F, 1.0F, 0.0F);
-		} else {
-			var7 = 0.375F;
-			GlStateManager.translatef(0.25F, 0.1875F, -0.1875F);
-			GlStateManager.scalef(var7, var7, var7);
-			GlStateManager.rotatef(60.0F, 0.0F, 0.0F, 1.0F);
-			GlStateManager.rotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotatef(20.0F, 0.0F, 0.0F, 1.0F);
 		}
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"), index = 2)
 	private ModelTransformations.Type axolotlclient$changeTransformType(ModelTransformations.Type type) {
-		return areItemPositionsEnabled() && !ItemBlacklist.isPresent(itemStack) ? ModelTransformations.Type.NONE : type;
+		return areItemPositionsEnabled() && OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemBlacklist.isPresent(itemStack) ? ModelTransformations.Type.NONE : type;
 	}
 
 	@Unique
@@ -134,7 +136,7 @@ public abstract class HeldItemLayerMixin {
 	}
 
 	@Unique
-	private static boolean isSneakingEnabled() {
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.smoothSneaking.get();
+	private static boolean isSneakingFixEnabled() {
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fixThirdPersonHeldItemSneakDeSync.get();
 	}
 }

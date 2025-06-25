@@ -56,7 +56,7 @@ damageColor.tooltip=Applies the old damage tint color. <br>This color is possibl
 stickRod=Replace Cast Fishing Rod Texture With Stick Texture
 stickRod.tooltip=Replaces the cast fishing rod texture <br>with the stick texture while in third person mode. <br>Weirdly a feature in 1.7.
 
-blockingArm=Third Person Sword Blocking Arm
+blockingArm=Third Person Sword Blocking Arm Position
 blockingArm.tooltip=Positions the blocking arm in a <br>manner that replicates 1.7.
 
 fastItems=Fast Items
@@ -148,3 +148,18 @@ disableSkinCustomizationButton.tooltip=Removes the skin customization settings p
 
 oldMultiplayerSettingsPage=Old Multiplayer Settings Page
 oldMultiplayerSettingsPage.tooltip=Brings back the multiplayer settings <br>page which replaces the chat settings page. <br>Intended to be paired with the "disableSkinLayers" and <br>"disableSkinCustomizationButton" features.
+
+disableResourcePackItemTransformations=Disable Resource Pack Item Transformations
+disableResourcePackItemTransformations.tooltip=Stops resource packs from transforming item positions.
+
+fixThirdPersonHeldItemSneakDeSync=Fix Held Item Sneaking De-sync
+fixThirdPersonHeldItemSneakDeSync.tooltip=Fixes a de-sync which occurs when sneaking <br>and holding an item. Only viewable from <br>the third person perspective. This is a bug in 1.8.
+
+oldRodRotation=Fishing Rod Rotation
+oldRodRotation.tooltip=Rotates the fishing rod in a manner that matches 1.7.
+
+oldBowRotation=Bow Rotation
+oldBowRotation.tooltip=Rotates the bow in a manner that replicates its exact position in 1.7.
+
+swordBlockThirdPerson=Third Person Sword Item Blocking Position
+swordBlockThirdPerson.tooltip=Gives the sword item the 1.7 sword-block transformations in third <br>person mode.

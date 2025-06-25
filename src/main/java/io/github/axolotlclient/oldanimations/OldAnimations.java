@@ -29,7 +29,8 @@ public class OldAnimations implements ClientModInitializer {
 
 	/*
 	blocks item positions (rotations)
-	allow resource pack transformations as an option
+	third person item positions toggle?
+	half blocks toggle?
 	add fast grass
 	*/
 

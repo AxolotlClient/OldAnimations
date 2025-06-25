@@ -18,13 +18,23 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.living.player.PlayerEntity;
+import net.minecraft.block.*;
+import net.minecraft.item.ItemStack;
 
-public final class PlayerUtil {
+public final class ItemUtil {
 
-	public static boolean isSelf(Entity entity) {
-		return entity instanceof PlayerEntity && Minecraft.getInstance().player.getNetworkId() == entity.getNetworkId();
+	/* there was no better way of doing this sadly */
+	public static ItemStack itemStack = null;
+
+	/* thank you animatium, very cool! */
+	public static boolean isThinBlockItem(ItemStack stack) {
+		if (stack != null) {
+			final Block block = Block.byItem(stack.getItem());
+			return block instanceof CarpetBlock ||
+				block instanceof TrapdoorBlock || block instanceof PressurePlateBlock ||
+				block instanceof SnowLayerBlock || block instanceof DaylightDetectorBlock;
+		} else {
+			return false;
+		}
 	}
 }
