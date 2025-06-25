@@ -60,7 +60,7 @@ public abstract class HeldItemRendererMixin {
 	}
 
 	@ModifyArg(method = "renderInFirstPerson",
-		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;appyFirstPersonTransform(FF)V"),
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;applyFirstPersonTransform(FF)V"),
 		slice = @Slice(
 			from = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;applyConsuming(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;F)V"),
 			to = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;applyBowNocking(FLnet/minecraft/client/entity/living/player/ClientPlayerEntity;)V")

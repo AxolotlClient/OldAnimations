@@ -64,13 +64,13 @@ public abstract class MinecraftMixin {
 	@Unique
 	private String axolotlclient$lastTitle = null;
 
-	@Inject(method = "handleBlockMining", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/LocalClientPlayerEntity;isHoldingItem()Z"))
+	@Inject(method = "tickBlockMining", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/LocalClientPlayerEntity;isUsingItem()Z"))
 	private void axolotlclient$useAndMine(CallbackInfo ci, @Local(argsOnly = true) boolean bl) {
 		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.useAndMine.get()) {
 			return;
 		}
 		/* mimics the conditions used in 1.7/1.8 and plays a fake swing animation when the player is using an item and punching */
-		if (attackCooldown <= 0 && bl && player.isHoldingItem() && crosshairTarget != null && crosshairTarget.type == HitResult.Type.BLOCK) {
+		if (attackCooldown <= 0 && bl && player.isUsingItem() && crosshairTarget != null && crosshairTarget.type == HitResult.Type.BLOCK) {
 			BlockPos blockPos = crosshairTarget.getPos();
 			if (!world.isAir(blockPos)) {
 				axolotlclient$fakeSwing();

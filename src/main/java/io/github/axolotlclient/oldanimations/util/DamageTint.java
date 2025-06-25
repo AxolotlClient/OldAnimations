@@ -25,6 +25,8 @@ import java.nio.FloatBuffer;
 
 public class DamageTint {
 
+	/* methods are both adapted from 1.7 */
+
 	public static void setDamageTint(FloatBuffer buffer) {
 		Minecraft.getInstance().gameRenderer.disableLightMap();
 		GlStateManager.disableTexture();
