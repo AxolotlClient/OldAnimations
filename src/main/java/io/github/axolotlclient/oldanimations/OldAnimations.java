@@ -30,6 +30,7 @@ public class OldAnimations implements ClientModInitializer {
 	/*
 	organize util folder :p
 
+	remove skin customization button + rename chat settings to multiplayer settings
 	blocks item positions
 	allow resource pack transformations as an option
 	add more individual customizations?

@@ -142,3 +142,9 @@ disableServerSelectionButtons.tooltip=Disables the server list selection buttons
 
 disableUnknownServerIcon=Remove Unknown Server Icon
 disableUnknownServerIcon.tooltip=Removes the unknown server icon in the multiplayer menu as it does not exist in 1.7.
+
+disableSkinCustomizationButton=Disable Skin Customization Button
+disableSkinCustomizationButton.tooltip=Removes the skin customization settings page within the in-game settings as skin layers don't exist in 1.7. Intended to be paired with the "disableSkinLayers" feature.
+
+oldMultiplayerSettingsPage=Old Multiplayer Settings Page
+oldMultiplayerSettingsPage.tooltip=Brings back the multiplayer settings page which replaces the chat settings page. Intended to be paired with the "disableSkinLayers" and "disableSkinCustomizationButton" features.

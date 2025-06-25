@@ -87,11 +87,12 @@ public class OldAnimationsConfig {
 	public final BooleanOption stopLineTranslateSneak = new BooleanOption("stopLineTranslateSneak", true);
 	public final BooleanOption fixCameraPitch = new BooleanOption("fixCameraPitch", true);
 	public final BooleanOption oldPotionGlint = new BooleanOption("oldPotionGlint", true);
-	public final BooleanOption replaceSkullModel = new BooleanOption("replaceSkullMode", true);
+	public final BooleanOption replaceSkullModel = new BooleanOption("replaceSkullModel", true);
 	public final BooleanOption xpOrbPosition = new BooleanOption("xpOrbPosition", true);
-
 	public final BooleanOption disableServerSelectionButtons = new BooleanOption("disableServerSelectionButtons", true);
 	public final BooleanOption disableUnknownServerIcon = new BooleanOption("disableUnknownServerIcon", true);
+	public final BooleanOption disableSkinCustomizationButton = new BooleanOption("disableSkinCustomizationButton", true);
+	public final BooleanOption oldMultiplayerSettingsPage = new BooleanOption("oldMultiplayerSettingsPage", true);
 
 	public static boolean isEnabled() {
 		return instance.enabled.get();
@@ -141,6 +142,8 @@ public class OldAnimationsConfig {
 			centeredSelectionMenus,
 			disableServerSelectionButtons,
 			disableUnknownServerIcon,
+			disableSkinCustomizationButton,
+			oldMultiplayerSettingsPage,
 			disableTitles
 		);
 		categoryGUI.add(categoryDebugOverlay);

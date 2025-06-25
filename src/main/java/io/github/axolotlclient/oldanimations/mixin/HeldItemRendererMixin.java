@@ -49,6 +49,7 @@ public abstract class HeldItemRendererMixin {
 
 	@Shadow
 	private int selectedSlot;
+
 	@Unique
 	private Float axolotlclient$h;
 
@@ -121,14 +122,9 @@ public abstract class HeldItemRendererMixin {
 		return areItemPositionsEnabled() && !ItemBlacklist.isPresent(item) ? ModelTransformations.Type.NONE : mode;
 	}
 
-	@Unique
-	private static boolean areItemPositionsEnabled() {
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get();
-	}
-
 	@Expression("? != null")
 	@ModifyExpressionValue(method = "updateHeldItem", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 1))
-	private boolean axolotlclient$compareDamage(boolean original, @Local ItemStack itemStack) {
+	private boolean axolotlclient$compareDamage(boolean original, @Local /* go away :( */ ItemStack itemStack) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.equipLogic.get()) {
 			/* adapted from 1.7 */
 			return original && itemStack != item && itemStack.getItem() == item.getItem() && itemStack.getDamage() == item.getDamage();
@@ -159,5 +155,10 @@ public abstract class HeldItemRendererMixin {
 			return selectedSlot != playerEntity.inventory.selectedSlot || itemStack != item;
 		}
 		return original;
+	}
+
+	@Unique
+	private static boolean areItemPositionsEnabled() {
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get();
 	}
 }
