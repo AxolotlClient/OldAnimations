@@ -98,6 +98,7 @@ public class OldAnimationsConfig {
 	public final BooleanOption oldRodRotation = new BooleanOption("oldRodRotation", true);
 	public final BooleanOption oldBowRotation = new BooleanOption("oldBowRotation", true);
 	public final BooleanOption swordBlockThirdPerson = new BooleanOption("swordBlockThirdPerson", true);
+	public final BooleanOption useAndMineDestroyVisual = new BooleanOption("useAndMineDestroyVisual", false);
 
 	public static boolean isEnabled() {
 		return instance.enabled.get();
@@ -113,6 +114,7 @@ public class OldAnimationsConfig {
 			useAndMine,
 			allowMiningCancel,
 			useAndMineParticles,
+			useAndMineDestroyVisual,
 			blockingArm,
 			swordBlockThirdPerson
 		);
@@ -171,12 +173,8 @@ public class OldAnimationsConfig {
 			disableTabHeader,
 			disableTabFooter
 		);
-		/* feature exists in axolotlclient :p */
-		if (!OldAnimations.AXOLOTLCLIENT) {
-			categoryTabOverlay.add(
-				disableTabPlayerHeads
-			);
-		}
+		//TODO: fix compat with axolotlclient
+		categoryTabOverlay.add(disableTabPlayerHeads);
 		category.add(categoryEnchantmentGlint);
 		categoryEnchantmentGlint.add(
 			oldGlint,

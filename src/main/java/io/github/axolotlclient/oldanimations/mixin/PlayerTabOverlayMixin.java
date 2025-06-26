@@ -93,10 +93,6 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 
 	@ModifyVariable(method = "render", at = @At("STORE"), index = 11)
 	private boolean axolotlclient$disablePlayerHeads(boolean original) {
-		/* this option already exists in axolotlclient, so let's let it handle this feature */
-		if (OldAnimations.AXOLOTLCLIENT) {
-			return original;
-		}
 		/* disables the rendering of player heads */
 		return (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableTabPlayerHeads.get()) && original;
 	}

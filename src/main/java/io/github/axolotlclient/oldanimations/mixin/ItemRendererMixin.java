@@ -35,7 +35,6 @@ import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.item.*;
 import net.minecraft.resource.Identifier;
 import net.minecraft.util.math.Direction;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -163,10 +162,6 @@ public abstract class ItemRendererMixin {
 	@Inject(method = "renderGuiItemModel", at = @At("TAIL"))
 	private void axolotlclient$renderGuiGlint(ItemStack stack, int x, int y, CallbackInfo ci) {
 		axolotlclient$isGui = false;
-	}
-
-	@Inject(method = "renderGuiItem", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/item/ItemRenderer;zOffset:F", ordinal = 1))
-	private void axolotlclient$useCustomGlint(ItemStack stack, int x, int y, CallbackInfo ci) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGuiGlint.get() && stack.hasEnchantmentGlint()) {
 			GlintHandler.renderEnchantmentGlintPre(textureManager, ENCHANTMENT_GLINT_LOCATION, axolotlclient$glintColor);
 			prepareGuiItemRender(x, y, false);

@@ -1,10 +1,10 @@
 plugins {
 	id 'java'
-	id 'fabric-loom' version "1.9.+"
-	id 'ploceus' version "1.9.+"
+	id 'fabric-loom' version "1.10.+"
+	id 'ploceus' version "1.10.+"
 	id 'maven-publish'
 	id 'com.modrinth.minotaur' version "2.+"
-	id 'io.freefair.lombok' version "8.11"
+	id 'io.freefair.lombok' version "8.12"
 	id "dev.yumi.gradle.licenser" version "1.0.+"
 }
 
