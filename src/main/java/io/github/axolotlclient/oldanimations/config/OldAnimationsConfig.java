@@ -26,6 +26,10 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import lombok.Getter;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
+import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
+
+import java.util.function.Supplier;
 
 public class OldAnimationsConfig {
 
@@ -33,16 +37,16 @@ public class OldAnimationsConfig {
 	private final BooleanOption enabled = new BooleanOption("enabled", true);
 
 	@Getter
-	private final OptionCategory category = OptionCategory.create(OldAnimations.MODID).includeInParentTree(false);
-	private final OptionCategory categoryBlocking = OptionCategory.create("Blocking/Item Using");
-	private final OptionCategory categorySneaking = OptionCategory.create("Sneaking");
-	private final OptionCategory categoryItems = OptionCategory.create("Items");
-	private final OptionCategory categoryCombat = OptionCategory.create("Combat");
-	private final OptionCategory categoryGUI = OptionCategory.create("GUI");
-	private final OptionCategory categoryDebugOverlay = OptionCategory.create("Debug Overlay");
-	private final OptionCategory categoryTabOverlay = OptionCategory.create("Tab Overlay");
-	private final OptionCategory categoryEnchantmentGlint = OptionCategory.create("Enchantment Glint");
-	private final OptionCategory categoryMisc = OptionCategory.create("Misc");
+	private final OptionCategory category = OptionCategory.create(OldAnimations.MODID);
+	private final OptionCategory categoryBlocking = OptionCategory.create("blockingItemUsing");
+	private final OptionCategory categorySneaking = OptionCategory.create("sneaking");
+	private final OptionCategory categoryItems = OptionCategory.create("items");
+	private final OptionCategory categoryCombat = OptionCategory.create("combat");
+	private final OptionCategory categoryGUI = OptionCategory.create("gui");
+	private final OptionCategory categoryDebugOverlay = OptionCategory.create("debugOverlay");
+	private final OptionCategory categoryTabOverlay = OptionCategory.create("tabOverlay");
+	private final OptionCategory categoryEnchantmentGlint = OptionCategory.create("enchantmentGlint");
+	private final OptionCategory categoryMisc = OptionCategory.create("misc");
 
 	public final BooleanOption useAndMine = new BooleanOption("useAndMine", true);
 	public final BooleanOption useAndMineParticles = new BooleanOption("useAndMineParticles", true);
@@ -99,6 +103,16 @@ public class OldAnimationsConfig {
 	public final BooleanOption oldBowRotation = new BooleanOption("oldBowRotation", true);
 	public final BooleanOption swordBlockThirdPerson = new BooleanOption("swordBlockThirdPerson", true);
 	public final BooleanOption useAndMineDestroyVisual = new BooleanOption("useAndMineDestroyVisual", false);
+	public final BooleanOption fastGrass = new BooleanOption("fastGrass", false);
+
+	private final Supplier<Boolean>[] suppliers = new Supplier[] {
+		replaceSkullModel::get,
+		fastGrass::get
+	};
+	private final boolean[] previousStates = {
+		replaceSkullModel.get(),
+		fastGrass.get()
+	};
 
 	public static boolean isEnabled() {
 		return instance.enabled.get();
@@ -189,12 +203,32 @@ public class OldAnimationsConfig {
 			flameOffset,
 			oldPickupArm,
 			fixCameraPitch,
-			xpOrbPosition
+			xpOrbPosition,
+			fastGrass
 		);
+
+		/* reload the resources upon toggling certain options */
+		reloadResources();
 
 		ConfigManager configManager = new VersionedJsonConfigManager(FabricLoader.getInstance().getConfigDir().resolve(OldAnimations.MODID + ".json"),
 			category, 1, (configVersion, configVersion1, optionCategory, jsonObject) -> jsonObject);
 		AxolotlClientConfig.getInstance().register(configManager);
 		configManager.load();
+	}
+
+	private void reloadResources() {
+		MinecraftClientEvents.TICK_END.register(client -> {
+			boolean needsReload = false;
+			for (int i = 0; i < suppliers.length; i++) {
+				boolean current = suppliers[i].get();
+				if (current != previousStates[i]) {
+					previousStates[i] = current;
+					needsReload = true;
+				}
+			}
+			if (needsReload) {
+				Minecraft.getInstance().reloadResources();
+			}
+		});
 	}
 }

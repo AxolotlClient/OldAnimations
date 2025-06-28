@@ -18,13 +18,20 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.block.*;
 import net.minecraft.item.ItemStack;
 
 public final class ItemUtil {
 
 	/* there was no better way of doing this sadly */
-	public static ItemStack itemStack = null;
+	@Getter
+	@Setter
+	private static ItemStack heldItemStack = null;
+	@Getter
+	@Setter
+	private static ItemStack guiItemStack = null;
 
 	/* thank you animatium, very cool! */
 	public static boolean isThinBlockItem(ItemStack stack) {

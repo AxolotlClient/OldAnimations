@@ -32,8 +32,6 @@ public class OldAnimations implements ClientModInitializer {
 	third person item positions toggle?
 	half blocks toggle?
 	add fast grass
-
-	client side fake block destroy while punching and using
 	*/
 
 	public static final String MODID = "axolotlclient-oldanimations";

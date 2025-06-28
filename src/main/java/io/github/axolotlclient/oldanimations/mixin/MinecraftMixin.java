@@ -23,15 +23,11 @@ import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
-import net.minecraft.client.ClientPlayerInteractionManager;
+import io.github.axolotlclient.oldanimations.util.PlayerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.entity.particle.ParticleManager;
 import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.sound.instance.SimpleSoundInstance;
-import net.minecraft.client.sound.system.SoundManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -39,10 +35,8 @@ import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.entity.living.MobType;
 import net.minecraft.entity.living.effect.StatusEffect;
 import net.minecraft.entity.particle.ParticleType;
-import net.minecraft.resource.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.HitResult;
-import net.minecraft.world.WorldSettings;
 import org.lwjgl.opengl.Display;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -70,28 +64,10 @@ public abstract class MinecraftMixin {
 	public ClientWorld world;
 
 	@Shadow
-	public ClientPlayerInteractionManager interactionManager;
-
-	@Shadow
-	public abstract SoundManager getSoundManager();
-
-	@Shadow
 	public GameOptions options;
 
 	@Unique
 	private String axolotlclient$lastTitle = null;
-
-	@Unique
-	private float axolotlclient$miningCooldown;
-
-	@Unique
-	private float axolotlclient$miningProgress;
-
-	@Unique
-	private BlockPos axolotlclient$target = new BlockPos(-1, -1, -1);
-
-	@Unique
-	private boolean axolotlclient$syncMiningProgress;
 
 	@Inject(method = "tickBlockMining", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/LocalClientPlayerEntity;isUsingItem()Z"))
 	private void axolotlclient$useAndMine(CallbackInfo ci, @Local(argsOnly = true) boolean bl) {
@@ -99,23 +75,28 @@ public abstract class MinecraftMixin {
 			return;
 		}
 
+		final Minecraft minecraft = (Minecraft) (Object) this;
+
 		/* mimics the conditions used in 1.7/1.8 and plays a fake swing animation when the player is using an item and punching */
 		if (attackCooldown <= 0 && bl && player.isUsingItem() && crosshairTarget != null && crosshairTarget.type == HitResult.Type.BLOCK) {
 			BlockPos blockPos = crosshairTarget.getPos();
 			if (!world.isAir(blockPos)) {
 				if (OldAnimationsConfig.instance.useAndMineDestroyVisual.get()) {
-					axolotlclient$fakeDestroyBlock(blockPos);
+					PlayerUtil.INSTANCE.fakeDestroyBlock(minecraft, blockPos);
 				}
-				axolotlclient$fakeSwing();
+				PlayerUtil.INSTANCE.fakeSwing(player);
 				if (OldAnimationsConfig.instance.useAndMineParticles.get()) {
 					particleManager.addBlockMiningParticles(blockPos, crosshairTarget.face);
 				}
 			}
+		} else {
+			/* we need to stop the mining progress if the player is not using and mining */
+			PlayerUtil.INSTANCE.stopFakeMiningBlock(minecraft);
 		}
 
 		if (OldAnimationsConfig.instance.useAndMineDestroyVisual.get() && !options.attackKey.isPressed() && player.isUsingItem()) {
-			/* we need to stop the mining progress if the player stops using and mining */
-			axolotlclient$stopMiningBlock();
+			/* we need to stop the mining progress if the player stops mining but continues using */
+			PlayerUtil.INSTANCE.stopFakeMiningBlock(minecraft);
 		}
 	}
 
@@ -123,7 +104,7 @@ public abstract class MinecraftMixin {
 	private void axolotlclient$wswsws(CallbackInfo ci, @Local(argsOnly = true) boolean bl) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.useAndMineDestroyVisual.get()) {
 			/* if the player just mined or is mining, then sync the mining progress */
-			axolotlclient$syncMiningProgress = true;
+			PlayerUtil.INSTANCE.setSyncMiningProgress(true);
 		}
 	}
 
@@ -139,7 +120,7 @@ public abstract class MinecraftMixin {
 		}
 		/* mimics the conditions used in 1.7/1.8 and plays a fake swing animation when the player has an attack cooldown */
 		if (attackCooldown > 0) {
-			axolotlclient$fakeSwing();
+			PlayerUtil.INSTANCE.fakeSwing(player);
 			if (OldAnimationsConfig.instance.oldSwingVisualParticles.get() && crosshairTarget != null) {
 				Entity entity = crosshairTarget.entity;
 				if (crosshairTarget.type == HitResult.Type.ENTITY && !entity.onPunched(player)) {
@@ -189,80 +170,5 @@ public abstract class MinecraftMixin {
 			Display.setTitle(title);
 			axolotlclient$lastTitle = title;
 		}
-	}
-
-	@Unique
-	private void axolotlclient$fakeSwing() {
-		int armSwingAnimationEnd = ((LivingEntityAccessor) player).getArmSwingAnimationEnd();
-		if ((!player.handSwinging || player.handSwingTicks >= armSwingAnimationEnd / 2 || player.handSwingTicks < 0)) {
-			player.handSwingTicks = -1;
-			player.handSwinging = true;
-		}
-	}
-
-	@Unique
-	private void axolotlclient$fakeDestroyBlock(BlockPos blockPos) {
-		ClientPlayerInteractionManagerAccessor accessor = ((ClientPlayerInteractionManagerAccessor) interactionManager);
-		if (axolotlclient$miningCooldown > 0) {
-			axolotlclient$miningCooldown--;
-			return;
-		}
-		if (interactionManager.getGameMode() == WorldSettings.GameMode.CREATIVE && world.getWorldBorder().contains(blockPos)) {
-			axolotlclient$miningCooldown = 5;
-			return;
-		}
-
-		if (!blockPos.equals(axolotlclient$target)) {
-			/* if the cursor is moved to another block, we need to stop the mining progress */
-			axolotlclient$stopMiningBlock();
-			axolotlclient$target = blockPos;
-		}
-
-		BlockState blockState = world.getBlockState(blockPos);
-		Block block = blockState.getBlock();
-
-		if (axolotlclient$syncMiningProgress) {
-			/* for a seamless fake mining progress to look believable, we should sync it with the real progress */
-			axolotlclient$miningProgress = accessor.getMiningProgress();
-			axolotlclient$syncMiningProgress = false;
-		}
-
-		axolotlclient$miningProgress = axolotlclient$miningProgress + block.getMiningSpeed(player, player.world, blockPos);
-
-		/* trying to sync the mining sounds :p */
-		if (accessor.getMiningSoundTimer() % 4.0F == 0.0F) {
-			getSoundManager().play(new SimpleSoundInstance(
-				new Identifier(block.sound.getStepSound()),
-				(block.sound.getVolume() + 1.0F) / 8.0F,
-				block.sound.getPitch() * 0.5F,
-				(float) blockPos.getX() + 0.5F,
-				(float) blockPos.getY() + 0.5F,
-				(float) blockPos.getZ() + 0.5F
-			));
-		}
-		accessor.setMiningSoundTimer(accessor.getMiningSoundTimer() + 1);
-		if (axolotlclient$miningProgress >= 1.0F) {
-			getSoundManager().play(new SimpleSoundInstance(
-				new Identifier(block.sound.getDigSound()),
-				(block.sound.getVolume() + 1.0F) / 2.0F,
-				block.sound.getPitch() * 0.8F,
-				(float)blockPos.getX() + 0.5F,
-				(float)blockPos.getY() + 0.5F,
-				(float)blockPos.getZ() + 0.5F
-			));
-			particleManager.addBlockMiningParticles(blockPos, blockState);
-			axolotlclient$target = new BlockPos(blockPos.getX(), -1, blockPos.getZ());
-			axolotlclient$miningProgress = 0.0F;
-			accessor.setMiningSoundTimer(0.0F);
-			axolotlclient$miningCooldown = 5;
-		}
-
-		world.updateBlockMiningProgress(player.getNetworkId(), axolotlclient$target, (int) (axolotlclient$miningProgress * 10.0F) - 1);
-	}
-
-	@Unique
-	private void axolotlclient$stopMiningBlock() {
-		axolotlclient$miningProgress = 0.0F;
-		world.updateBlockMiningProgress(player.getNetworkId(), axolotlclient$target, -1);
 	}
 }

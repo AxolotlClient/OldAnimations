@@ -6,6 +6,7 @@
 		"minVersion": "0.5.0-rc.2"
 	},
 	"client": [
+		"BlockModelAccessor",
 		"ChatOptionsScreenMixin",
 		"ClientPlayerInteractionManagerAccessor",
 		"ClientPlayNetworkHandlerMixin",
@@ -21,7 +22,6 @@
 		"HeldItemRendererMixin",
 		"HumanoidModelMixin",
 		"ItemEntityRendererMixin",
-		"ItemModelShaperMixin",
 		"ItemRendererMixin",
 		"ListWidgetMixin",
 		"LivingEntityAccessor",

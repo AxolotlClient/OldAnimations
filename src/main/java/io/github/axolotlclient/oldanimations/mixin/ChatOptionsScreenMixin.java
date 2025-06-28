@@ -60,7 +60,7 @@ public class ChatOptionsScreenMixin extends Screen {
 	@Unique
 	private int axolotlclient$i;
 
-	@ModifyVariable(method = "init", at = @At("LOAD"), index = 1, print = true)
+	@ModifyVariable(method = "init", at = @At("LOAD"), index = 1)
 	private int axolotlclient$captureAndUpdateLocal(int original) {
 		/* this is a horrible injection, but its all i could come up with :p */
 		axolotlclient$i = original;

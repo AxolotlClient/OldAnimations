@@ -194,20 +194,30 @@ public abstract class ItemRendererMixin {
 		}
 	}
 
-	@Inject(method = "renderGuiItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItemModel(Lnet/minecraft/item/ItemStack;II)V"))
-	private void axolotlclient$fixDepth(ItemStack stack, int x, int y, CallbackInfo ci) {
+	@Inject(method = "renderGuiItemModel", at = @At(value = "HEAD"))
+	private void axolotlclient$fixDepthAndCaptureStack(ItemStack stack, int x, int y, CallbackInfo ci) {
 		/* honestly, idk why this works, but it does :p */
 		GlStateManager.enableDepthTest();
 	}
 
-	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At("HEAD"))
-	private void axolotlclient$captureStack(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, CallbackInfo ci) {
-		ItemUtil.itemStack = itemStack;
+	@Inject(method = "renderGuiItemModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
+	private void axolotlclient$captureGuiStack(ItemStack itemStack, int i, int j, CallbackInfo ci) {
+		ItemUtil.setGuiItemStack(itemStack);
 	}
 
-	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At("TAIL"))
-	private void axolotlclient$releaseStack(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, CallbackInfo ci) {
-		ItemUtil.itemStack = null;
+	@Inject(method = "renderGuiItemModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", shift = At.Shift.AFTER))
+	private void axolotlclient$releaseGuiStack(ItemStack itemStack, int i, int j, CallbackInfo ci) {
+		ItemUtil.setGuiItemStack(null);
+	}
+
+	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
+	private void axolotlclient$captureHeldStack(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, CallbackInfo ci) {
+		ItemUtil.setHeldItemStack(itemStack);
+	}
+
+	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", shift = At.Shift.AFTER))
+	private void axolotlclient$releaseHeldStack(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, CallbackInfo ci) {
+		ItemUtil.setHeldItemStack(null);
 	}
 
 	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
