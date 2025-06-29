@@ -58,7 +58,7 @@ public class OldAnimationsConfig {
 	public final BooleanOption show1_7_10 = new BooleanOption("show1_7_10", false);
 	public final BooleanOption debugInfo = new BooleanOption("debugInfo", true);
 	public final BooleanOption disableDebugBackground = new BooleanOption("disableDebugBackground", true);
-	public final BooleanOption debugCrosshair = new BooleanOption("debugCrosshair", true);
+	public final BooleanOption alwaysShowCrosshair = new BooleanOption("alwaysShowCrosshair", true);
 	public final BooleanOption debugTextSpacing = new BooleanOption("debugTextSpacing", true);
 	public final BooleanOption debugTextColorScheme = new BooleanOption("debugTextColorScheme", true);
 	public final BooleanOption debugTextShadow = new BooleanOption("debugTextShadow", true);
@@ -165,6 +165,7 @@ public class OldAnimationsConfig {
 		categoryGUI.add(
 			show1_7_10,
 			heartFlashing,
+			alwaysShowCrosshair,
 			centeredSelectionMenus,
 			disableServerSelectionButtons,
 			disableUnknownServerIcon,
@@ -176,7 +177,6 @@ public class OldAnimationsConfig {
 		categoryDebugOverlay.add(
 			debugInfo,
 			disableDebugBackground,
-			debugCrosshair,
 			debugTextSpacing,
 			debugTextColorScheme,
 			debugTextShadow

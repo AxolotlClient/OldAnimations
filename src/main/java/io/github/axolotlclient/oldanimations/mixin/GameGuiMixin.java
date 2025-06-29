@@ -20,6 +20,11 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfig.impl.AxolotlClientConfigMod;
+import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
+import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.render.Window;
@@ -56,7 +61,8 @@ public abstract class GameGuiMixin {
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;hasCrosshair()Z"))
 	private boolean axolotlclient$enableCrosshair(GameGui instance, Operation<Boolean> original) {
-		return (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.debugCrosshair.get()) || original.call(instance);
+		boolean isCustomCrosshair = OldAnimations.AXOLOTLCLIENT && HudManager.getInstance().get(CrosshairHud.ID).isEnabled();
+		return (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.alwaysShowCrosshair.get() && !isCustomCrosshair) || original.call(instance);
 	}
 
 	@Unique

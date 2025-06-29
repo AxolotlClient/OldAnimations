@@ -22,6 +22,9 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
+import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.ducks.Sneaky;
 import net.minecraft.client.Minecraft;
@@ -82,7 +85,8 @@ public abstract class GameRendererMixin implements Sneaky {
 
 	@WrapOperation(method = "renderAxisIndicators", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/LocalClientPlayerEntity;hasReducedDebugInfo()Z"))
 	private boolean axolotlclient$disableAxisIndicator(LocalClientPlayerEntity instance, Operation<Boolean> original) {
-		return (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.debugCrosshair.get()) || original.call(instance);
+		boolean isCustomCrosshair = OldAnimations.AXOLOTLCLIENT && HudManager.getInstance().get(CrosshairHud.ID).isEnabled();
+		return (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.alwaysShowCrosshair.get() && !isCustomCrosshair) || original.call(instance);
 	}
 
 	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;updateHeldItem()V")) /* placed below null check */
