@@ -52,7 +52,7 @@ public abstract class EntityRendererMixin {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.flameOffset.get() && PlayerUtil.isSelf(entity)) {
 			/* taken from 1.7 */
 			/* we must make sure the flame is synced with the interpolated player model position */
-			original += (OldAnimationsConfig.instance.thirdPersonSmoothSneaking.get() ? ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() : entity.getEyeHeight());
+			original += (OldAnimationsConfig.instance.thirdPersonSneaking.get() ? ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() : entity.getEyeHeight());
 		}
 		return original;
 	}
@@ -64,7 +64,7 @@ public abstract class EntityRendererMixin {
 			GlStateManager.pushMatrix();
 			/* taken from 1.7 */
 			/* we must make sure the flame is synced with the interpolated player model position */
-			float eyeHeight = (OldAnimationsConfig.instance.thirdPersonSmoothSneaking.get() ? ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() : entity.getEyeHeight());
+			float eyeHeight = (OldAnimationsConfig.instance.thirdPersonSneaking.get() ? ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() : entity.getEyeHeight());
 			GlStateManager.translatef(0.0F, eyeHeight, 0.0F);
 		}
 		original.call(instance, entity, dx, dy, dz, tickDelta);

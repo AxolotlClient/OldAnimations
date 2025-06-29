@@ -58,7 +58,12 @@ public abstract class GameRendererMixin implements Sneaky {
 	@Inject(method = "setupCamera", at = @At("HEAD"))
 	protected void axolotlclient$lerpCamera(float partialTicks, int pass, CallbackInfo ci) {
 		/* eye height is interpolated between the last and current camera Y positions */
-		if (isSneakingEnabled()) eyeHeight = lerp(partialTicks, lastCameraY, cameraY);
+		if (!OldAnimationsConfig.isEnabled()) return;
+		if (OldAnimationsConfig.instance.smoothSneaking.get()) {
+			eyeHeight = lerp(partialTicks, lastCameraY, cameraY);
+		} else if (OldAnimationsConfig.instance.slowUpSneak.get()) {
+			eyeHeight = cameraY;
+		}
 	}
 
 	@ModifyVariable(method = "transformCamera", at = @At(value = "STORE"), ordinal = 1)
@@ -67,12 +72,12 @@ public abstract class GameRendererMixin implements Sneaky {
 			/* just use the 1.8 eyeheight while sleeping :p */
 			return eyeHeight;
 		}
-		return isSneakingEnabled() ? axolotlclient$getEyeHeight() : eyeHeight; /* player eye height */
+		return axolotlclient$isEitherSneakOptionEnabled() ? axolotlclient$getEyeHeight() : eyeHeight;
 	}
 
 	@ModifyArg(method = "renderAxisIndicators", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"), index = 1)
 	private float axolotlclient$useLerpEyeHeight_Debug(float x) {
-		return isSneakingEnabled() ? axolotlclient$getEyeHeight() : x; /* debug crosshair parity */
+		return axolotlclient$isEitherSneakOptionEnabled() ? axolotlclient$getEyeHeight() : x; /* debug crosshair parity */
 	}
 
 	@WrapOperation(method = "renderAxisIndicators", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/LocalClientPlayerEntity;hasReducedDebugInfo()Z"))
@@ -83,7 +88,7 @@ public abstract class GameRendererMixin implements Sneaky {
 	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;updateHeldItem()V")) /* placed below null check */
 	private void axolotlclient$updateCameraY(CallbackInfo ci) {
 		/* updates the current eye height */
-		if (!isSneakingEnabled()) {
+		if (!axolotlclient$isEitherSneakOptionEnabled()) {
 			return;
 		}
 		Entity entity = minecraft.getCamera();
@@ -110,8 +115,9 @@ public abstract class GameRendererMixin implements Sneaky {
 	}
 
 	@Unique
-	private static boolean isSneakingEnabled() {
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.smoothSneaking.get();
+	private boolean axolotlclient$isEitherSneakOptionEnabled() {
+		/* if neither of the sneaking options are selection, we might as well just use the original eyeheight */
+		return OldAnimationsConfig.isEnabled() && (OldAnimationsConfig.instance.smoothSneaking.get() || OldAnimationsConfig.instance.slowUpSneak.get());
 	}
 
 	@Override

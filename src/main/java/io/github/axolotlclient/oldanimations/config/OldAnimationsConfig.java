@@ -62,7 +62,7 @@ public class OldAnimationsConfig {
 	public final BooleanOption debugTextSpacing = new BooleanOption("debugTextSpacing", true);
 	public final BooleanOption debugTextColorScheme = new BooleanOption("debugTextColorScheme", true);
 	public final BooleanOption debugTextShadow = new BooleanOption("debugTextShadow", true);
-	public final BooleanOption thirdPersonSmoothSneaking = new BooleanOption("thirdPersonSmoothSneaking", true);
+	public final BooleanOption thirdPersonSneaking = new BooleanOption("thirdPersonSneaking", false);
 	public final BooleanOption allowMiningCancel = new BooleanOption("allowMiningCancel", true);
 	public final BooleanOption damageColor = new BooleanOption("damageColor", true);
 	public final BooleanOption stickRod = new BooleanOption("stickRod", false);
@@ -136,7 +136,7 @@ public class OldAnimationsConfig {
 		categorySneaking.add(
 			smoothSneaking,
 			slowUpSneak,
-			thirdPersonSmoothSneaking
+			thirdPersonSneaking
 		);
 		category.add(categoryItems);
 		categoryItems.add(
