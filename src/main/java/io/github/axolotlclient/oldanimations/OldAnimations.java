@@ -28,10 +28,11 @@ import java.util.List;
 public class OldAnimations implements ClientModInitializer {
 
 	/*
-	blocks item positions (rotations)
+	blocks item positions (rotations) + trapdoors + pressure plates
+	pressure plates look a bit different?? idk why THEYRE BIGGER THATS WHY
 	third person item positions toggle?
-	half blocks toggle?
-	add fast grass
+	old fence fate model
+	move sprint keybind option in controls menu
 	*/
 
 	public static final String MODID = "axolotlclient-oldanimations";

@@ -104,14 +104,21 @@ public class OldAnimationsConfig {
 	public final BooleanOption swordBlockThirdPerson = new BooleanOption("swordBlockThirdPerson", true);
 	public final BooleanOption useAndMineDestroyVisual = new BooleanOption("useAndMineDestroyVisual", false);
 	public final BooleanOption fastGrass = new BooleanOption("fastGrass", false);
+	public final BooleanOption oldDoorTextures = new BooleanOption("oldDoorTextures", false);
+	public final BooleanOption oldDifficultyButtonLogic = new BooleanOption("oldDifficultyButtonLogic", false);
+	public final BooleanOption moveSprintKeybind = new BooleanOption("moveSprintKeybind", false);
 
 	private final Supplier<Boolean>[] suppliers = new Supplier[] {
+		enabled::get,
 		replaceSkullModel::get,
-		fastGrass::get
+		fastGrass::get,
+		oldDoorTextures::get
 	};
 	private final boolean[] previousStates = {
+		enabled.get(),
 		replaceSkullModel.get(),
-		fastGrass.get()
+		fastGrass.get(),
+		oldDoorTextures.get()
 	};
 
 	public static boolean isEnabled() {
@@ -150,6 +157,7 @@ public class OldAnimationsConfig {
 			stopLineTranslateSneak,
 			equipLogic,
 			replaceSkullModel,
+			oldDoorTextures,
 			disableResourcePackItemTransformations,
 			fixThirdPersonHeldItemSneakDeSync
 		);
@@ -171,6 +179,8 @@ public class OldAnimationsConfig {
 			disableUnknownServerIcon,
 			disableSkinCustomizationButton,
 			oldMultiplayerSettingsPage,
+			oldDifficultyButtonLogic,
+			moveSprintKeybind,
 			disableTitles
 		);
 		categoryGUI.add(categoryDebugOverlay);

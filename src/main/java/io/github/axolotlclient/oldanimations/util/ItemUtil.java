@@ -37,6 +37,8 @@ public final class ItemUtil {
 	public static boolean isThinBlockItem(ItemStack stack) {
 		if (stack != null) {
 			final Block block = Block.byItem(stack.getItem());
+			/* i fr thought pressure plates and trapdoors were affected by this.. i was wrong */
+			//TODO: FIX THIS
 			return block instanceof CarpetBlock ||
 				block instanceof TrapdoorBlock || block instanceof PressurePlateBlock ||
 				block instanceof SnowLayerBlock || block instanceof DaylightDetectorBlock;

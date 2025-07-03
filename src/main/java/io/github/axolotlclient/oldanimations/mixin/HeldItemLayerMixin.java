@@ -33,6 +33,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.text.LiteralText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
@@ -74,7 +75,8 @@ public abstract class HeldItemLayerMixin {
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getRenderType()I"))
 	private int axolotlclient$disableBlockTypeCheck(Block instance, Operation<Integer> original) {
 		/* we need to stop these transformations from applying  */
-		return areItemPositionsEnabled() ? 3 : original.call(instance);
+		//TODO: Fix this
+		return areItemPositionsEnabled() && OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() ? 3 : original.call(instance);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
@@ -92,6 +94,7 @@ public abstract class HeldItemLayerMixin {
 		}
 		if (OldAnimationsConfig.instance.itemPositions.get()) {
 			if (item instanceof BlockItem && Minecraft.getInstance().getItemRenderer().isGui3d(itemStack)) {
+				if (!OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && Block.byItem(item).getRenderType() == 2) return;
 				var7 = 0.375F;
 				GlStateManager.translatef(0.0F, 0.1875F, -0.3125F);
 				GlStateManager.rotatef(20.0F, 1.0F, 0.0F, 0.0F);

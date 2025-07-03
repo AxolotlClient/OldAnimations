@@ -19,16 +19,24 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.handler.ClientPlayNetworkHandler;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.network.packet.s2c.play.TitlesS2CPacket;
+import net.minecraft.world.Difficulty;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class ClientPlayNetworkHandlerMixin {
+
+	@Shadow
+	private Minecraft minecraft;
 
 	@ModifyExpressionValue(method = "handleAddXpOrb", at = @At(value = "CONSTANT", args = "doubleValue=32"))
 	private double ornitheAnimations$oldOrbRendering(double original) {
@@ -49,5 +57,11 @@ public abstract class ClientPlayNetworkHandlerMixin {
 			/* 1.7 doesn't have titles */
 			ci.cancel();
 		}
+	}
+
+	@WrapWithCondition(method = "handleLogin", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;difficulty:Lnet/minecraft/world/Difficulty;"))
+	private boolean axolotlclient$dontUsePacketDifficulty(GameOptions instance, Difficulty value) {
+		/* we're going to set the options difficulty elsewhere, so let's remove this as it's not needed */
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.oldDifficultyButtonLogic.get();
 	}
 }

@@ -121,5 +121,11 @@
 	"useAndMineDestroyVisual": "Use and Mine Block Destroy Progress",
 	"useAndMineDestroyVisual.tooltip": "Visually shows block mining progress and plays block destroy audio while the player is holding both mouse buttons.",
 	"fastGrass": "Fast Grass",
-	"fastGrass.tooltip": "Disables the grass side overlay. This was removed in 1.8. Toggling this will reload the game resources!"
+	"fastGrass.tooltip": "Disables the grass side overlay. This was removed in 1.8. Toggling this will reload the game resources!",
+	"oldDoorTextures": "Old Door Textures",
+	"oldDoorTextures.tooltip": "Reverts the textures of the oak door and iron door to their older counterparts. Toggling this will reload the game resources!",
+	"oldDifficultyButtonLogic": "Difficulty Button Behavior",
+	"oldDifficultyButtonLogic.tooltip": "Brings back the ability to change the difficulty of worlds from the main menu. This option also hides the difficulty lock button as it does not exist in 1.7!",
+	"moveSprintKeybind": "Old Controls Menu Layout",
+	"moveSprintKeybind.tooltip": "Moves the sprint keybind to the gameplay category within the controls menu which is the case in 1.7. This option requires a restart to show properly!"
 }

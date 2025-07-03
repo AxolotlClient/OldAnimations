@@ -91,6 +91,20 @@ public abstract class ModelBakeryMixin {
 				}
 			}
 		}
+
+		//TODO: This could probably be rewritten
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDoorTextures.get()) {
+			/* we just need to swap out the textures lmaooo */
+			String path = identifier.getPath();
+			if ("models/item/iron_door.json".equals(path)) {
+				BlockModelAccessor model = (BlockModelAccessor) original;
+				model.getTextures().put("layer0", "items/old_door_iron");
+			}
+			if ("models/item/oak_door.json".equals(path)) {
+				BlockModelAccessor model = (BlockModelAccessor) original;
+				model.getTextures().put("layer0", "items/old_door_wood");
+			}
+		}
 		return original;
 	}
 }

@@ -25,6 +25,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.*;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
@@ -237,6 +238,7 @@ public abstract class ItemRendererMixin {
 				/* fortnite, we need to talk... */
 				Item item = itemStack.getItem();
 				if (item instanceof BlockItem && Minecraft.getInstance().getItemRenderer().isGui3d(itemStack)) {
+					if (Block.byItem(item).getRenderType() == 2) return;
 					scale = 1.0F / 0.375F;
 					GlStateManager.scalef(scale, scale, scale);
 					GlStateManager.rotatef(-170.0F, 0.0F, 0.0F, 1.0F);
