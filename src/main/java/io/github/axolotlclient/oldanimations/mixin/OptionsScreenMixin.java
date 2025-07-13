@@ -69,7 +69,7 @@ public abstract class OptionsScreenMixin extends Screen {
 
 	@Inject(method = "buttonClicked", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/widget/ButtonWidget;id:I", ordinal = 2))
 	private void axolotlclient$onlySetIfInWorld(ButtonWidget buttonWidget, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableSkinCustomizationButton.get() && minecraft.world == null && buttonWidget.id == 108) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDifficultyButtonLogic.get() && minecraft.world == null && buttonWidget.id == 108) {
 			/* this is so silly... but the alternatives are not fun :p */
 			options.difficulty = Difficulty.byId(options.difficulty.getId() + 1 & 3);
 			difficultyButton.message = getButtonLabel(options.difficulty);
@@ -80,7 +80,7 @@ public abstract class OptionsScreenMixin extends Screen {
 	private int axolotlclient$onlySetIfInWorld(int original) {
 		/* because we're going to be able to toggle this button while not in a world, we can avoid the game crashing by */
 		/* checking if the world is valid before we set the difficulty */
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableSkinCustomizationButton.get() && minecraft.world == null ? -1 : original;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDifficultyButtonLogic.get() && minecraft.world == null ? -1 : original;
 	}
 
 	@ModifyArg(method = "buttonClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/Difficulty;byId(I)Lnet/minecraft/world/Difficulty;"), index = 0)

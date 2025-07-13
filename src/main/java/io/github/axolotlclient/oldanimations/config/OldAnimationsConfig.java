@@ -41,6 +41,7 @@ public class OldAnimationsConfig {
 	private final OptionCategory categoryBlocking = OptionCategory.create("blockingItemUsing");
 	private final OptionCategory categorySneaking = OptionCategory.create("sneaking");
 	private final OptionCategory categoryItems = OptionCategory.create("items");
+	private final OptionCategory categoryTextures = OptionCategory.create("textures");
 	private final OptionCategory categoryCombat = OptionCategory.create("combat");
 	private final OptionCategory categoryGUI = OptionCategory.create("gui");
 	private final OptionCategory categoryDebugOverlay = OptionCategory.create("debugOverlay");
@@ -58,7 +59,7 @@ public class OldAnimationsConfig {
 	public final BooleanOption show1_7_10 = new BooleanOption("show1_7_10", false);
 	public final BooleanOption debugInfo = new BooleanOption("debugInfo", true);
 	public final BooleanOption disableDebugBackground = new BooleanOption("disableDebugBackground", true);
-	public final BooleanOption alwaysShowCrosshair = new BooleanOption("alwaysShowCrosshair", true);
+	public final BooleanOption alwaysShowCrosshair = new BooleanOption("alwaysShowCrosshair", false);
 	public final BooleanOption debugTextSpacing = new BooleanOption("debugTextSpacing", true);
 	public final BooleanOption debugTextColorScheme = new BooleanOption("debugTextColorScheme", true);
 	public final BooleanOption debugTextShadow = new BooleanOption("debugTextShadow", true);
@@ -107,18 +108,25 @@ public class OldAnimationsConfig {
 	public final BooleanOption oldDoorTextures = new BooleanOption("oldDoorTextures", false);
 	public final BooleanOption oldDifficultyButtonLogic = new BooleanOption("oldDifficultyButtonLogic", false);
 	public final BooleanOption moveSprintKeybind = new BooleanOption("moveSprintKeybind", false);
+	public final BooleanOption thirdPersonCapePosition = new BooleanOption("thirdPersonCapePosition", false);
+	public final BooleanOption oldSpongeTexture = new BooleanOption("oldSpongeTexture", false);
+	public final BooleanOption oldTallGrassTexture = new BooleanOption("oldTallGrassTexture", false);
 
 	private final Supplier<Boolean>[] suppliers = new Supplier[] {
 		enabled::get,
 		replaceSkullModel::get,
 		fastGrass::get,
-		oldDoorTextures::get
+		oldDoorTextures::get,
+		oldSpongeTexture::get,
+		oldTallGrassTexture::get
 	};
 	private final boolean[] previousStates = {
 		enabled.get(),
 		replaceSkullModel.get(),
 		fastGrass.get(),
-		oldDoorTextures.get()
+		oldDoorTextures.get(),
+		oldSpongeTexture.get(),
+		oldTallGrassTexture.get()
 	};
 
 	public static boolean isEnabled() {
@@ -143,7 +151,8 @@ public class OldAnimationsConfig {
 		categorySneaking.add(
 			smoothSneaking,
 			slowUpSneak,
-			thirdPersonSneaking
+			thirdPersonSneaking,
+			thirdPersonCapePosition
 		);
 		category.add(categoryItems);
 		categoryItems.add(
@@ -157,9 +166,15 @@ public class OldAnimationsConfig {
 			stopLineTranslateSneak,
 			equipLogic,
 			replaceSkullModel,
-			oldDoorTextures,
 			disableResourcePackItemTransformations,
 			fixThirdPersonHeldItemSneakDeSync
+		);
+		category.add(categoryTextures);
+		categoryTextures.add(
+			fastGrass,
+			oldDoorTextures,
+			oldSpongeTexture,
+			oldTallGrassTexture
 		);
 		category.add(categoryCombat);
 		categoryCombat.add(
@@ -213,8 +228,7 @@ public class OldAnimationsConfig {
 			flameOffset,
 			oldPickupArm,
 			fixCameraPitch,
-			xpOrbPosition,
-			fastGrass
+			xpOrbPosition
 		);
 
 		/* reload the resources upon toggling certain options */

@@ -39,7 +39,7 @@ public abstract class ClientPlayNetworkHandlerMixin {
 	private Minecraft minecraft;
 
 	@ModifyExpressionValue(method = "handleAddXpOrb", at = @At(value = "CONSTANT", args = "doubleValue=32"))
-	private double ornitheAnimations$oldOrbRendering(double original) {
+	private double axolotlclient$oldOrbRendering(double original) {
 		return original / (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.xpOrbPosition.get() ?
 			32.0D : 1.0D /* renders the xp orbs similar to 1.7 by oddly offsetting them */
 		);

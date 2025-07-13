@@ -225,7 +225,7 @@ public abstract class ItemRendererMixin {
 	private void axolotlclient$reverseTransformations(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, CallbackInfo ci) {
 		/* we can replicate ModelTransformations.Type.NONE by just reversing the default transformations! */
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() &&
-			!OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemBlacklist.isPresent(itemStack)) {
+			!OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemUtil.isBlacklisted(itemStack)) {
 			float scale;
 			float scale2 = 0.0625F;
 			if (type == ModelTransformations.Type.FIRST_PERSON && !isGui3d(itemStack)) {
@@ -255,7 +255,7 @@ public abstract class ItemRendererMixin {
 					GlStateManager.scalef(scale, scale, scale);
 					GlStateManager.rotatef(35.0F, 0.0F, 0.0F, 1.0F);
 					GlStateManager.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-					GlStateManager.translatef(0.0F, -1.25F * scale2, 3.5F * scale2);
+					GlStateManager.translatef(0.0F, (ItemUtil.isBlazeRod(itemStack) ? -0.75F : -1.25F) * scale2, 3.5F * scale2);
 				} else {
 					scale = 1.0F / 0.55F;
 					GlStateManager.scalef(scale, scale, scale);

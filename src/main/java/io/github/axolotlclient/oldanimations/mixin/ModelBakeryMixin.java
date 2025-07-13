@@ -78,6 +78,32 @@ public abstract class ModelBakeryMixin {
 			});
 		}
 
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldTallGrassTexture.get()) {
+			/* tall grass */
+			if ("minecraft:models/block/tall_grass.json".equals(identifier.toString())) {
+				((BlockModelAccessor) original).getTextures().put("cross", "blocks/old_tallgrass");
+			}
+			if ("minecraft:models/item/tall_grass.json".equals(identifier.toString())) {
+				((BlockModelAccessor) original).getTextures().put("layer0", "blocks/old_tallgrass");
+			}
+			/* double grass*/
+			if ("minecraft:models/block/double_grass_top.json".equals(identifier.toString())) {
+				((BlockModelAccessor) original).getTextures().put("cross", "blocks/old_double_plant_grass_top");
+			}
+			if ("minecraft:models/item/double_grass.json".equals(identifier.toString())) {
+				((BlockModelAccessor) original).getTextures().put("layer0", "blocks/old_double_plant_grass_top");
+			}
+			if ("minecraft:models/block/double_grass_bottom.json".equals(identifier.toString())) {
+				((BlockModelAccessor) original).getTextures().put("cross", "blocks/old_double_plant_grass_bottom");
+			}
+		}
+
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldSpongeTexture.get() &&
+			"minecraft:models/block/sponge.json".equals(identifier.toString())) {
+			/* lowk this texture is UGGLYYYYYY */
+			((BlockModelAccessor) original).getTextures().put("all", "blocks/old_sponge");
+		}
+
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.replaceSkullModel.get()) {
 			/* defines our 1.7 skull model! */
 			String path = identifier.getPath();

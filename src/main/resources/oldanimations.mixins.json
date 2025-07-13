@@ -7,6 +7,7 @@
 	},
 	"client": [
 		"BlockModelAccessor",
+		"CapeLayerMixin",
 		"ChatOptionsScreenMixin",
 		"ClientPlayerInteractionManagerAccessor",
 		"ClientPlayNetworkHandlerMixin",
@@ -31,6 +32,7 @@
 		"ModelBakeryMixin",
 		"ModelTransformationsMixin",
 		"OptionsScreenMixin",
+		"PlayerModelMixin",
 		"PlayerRendererMixin",
 		"PlayerTabOverlayMixin",
 		"ProjectileRendererMixin",

@@ -23,7 +23,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import io.github.axolotlclient.oldanimations.util.ItemBlacklist;
+import io.github.axolotlclient.oldanimations.util.ItemUtil;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -96,17 +96,21 @@ public abstract class HeldItemRendererMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$applyHeldItemTransforms(LivingEntity livingEntity, ItemStack itemStack, ModelTransformations.Type type, CallbackInfo ci) {
-		if (!areItemPositionsEnabled()) return;
-		if (renderer.isGui3d(itemStack) || ItemBlacklist.isPresent(itemStack)) return;
-		/* original transformations from 1.7 */
-		GlStateManager.translatef(0.0F, -0.3F, 0.0F);
-		GlStateManager.scalef(1.5F, 1.5F, 1.5F);
-		GlStateManager.rotatef(50.0F, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotatef(335.0F, 0.0F, 0.0F, 1.0F);
-		GlStateManager.translatef(-0.9375F, -0.0625F, 0.0F);
-		/* we need to adapt the 1.7 transformations to fit in 1.8 */
-		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
-		GlStateManager.translatef(-0.5F, 0.5F, 0.03125F);
+		if (!areItemPositionsEnabled() || ItemUtil.isBlacklisted(itemStack)) return;
+		if (renderer.isGui3d(itemStack)) {
+			/* blocks */
+			GlStateManager.rotatef(90.0F + (ItemUtil.shouldRotateBlock(itemStack) ? 180.0F : 0.0F), 0.0F, 1.0F, 0.0F);
+		} else {
+			/* original transformations from 1.7 */
+			GlStateManager.translatef(0.0F, -0.3F, 0.0F);
+			GlStateManager.scalef(1.5F, 1.5F, 1.5F);
+			GlStateManager.rotatef(50.0F, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(335.0F, 0.0F, 0.0F, 1.0F);
+			GlStateManager.translatef(-0.9375F, -0.0625F, 0.0F);
+			/* we need to adapt the 1.7 transformations to fit in 1.8 */
+			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
+			GlStateManager.translatef(-0.5F, 0.5F, 0.03125F);
+		}
 	}
 
 	@Inject(method = "renderInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
@@ -119,7 +123,7 @@ public abstract class HeldItemRendererMixin {
 
 	@ModifyArg(method = "renderInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"), index = 2)
 	private ModelTransformations.Type axolotlclient$changeTransformType(ModelTransformations.Type mode) {
-		return areItemPositionsEnabled() && OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemBlacklist.isPresent(item) ? ModelTransformations.Type.NONE : mode;
+		return areItemPositionsEnabled() && OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemUtil.isBlacklisted(item) ? ModelTransformations.Type.NONE : mode;
 	}
 
 	@Expression("? != null")

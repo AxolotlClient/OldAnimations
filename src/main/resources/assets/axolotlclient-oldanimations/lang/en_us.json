@@ -4,6 +4,7 @@
 	"blockingItemUsing": "Blocking/Item Using",
 	"sneaking": "Sneaking",
 	"items": "Items",
+	"textures": "Textures",
 	"combat": "Combat",
 	"gui": "GUI",
 	"debugOverlay": "Debug Overlay",
@@ -127,5 +128,11 @@
 	"oldDifficultyButtonLogic": "Difficulty Button Behavior",
 	"oldDifficultyButtonLogic.tooltip": "Brings back the ability to change the difficulty of worlds from the main menu. This option also hides the difficulty lock button as it does not exist in 1.7!",
 	"moveSprintKeybind": "Old Controls Menu Layout",
-	"moveSprintKeybind.tooltip": "Moves the sprint keybind to the gameplay category within the controls menu which is the case in 1.7. This option requires a restart to show properly!"
+	"moveSprintKeybind.tooltip": "Moves the sprint keybind to the gameplay category within the controls menu which is the case in 1.7. This option requires a restart to show properly!",
+	"thirdPersonCapePosition": "Cape Position",
+	"thirdPersonCapePosition.tooltip": "While sneaking, the cape will be closer to the player which will clip through worn armor.",
+	"oldSpongeTexture": "Old Sponge Texture",
+	"oldSpongeTexture.tooltip": "Reverts the texture of the sponge to it's older counterpart. Toggling this will reload the game resources!",
+	"oldTallGrassTexture": "Old Tall/Double Grass Textures",
+	"oldTallGrassTexture.tooltip": "Reverts the textures of tall/double grass to their slightly darker and older counterpart! Toggling this will reload the game resources!"
 }

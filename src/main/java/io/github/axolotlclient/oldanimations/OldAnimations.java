@@ -28,11 +28,14 @@ import java.util.List;
 public class OldAnimations implements ClientModInitializer {
 
 	/*
-	blocks item positions (rotations) + trapdoors + pressure plates
-	pressure plates look a bit different?? idk why THEYRE BIGGER THATS WHY
+	blocks item positions (rotations) + fix trapdoors and pressure plates and other crap
+	held pressure plates look a bit different?? idk why THEYRE BIGGER THATS WHY
 	third person item positions toggle?
 	old fence fate model
-	move sprint keybind option in controls menu
+	old fast smooth lighting shadows
+	tops of certain blocks have switch uvs
+	tripwire texture and model changes
+	couldrons model and texture
 	*/
 
 	public static final String MODID = "axolotlclient-oldanimations";

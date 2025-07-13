@@ -22,7 +22,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import io.github.axolotlclient.oldanimations.util.ItemBlacklist;
+import io.github.axolotlclient.oldanimations.util.ItemUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.entity.layer.HeldItemLayer;
@@ -33,7 +33,6 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.text.LiteralText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
@@ -81,7 +80,7 @@ public abstract class HeldItemLayerMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$applyHeldItemLayerTransforms(LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
-		if (!OldAnimationsConfig.isEnabled() || ItemBlacklist.isPresent(itemStack)) return;
+		if (!OldAnimationsConfig.isEnabled() || ItemUtil.isBlacklisted(itemStack)) return;
 		Item item = itemStack.getItem();
 		float var7;
 		/* original transformations from 1.7 */
@@ -107,7 +106,7 @@ public abstract class HeldItemLayerMixin {
 				GlStateManager.scalef(var7, -var7, var7);
 				GlStateManager.rotatef(-100.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(45.0F, 0.0F, 1.0F, 0.0F);
-			} else if (item.isHandheld()) {
+			} else if (item.isHandheld() && !ItemUtil.isBlazeRod(itemStack)) {
 				var7 = 0.625F;
 				if (item.shouldRotate()) {
 					GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
@@ -130,7 +129,7 @@ public abstract class HeldItemLayerMixin {
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"), index = 2)
 	private ModelTransformations.Type axolotlclient$changeTransformType(ModelTransformations.Type type) {
-		return areItemPositionsEnabled() && OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemBlacklist.isPresent(itemStack) ? ModelTransformations.Type.NONE : type;
+		return areItemPositionsEnabled() && OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemUtil.isBlacklisted(itemStack) ? ModelTransformations.Type.NONE : type;
 	}
 
 	@Unique
