@@ -26,11 +26,21 @@ import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.texture.TextureAtlas;
 import net.minecraft.client.render.texture.TextureManager;
+import net.minecraft.client.resource.model.BakedModel;
+import net.minecraft.client.resource.model.BasicBakedModel;
 import net.minecraft.resource.Identifier;
 
 import java.awt.*;
+import java.util.HashMap;
 
 public final class GlintHandler {
+	private static final HashMap<HashedModel, BakedModel> glintMap = new HashMap<>();
+
+	/* custom glint model */
+	public static BakedModel getModel(BakedModel model) {
+		return glintMap.computeIfAbsent(new HashedModel(model),
+			key -> new BasicBakedModel.Builder(model, CustomTextureAtlasSprite.INSTANCE).build());
+	}
 
 	public static void renderEnchantmentGlintPre(TextureManager textureManager, Identifier glintTexture, int color) {
 		GlStateManager.enableRescaleNormal();

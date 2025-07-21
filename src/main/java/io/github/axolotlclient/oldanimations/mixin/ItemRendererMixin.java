@@ -27,9 +27,11 @@ import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.item.ItemModelShaper;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.client.render.texture.TextureManager;
+import net.minecraft.client.resource.ModelIdentifier;
 import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.client.resource.model.BakedQuad;
 import net.minecraft.entity.living.LivingEntity;
@@ -68,6 +70,9 @@ public abstract class ItemRendererMixin {
 
 	@Shadow
 	public abstract boolean isGui3d(ItemStack itemStack);
+
+	@Shadow
+	public abstract ItemModelShaper getModelShaper();
 
 	@Unique
 	private boolean axolotlclient$isGui;
@@ -114,7 +119,7 @@ public abstract class ItemRendererMixin {
 
 	@ModifyArg(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderEnchantmentGlint(Lnet/minecraft/client/resource/model/BakedModel;)V"))
 	public BakedModel axolotlclient$replaceModel(BakedModel model) {
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlint.get() ? GlintModel.getModel(model) : model;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlint.get() ? GlintHandler.getModel(model) : model;
 	}
 
 	@ModifyArg(method = "render(Lnet/minecraft/client/resource/model/BakedModel;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;render(Lnet/minecraft/client/resource/model/BakedModel;ILnet/minecraft/item/ItemStack;)V"), index = 1)
@@ -125,11 +130,13 @@ public abstract class ItemRendererMixin {
 
 	@Inject(method = "renderEnchantmentGlint", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$disableDefaultGlint(CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGuiGlint.get() && axolotlclient$isGui) {
-			ci.cancel();
-		}
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fastItems.get() && !axolotlclient$isGui && !axolotlclient$isHeld) {
-			ci.cancel();
+		if (OldAnimationsConfig.isEnabled()) {
+			if (OldAnimationsConfig.instance.oldGuiGlint.get() && axolotlclient$isGui) {
+				ci.cancel();
+			}
+			if (OldAnimationsConfig.instance.fastItems.get() && !axolotlclient$isGui && !axolotlclient$isHeld) {
+				ci.cancel();
+			}
 		}
 	}
 
@@ -177,7 +184,7 @@ public abstract class ItemRendererMixin {
 			!axolotlclient$isGui && stack.getItem() instanceof PotionItem &&
 			/* just to be safe, let's skip rendering while projectiles and dropped items are 2d */
 			(!OldAnimationsConfig.instance.fastItems.get() || axolotlclient$isHeld)) {
-			model = ModelUtil.getModel("bottle_overlay");
+			model = axolotlclient$getModel("bottle_overlay");
 		}
 		original.call(instance, model, stack);
 	}
@@ -191,7 +198,7 @@ public abstract class ItemRendererMixin {
 			/* renders the splash/drinkable bottle AFTER the glint rendering like in 1.7 */
 			String id = PotionItem.isSplashPotion(stack.getMetadata()) ? "bottle_splash_empty" : "bottle_drinkable_empty";
 			/* hacky way of rendering the bottle without using the potion's overlay color */
-			render(ModelUtil.getModel(id), DummyItem.getStack());
+			render(axolotlclient$getModel(id), ItemUtil.DummyItem.getStack());
 		}
 	}
 
@@ -264,5 +271,10 @@ public abstract class ItemRendererMixin {
 				}
 			}
 		}
+	}
+
+	@Unique
+	private BakedModel axolotlclient$getModel(String model) {
+		return getModelShaper().getManager().getModel(new ModelIdentifier(model, "inventory"));
 	}
 }

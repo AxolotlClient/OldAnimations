@@ -74,11 +74,18 @@ public final class DebugComponents {
 		String enumfacingString = enumfacing.toString();
 		enumfacingString = enumfacingString.toUpperCase(Locale.ROOT);
 		list.add(var32.append(enumfacingString).append(") / ").append(MathHelper.wrapDegrees(mc.player.yaw)).toString());
-		int light = chunk.getLight(blockpos, 0);
-		String biomeName = chunk.getBiome(blockpos, mc.world.getBiomeSource()).name;
-		int blockLight = chunk.getLight(LightType.BLOCK, blockpos);
-		int skyLight = chunk.getLight(LightType.SKY, blockpos);
-		list.add("lc: " + light + " b: " + biomeName + " bl: " + blockLight + " sl: " + skyLight + " rl: " + light);
+
+		try {
+			int light = chunk.getLight(blockpos, 0);
+			String biomeName = chunk.getBiome(blockpos, mc.world.getBiomeSource()).name;
+			int blockLight = chunk.getLight(LightType.BLOCK, blockpos);
+			int skyLight = chunk.getLight(LightType.SKY, blockpos);
+			list.add("lc: " + light + " b: " + biomeName + " bl: " + blockLight + " sl: " + skyLight + " rl: " + light);
+		} catch (Exception e) {
+			/* yeah, in 1.7, this actually is empty when ur in the void LMFAO */
+			list.add("");
+		}
+
 		String var17 = "ws: %.3f, fs: %.3f, g: %b, fl: %.0f";
 		Object[] var18 = new Object[]{mc.player.abilities.getWalkSpeed(), mc.player.abilities.getFlySpeed(), mc.player.onGround, playerPosY};
 		String var33 = String.format(var17, Arrays.copyOf(var18, var18.length));

@@ -93,4 +93,10 @@ public final class ItemUtil {
 			return false;
 		}
 	}
+
+	public static final class DummyItem extends Item {
+		public static ItemStack getStack() {
+			return new ItemStack(new DummyItem());
+		}
+	}
 }
