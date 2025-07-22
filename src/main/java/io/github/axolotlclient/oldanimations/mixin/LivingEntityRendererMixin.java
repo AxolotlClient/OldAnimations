@@ -133,6 +133,14 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 		return original;
 	}
 
+	@ModifyExpressionValue(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", at = @At(value = "CONSTANT", args = "floatValue=1.0", ordinal = 0))
+	private float axolotlclient$damageTintLighting(float original, @Local(index = 4, ordinal = 1) float g) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDamageTintLighting.get()) {
+			return g; /* this will basically make the tint influenced by lighting */
+		}
+		return original;
+	}
+
 	@ModifyArg(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 0), index = 1)
 	private float axolotlclient$syncNameTag(float f, @Local(argsOnly = true) LivingEntity livingEntity) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.isSelf(livingEntity)) {
@@ -162,7 +170,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 
 	@Override
 	public boolean axolotlclient$setupOverlayColor(@NotNull LivingEntity livingEntity, float partialTicks) {
-		/* trick to ensure the brightnessBuffer is updated*/
+		/* trick to ensure the brightnessBuffer is updated */
 		if (setupOverlayColor(livingEntity, partialTicks, true)) tearDownOverlayColor();
 		/* if there are any performance issues, blame this */
 

@@ -134,5 +134,9 @@
 	"oldSpongeTexture": "Old Sponge Texture",
 	"oldSpongeTexture.tooltip": "Reverts the texture of the sponge to it's older counterpart. Toggling this will reload the game resources!",
 	"oldTallGrassTexture": "Old Tall/Double Grass Textures",
-	"oldTallGrassTexture.tooltip": "Reverts the textures of tall/double grass to their slightly darker and older counterpart! Toggling this will reload the game resources!"
+	"oldTallGrassTexture.tooltip": "Reverts the textures of tall/double grass to their slightly darker and older counterpart! Toggling this will reload the game resources!",
+	"oldFogGrayScale": "Old Fog Grayscale Logic",
+	"oldFogGrayScale.tooltip": "Calculates fog's grayscale effect starting from the player's eyeline and not their feet just like in 1.7.",
+	"oldDamageTintLighting": "Apply Lighting to Damage Tint",
+	"oldDamageTintLighting.tooltip": "Allows the damage tint's red hue to be influenced by the surrounding lighting just like in 1.7."
 }

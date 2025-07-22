@@ -111,6 +111,8 @@ public class OldAnimationsConfig {
 	public final BooleanOption thirdPersonCapePosition = new BooleanOption("thirdPersonCapePosition", false);
 	public final BooleanOption oldSpongeTexture = new BooleanOption("oldSpongeTexture", false);
 	public final BooleanOption oldTallGrassTexture = new BooleanOption("oldTallGrassTexture", false);
+	public final BooleanOption oldFogGrayScale = new BooleanOption("oldFogGrayScale", true);
+	public final BooleanOption oldDamageTintLighting = new BooleanOption("oldDamageTintLighting", true);
 
 	private final Supplier<Boolean>[] suppliers = new Supplier[] {
 		enabled::get,
@@ -182,7 +184,8 @@ public class OldAnimationsConfig {
 			oldSwingVisualParticles,
 			secondLayerDamageTint,
 			damageColor,
-			oldDamageTick
+			oldDamageTick,
+			oldDamageTintLighting
 		);
 		category.add(categoryGUI);
 		categoryGUI.add(
@@ -228,7 +231,8 @@ public class OldAnimationsConfig {
 			flameOffset,
 			oldPickupArm,
 			fixCameraPitch,
-			xpOrbPosition
+			xpOrbPosition,
+			oldFogGrayScale
 		);
 
 		/* reload the resources upon toggling certain options */

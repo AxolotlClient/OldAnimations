@@ -32,6 +32,7 @@ import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.living.LivingEntity;
+import net.minecraft.util.math.BlockPos;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -48,6 +49,9 @@ public abstract class GameRendererMixin implements Sneaky {
 	@Shadow
 	/* why you not final :( */
 	private Minecraft minecraft;
+
+	@Shadow
+	private float oldFogGrayScale;
 
 	@Unique
 	private float lastCameraY;
@@ -90,19 +94,30 @@ public abstract class GameRendererMixin implements Sneaky {
 	}
 
 	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;updateHeldItem()V")) /* placed below null check */
-	private void axolotlclient$updateCameraY(CallbackInfo ci) {
+	private void axolotlclient$onTick(CallbackInfo ci) {
 		/* updates the current eye height */
-		if (!axolotlclient$isEitherSneakOptionEnabled()) {
+		if (!OldAnimationsConfig.isEnabled()) {
 			return;
 		}
 		Entity entity = minecraft.getCamera();
-		float eyeHeight = entity.getEyeHeight();
-		lastCameraY = cameraY;
-		if (OldAnimationsConfig.instance.slowUpSneak.get() && eyeHeight > cameraY) {
-			cameraY += (eyeHeight - cameraY) * 0.5f;
-		} else {
-			cameraY = eyeHeight;
+		if ((OldAnimationsConfig.instance.smoothSneaking.get() || OldAnimationsConfig.instance.slowUpSneak.get())) {
+			float eyeHeight = entity.getEyeHeight();
+			lastCameraY = cameraY;
+			if (OldAnimationsConfig.instance.slowUpSneak.get() && eyeHeight > cameraY) {
+				cameraY += (eyeHeight - cameraY) * 0.5f;
+			} else {
+				cameraY = eyeHeight;
+			}
 		}
+
+		/* MC-51150 is already fixed by optifine lmfaoo... */
+		/* in order to actually give players an option to toggle it, */
+		/* i think this overwrite is warranted :)  */
+		BlockPos pos = OldAnimationsConfig.instance.oldFogGrayScale.get() ? new BlockPos(minecraft.getCamera().getEyePosition(1.0F)) : new BlockPos(minecraft.getCamera());
+		float f = minecraft.world.getBrightness(pos);
+		float g = (float) minecraft.options.viewDistance / 16.0F;
+		float h = f * (1.0F - g) + g;
+		oldFogGrayScale = oldFogGrayScale + (h - oldFogGrayScale) * 0.1F;
 	}
 
 	@ModifyExpressionValue(method = "applyHurtCam", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;hurtTime:I"))

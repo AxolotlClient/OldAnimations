@@ -18,6 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
@@ -51,5 +52,11 @@ public class PlayerModelMixin extends HumanoidModel {
 			/* in order to completely cancel out the cape pivot changes in 1.8, we're gonna re-assign it! */
 			cape.pivotY = pivotY.get();
 		}
+	}
+
+	@ModifyExpressionValue(method = "translateRightArm", at = @At(value = "CONSTANT", args = "floatValue=1.0F"))
+	private float axolotlclient$fixAlexArmOffset(float original) {
+		/* this modification isn't exactly related to 1.7 visuals, but it's close enough that i should include it :P */
+		return original / (!OldAnimationsConfig.isEnabled() || OldAnimationsConfig.instance.disableAlexModel.get() ? 1.0F : 2.0F);
 	}
 }
