@@ -70,11 +70,6 @@ public final class PlayerUtil {
 			target = blockPos;
 		}
 
-		if (isFakeMinedBlock(blockPos)) {
-			/* don't fake mine if the block is currently invisible */
-			return;
-		}
-
 		if (isBlockInRestorationDelay(blockPos)) {
 			/* prevent mining if block was recently restored and is still in delay period */
 			return;
@@ -86,6 +81,10 @@ public final class PlayerUtil {
 		}
 
 		if (block.getMiningSpeed(minecraft.player, minecraft.player.world, blockPos) >= 1.0F) {
+			if (isFakeMinedBlock(blockPos)) {
+				/* don't fake mine if the block is currently invisible */
+				return;
+			}
 			/* instantly breakable blocks */
 			finishMiningBlock(minecraft, block, blockPos, blockState);
 			return;
@@ -168,7 +167,7 @@ public final class PlayerUtil {
 				fakeMinedBlocks.remove(blockPos);
 				iterator.remove();
 				/* add the block to restoration mining delay. this allows the block to appear for a split second before its mine-able */
-				restorationMiningDelays.put(blockPos, currentTime + getPing(minecraft) + 1);
+				restorationMiningDelays.put(blockPos, currentTime + 1);
 				for (Direction direction : Direction.values()) {
 					/* updates surrounding blocks */
 					minecraft.world.notifyBlockChanged(blockPos.offset(direction));
