@@ -49,7 +49,7 @@ public abstract class EntityRendererMixin {
 
 	@ModifyExpressionValue(method = "renderOnFire", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/Entity;y:D"))
 	private double axolotlclient$includeEyeHeight$Y(double original, @Local(argsOnly = true) Entity entity) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.flameOffset.get() && PlayerUtil.isSelf(entity)) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.flameOffset.get() && PlayerUtil.INSTANCE.isSelf(entity)) {
 			/* taken from 1.7 */
 			/* we must make sure the flame is synced with the interpolated player model position */
 			original += (OldAnimationsConfig.instance.thirdPersonSneaking.get() ? ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() : entity.getEyeHeight());
@@ -59,7 +59,7 @@ public abstract class EntityRendererMixin {
 
 	@WrapOperation(method = "postRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderer;renderOnFire(Lnet/minecraft/entity/Entity;DDDF)V"))
 	private void axolotlclient$includeEyeHeight$renderFire(EntityRenderer<?> instance, Entity entity, double dx, double dy, double dz, float tickDelta, Operation<Void> original) {
-		boolean oldFlameHeight = OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.flameOffset.get() && PlayerUtil.isSelf(entity);
+		boolean oldFlameHeight = OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.flameOffset.get() && PlayerUtil.INSTANCE.isSelf(entity);
 		if (oldFlameHeight) {
 			GlStateManager.pushMatrix();
 			/* taken from 1.7 */

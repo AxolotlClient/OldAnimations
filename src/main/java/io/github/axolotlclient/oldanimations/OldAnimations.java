@@ -36,6 +36,7 @@ public class OldAnimations implements ClientModInitializer {
 	tops of certain blocks have switch uvs
 	tripwire texture and model changes
 	couldrons model and texture
+	improve fake block mining believability
 	*/
 
 	public static final String MODID = "axolotlclient-oldanimations";

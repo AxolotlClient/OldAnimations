@@ -112,7 +112,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 	@Inject(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"))
     private void axolotlclient$addSneakingTranslation(LivingEntity livingEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
         /* in order to match 1.7, we need to elevate the player model while sneaking */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.isSelf(livingEntity)) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
 			if (livingEntity.isSneaking()) {
 				/* we need to remove the already existing sneaking offset */
 				/* which is present in BiPedModel#render, PlayerEntityModel#render, and related classes */
@@ -143,7 +143,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 
 	@ModifyArg(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 0), index = 1)
 	private float axolotlclient$syncNameTag(float f, @Local(argsOnly = true) LivingEntity livingEntity) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.isSelf(livingEntity)) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
 			/* we must ensurethe nametag is synced with the interpolated player model position */
 			f += ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() - 1.62F;
 		}
@@ -152,7 +152,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 
 	@ModifyArg(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderNameTag(Lnet/minecraft/entity/Entity;DDDLjava/lang/String;FD)V"), index = 2)
 	private double axolotlclient$syncNameTag2(double par2, @Local(argsOnly = true) LivingEntity livingEntity) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.isSelf(livingEntity)) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
 			/* we must ensure the nametag is synced with the interpolated player model position once again */
 			par2 += ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() - 1.62F;
 		}

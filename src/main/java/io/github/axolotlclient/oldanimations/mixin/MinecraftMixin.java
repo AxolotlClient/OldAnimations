@@ -82,7 +82,7 @@ public abstract class MinecraftMixin {
 			BlockPos blockPos = crosshairTarget.getPos();
 			if (!world.isAir(blockPos)) {
 				if (OldAnimationsConfig.instance.useAndMineDestroyVisual.get()) {
-					PlayerUtil.INSTANCE.fakeDestroyBlock(minecraft, blockPos);
+					PlayerUtil.INSTANCE.fakeUpdateBlockMining(minecraft, blockPos);
 				}
 				PlayerUtil.INSTANCE.fakeSwing(player);
 				if (OldAnimationsConfig.instance.useAndMineParticles.get()) {
@@ -110,6 +110,7 @@ public abstract class MinecraftMixin {
 
 	@ModifyExpressionValue(method = "doUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientPlayerInteractionManager;isMiningBlock()Z"))
 	private boolean axolotlclient$allowMiningCancel(boolean original) {
+		/* this may flag an anticheat... but so does lunar, badlion, feather, forge mods, etc... we should be as safe as them */
 		return (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.allowMiningCancel.get()) && original;
 	}
 
@@ -138,6 +139,14 @@ public abstract class MinecraftMixin {
 					}
 				}
 			}
+		}
+	}
+
+	@Inject(method = "tick", at = @At("HEAD"))
+	private void axolotlclient$updatePendingFakeMinedBlocks(CallbackInfo ci) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.useAndMineDestroyVisual.get()) {
+			/* this will restore the block by updating the chunk*/
+			PlayerUtil.INSTANCE.updatePendingRestorations();
 		}
 	}
 
