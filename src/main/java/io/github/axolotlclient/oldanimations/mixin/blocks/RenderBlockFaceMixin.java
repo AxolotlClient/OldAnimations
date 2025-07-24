@@ -16,11 +16,11 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations.mixin;
+package io.github.axolotlclient.oldanimations.mixin.blocks;
 
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.PlayerUtil;
-import net.minecraft.block.Block;
+import net.minecraft.block.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldView;
@@ -29,8 +29,30 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Block.class)
-public abstract class BlockMixin {
+@Mixin(
+	value = {
+		Block.class,
+		AnvilBlock.class,
+		BlockWithCulling.class,
+		CarpetBlock.class,
+		DiodeBlock.class,
+		DragonEggBlock.class,
+		EndPortalBlock.class,
+		FarmlandBlock.class,
+		FenceBlock.class,
+		FenceGateBlock.class,
+		HopperBlock.class,
+		LiquidBlock.class,
+		PaneBlock.class,
+		PistonHeadBlock.class,
+		PortalBlock.class,
+		SlabBlock.class,
+		SnowLayerBlock.class,
+		TransparentBlock.class,
+		WallBlock.class
+	}
+)
+public class RenderBlockFaceMixin {
 
 	@Inject(method = "shouldRenderFace", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$showFaces(WorldView worldView, BlockPos blockPos, Direction direction, CallbackInfoReturnable<Boolean> cir) {

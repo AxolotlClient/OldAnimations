@@ -116,7 +116,7 @@ public abstract class HeldItemRendererMixin {
 	@Inject(method = "renderInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$applyRodRotation(float partialTicks, CallbackInfo ci) {
 		/* original transformation from 1.7 */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldRodRotation.get() && item.getItem().shouldRotate()) {
+		if (OldAnimationsConfig.isEnabled() && (OldAnimationsConfig.instance.oldRodRotation.get() || OldAnimationsConfig.instance.disableResourcePackItemTransformations.get()) && item.getItem().shouldRotate()) {
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 		}
 	}
