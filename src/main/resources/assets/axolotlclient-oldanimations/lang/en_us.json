@@ -138,5 +138,7 @@
 	"oldFogGrayScale": "Old Fog Grayscale Logic",
 	"oldFogGrayScale.tooltip": "Calculates fog's grayscale effect starting from the player's eyeline and not their feet just like in 1.7.",
 	"oldDamageTintLighting": "Apply Lighting to Damage Tint",
-	"oldDamageTintLighting.tooltip": "Allows the damage tint's red hue to be influenced by the surrounding lighting just like in 1.7."
+	"oldDamageTintLighting.tooltip": "Allows the damage tint's red hue to be influenced by the surrounding lighting just like in 1.7.",
+	"refreshResourcesRegardless": "Refresh Resources Regardless Of Change",
+	"refreshResourcesRegardless.tooltip": "Refreshes game resources when the done button is pressed in the resource packs window regardless of whether or not the pack was changed. Behavior taken straight from 1.7."
 }

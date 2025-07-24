@@ -113,6 +113,7 @@ public class OldAnimationsConfig {
 	public final BooleanOption oldTallGrassTexture = new BooleanOption("oldTallGrassTexture", false);
 	public final BooleanOption oldFogGrayScale = new BooleanOption("oldFogGrayScale", true);
 	public final BooleanOption oldDamageTintLighting = new BooleanOption("oldDamageTintLighting", true);
+	public final BooleanOption refreshResourcesRegardless = new BooleanOption("refreshResourcesRegardless", false);
 
 	private final Supplier<Boolean>[] suppliers = new Supplier[] {
 		enabled::get,
@@ -198,6 +199,7 @@ public class OldAnimationsConfig {
 			disableSkinCustomizationButton,
 			oldMultiplayerSettingsPage,
 			oldDifficultyButtonLogic,
+			refreshResourcesRegardless,
 			moveSprintKeybind,
 			disableTitles
 		);

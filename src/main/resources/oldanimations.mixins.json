@@ -37,6 +37,7 @@
 		"PlayerRendererMixin",
 		"PlayerTabOverlayMixin",
 		"ProjectileRendererMixin",
+		"ResourcePackScreenMixin",
 		"ServerListEntryWidgetMixin",
 		"ServerPlayerEntityMixin",
 		"WorldRendererMixin",
