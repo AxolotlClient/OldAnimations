@@ -130,7 +130,7 @@ public abstract class ItemRendererMixin {
 
 	@WrapOperation(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderEnchantmentGlint(Lnet/minecraft/client/resource/model/BakedModel;)V"))
 	public void axolotlclient$disableBlocksGlint(ItemRenderer instance, BakedModel bakedModel, Operation<Void> original, @Local(argsOnly = true) ItemStack itemStack) {
-		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableGlintOnBlocks.get() && !isGui3d(itemStack)) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableGlintOnBlocks.get() || !isGui3d(itemStack)) {
 			original.call(instance, bakedModel);
 		}
 	}

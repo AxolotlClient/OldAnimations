@@ -18,24 +18,41 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.entity.layer.CapeLayer;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CapeLayer.class)
-public abstract class CapeLayerMixin {
+public class CapeLayerMixin {
 
-	@Inject(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"))
-	private void axolotlClient$addSneakingTranslation(ClientPlayerEntity clientPlayerEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonCapePosition.get() && clientPlayerEntity.isSneaking()) {
-			/* honestly, idk why the cape is positioned differently in 1.8 versus 1.7.... weird lol */
-			/* this is a rough estimation of where it should be positioned... not ideal, but its better than nothing lol */
-			GlStateManager.translatef(0.0F, 0.0125F, 0.0F);
+	@Dynamic("OptiFine")
+	@WrapWithCondition(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 1))
+	private boolean axolotlclient$disableOptiFineTranslation(float f, float g, float h) {
+		/* optifine attemps to fix 1.8's weird cape position... that's all well and good, but let's just disable that when we use our own :p */
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.thirdPersonSneaking.get();
+	}
+
+	@Dynamic("OptiFine")
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=165.0"))
+	private float axolotlclient$disableOptiFineClamp(float original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
+			/* optifine attemps to clamp the cape's physics... nuh uh */
+			return Float.MAX_VALUE;
 		}
+		return original;
+	}
+
+	@Dynamic("OptiFine")
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-5.0"))
+	private float axolotlclient$disableOptiFineClamp2(float original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
+			/* optifine attemps to clamp the cape's physics... nuh uh */
+			return Float.MIN_VALUE;
+		}
+		return original;
 	}
 }
