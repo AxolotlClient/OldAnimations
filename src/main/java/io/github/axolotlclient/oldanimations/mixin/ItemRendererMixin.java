@@ -128,6 +128,13 @@ public abstract class ItemRendererMixin {
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlintColor.get() ? -10407781 : color;
 	}
 
+	@WrapOperation(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderEnchantmentGlint(Lnet/minecraft/client/resource/model/BakedModel;)V"))
+	public void axolotlclient$disableBlocksGlint(ItemRenderer instance, BakedModel bakedModel, Operation<Void> original, @Local(argsOnly = true) ItemStack itemStack) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableGlintOnBlocks.get() && !isGui3d(itemStack)) {
+			original.call(instance, bakedModel);
+		}
+	}
+
 	@Inject(method = "renderEnchantmentGlint", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$disableDefaultGlint(CallbackInfo ci) {
 		if (OldAnimationsConfig.isEnabled()) {
@@ -171,6 +178,9 @@ public abstract class ItemRendererMixin {
 	private void axolotlclient$renderGuiGlint(ItemStack stack, int x, int y, CallbackInfo ci) {
 		axolotlclient$isGui = false;
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGuiGlint.get() && stack.hasEnchantmentGlint()) {
+			if (OldAnimationsConfig.instance.disableGlintOnBlocks.get() && isGui3d(stack)) {
+				return;
+			}
 			GlintHandler.renderEnchantmentGlintPre(textureManager, ENCHANTMENT_GLINT_LOCATION, axolotlclient$glintColor);
 			prepareGuiItemRender(x, y, false);
 			GlintHandler.renderEnchantmentGlintPost(textureManager);

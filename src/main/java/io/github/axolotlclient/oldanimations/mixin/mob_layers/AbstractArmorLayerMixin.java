@@ -19,6 +19,7 @@
 package io.github.axolotlclient.oldanimations.mixin.mob_layers;
 
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+import io.github.axolotlclient.oldanimations.mixin.LivingEntityRendererAccessor;
 import io.github.axolotlclient.oldanimations.util.DamageTint;
 import io.github.axolotlclient.oldanimations.util.IDamageTint;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -46,7 +47,7 @@ public abstract class AbstractArmorLayerMixin {
 	@Inject(method = "renderArmor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/Model;render(Lnet/minecraft/entity/Entity;FFFFFF)V", shift = At.Shift.AFTER))
 	private void axolotlclient$addDamageBrightness(LivingEntity entity, float handSwingAmount, float handSwing, float tickDelta, float age, float headYaw, float headPitch, float scale, int equipmentSlot, CallbackInfo ci) {
 		/* colors the armor pieces red just like 1.7 */
-		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.secondLayerDamageTint.get() || !OldAnimationsConfig.instance.damageColor.get()) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.secondLayerDamageTint.get() || !OldAnimationsConfig.instance.damageTintColor.get()) {
 			return;
 		}
 		if (((IDamageTint) parent).axolotlclient$setupOverlayColor(entity, tickDelta)) {
@@ -55,9 +56,21 @@ public abstract class AbstractArmorLayerMixin {
 		}
 	}
 
+	@Inject(method = "renderArmor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/Model;render(Lnet/minecraft/entity/Entity;FFFFFF)V", shift = At.Shift.AFTER))
+	private void axolotlclient$addDamageBrightnessAlternative(LivingEntity entity, float handSwingAmount, float handSwing, float tickDelta, float age, float headYaw, float headPitch, float scale, int equipmentSlot, CallbackInfo ci) {
+		/* colors the armor pieces red just like 1.7 */
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.secondLayerDamageTint.get() || !OldAnimationsConfig.instance.separateDamageTintFromGlint.get() || OldAnimationsConfig.instance.damageTintColor.get()) {
+			return;
+		}
+		if (((LivingEntityRendererAccessor) parent).invokeSetupOverlayColor(entity, tickDelta, true)) {
+			getModel(equipmentSlot).render(entity, handSwingAmount, handSwing, age, headYaw, headPitch, scale);
+			((LivingEntityRendererAccessor) parent).invokeTearDownOverlayColor();
+		}
+	}
+
 	@Inject(method = "colorsWhenDamaged", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$applyDamageColor(CallbackInfoReturnable<Boolean> callback) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.secondLayerDamageTint.get() && !OldAnimationsConfig.instance.damageColor.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.secondLayerDamageTint.get() && !OldAnimationsConfig.instance.damageTintColor.get() && !OldAnimationsConfig.instance.separateDamageTintFromGlint.get()) {
 			/* enables coloring the second layer in 1.8 */
 			callback.setReturnValue(true);
 		}

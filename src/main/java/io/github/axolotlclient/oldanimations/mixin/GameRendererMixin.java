@@ -104,7 +104,11 @@ public abstract class GameRendererMixin implements Sneaky {
 			float eyeHeight = entity.getEyeHeight();
 			lastCameraY = cameraY;
 			if (OldAnimationsConfig.instance.slowUpSneak.get() && eyeHeight > cameraY) {
-				cameraY += (eyeHeight - cameraY) * 0.5f;
+				/* the value is 0.4f in 1.7, however the math that is applied, when rearranged, */
+				/* will yield 0.6f when adapted to 1.13+ sneaking logic */
+				/* that being said, 1.13 uses 0.5f which is a tiny bit slower than 1.7! */
+				/* turns out TheKodeToad was right the whole time... damn */
+				cameraY += (eyeHeight - cameraY) * 0.6f;
 			} else {
 				cameraY = eyeHeight;
 			}

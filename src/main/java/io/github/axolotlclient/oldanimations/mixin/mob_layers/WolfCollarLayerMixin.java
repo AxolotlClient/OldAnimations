@@ -41,7 +41,7 @@ public abstract class WolfCollarLayerMixin {
 	@Inject(method = "render(Lnet/minecraft/entity/living/mob/passive/animal/tamable/WolfEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/Model;render(Lnet/minecraft/entity/Entity;FFFFFF)V", shift = At.Shift.AFTER))
     private void axolotlclient$addDamageBrightness(WolfEntity wolfEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
 		/* colors the entity's layer red just like 1.7 */
-		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.damageColor.get()) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.damageTintColor.get()) {
 			return;
 		}
 		if (((IDamageTint) parent).axolotlclient$setupOverlayColor(wolfEntity, h)) {

@@ -57,13 +57,19 @@ public abstract class HeldItemLayerMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/entity/HumanoidModel;translateRightArm(F)V"))
 	private void axolotlclient$addSneakTranslation(LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
-		if (isSneakingFixEnabled() && livingEntity.isSneaking())
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fixThirdPersonHeldItemSneakDeSync.get() &&
+			!OldAnimationsConfig.instance.thirdPersonSneaking.get() && livingEntity.isSneaking())
 			GlStateManager.translatef(0.0F, 0.2F, 0.0F);
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;isSneaking()Z"))
 	private boolean axolotlclient$disableSneakTranslation(LivingEntity instance, Operation<Boolean> original) {
-		return (!isSneakingFixEnabled()) && original.call(instance);
+		if (OldAnimationsConfig.isEnabled() &&
+			(OldAnimationsConfig.instance.fixThirdPersonHeldItemSneakDeSync.get() || OldAnimationsConfig.instance.thirdPersonSneaking.get())) {
+			/* we need to remove the sneaking offset since we will be using our own */
+			return false;
+		}
+		return original.call(instance);
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;<init>(Lnet/minecraft/item/Item;I)V"), index = 0)
@@ -135,10 +141,5 @@ public abstract class HeldItemLayerMixin {
 	@Unique
 	private static boolean areItemPositionsEnabled() {
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get();
-	}
-
-	@Unique
-	private static boolean isSneakingFixEnabled() {
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fixThirdPersonHeldItemSneakDeSync.get();
 	}
 }

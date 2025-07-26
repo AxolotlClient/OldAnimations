@@ -66,9 +66,6 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 	@Shadow
 	protected FloatBuffer tintBuffer;
 
-	@Shadow
-	protected abstract boolean shouldRenderNameTag(T livingEntity);
-
 	@Unique
 	private float axolotlclient$h = 0.0F;
 
@@ -81,7 +78,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 	private void axolotlclient$cancelDamageBrightness(LivingEntityRenderer<?> instance, LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, Operation<Void> original) {
 		original.call(instance, livingEntity, f, g, h, i, j, k);
 
-		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.damageColor.get()) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.damageTintColor.get()) {
 			return;
 		}
 
@@ -94,7 +91,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 	@WrapOperation(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;F)Z"))
 	private boolean axolotlclient$cancelDamageBrightness(LivingEntityRenderer<?> instance, LivingEntity livingEntity, float f, Operation<Boolean> original) {
 		/* cancel model damage tint */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.damageColor.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.damageTintColor.get()) {
 			return false;
 		}
 		return original.call(instance, livingEntity, f);
@@ -103,7 +100,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 	@WrapOperation(method = "renderLayers", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z"))
 	private boolean axolotlclient$cancelDamageBrightness2(LivingEntityRenderer<?> instance, LivingEntity livingEntity, float f, boolean bl, Operation<Boolean> original) {
 		/* cancel layer damage tint */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.damageColor.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.damageTintColor.get()) {
 			return false;
 		}
 		return original.call(instance, livingEntity, f, bl);
@@ -113,11 +110,6 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
     private void axolotlclient$addSneakingTranslation(LivingEntity livingEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
         /* in order to match 1.7, we need to elevate the player model while sneaking */
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
-			if (livingEntity.isSneaking()) {
-				/* we need to remove the already existing sneaking offset */
-				/* which is present in BiPedModel#render, PlayerEntityModel#render, and related classes */
-				GlStateManager.translatef(0.0F, -0.2F, 0.0F);
-			}
 			float eyeHeightOffset = 1.62F - ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight();
 			/* the elevation will be the difference between the player's sneaking eyeheight and their actual eyeheight (1.62 meters) */
 			/* the player model should now move 1:1 with the crosshair */

@@ -42,7 +42,7 @@ public abstract class EndermanEyesLayerMixin {
 	@Inject(method = "render(Lnet/minecraft/entity/living/mob/hostile/EndermanEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/Model;render(Lnet/minecraft/entity/Entity;FFFFFF)V", shift = At.Shift.AFTER))
     private void axolotlclient$addDamageBrightness(EndermanEntity endermanEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
 		/* colors the entity's layer red just like 1.7 */
-		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.secondLayerDamageTint.get() || !OldAnimationsConfig.instance.damageColor.get()) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.secondLayerDamageTint.get() || !OldAnimationsConfig.instance.damageTintColor.get()) {
 			return;
 		}
 		if (((IDamageTint) parent).axolotlclient$setupOverlayColor(endermanEntity, h)) {
@@ -53,7 +53,7 @@ public abstract class EndermanEyesLayerMixin {
 
 	@Inject(method = "colorsWhenDamaged", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$applyDamageColor(CallbackInfoReturnable<Boolean> callback) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.secondLayerDamageTint.get() && !OldAnimationsConfig.instance.damageColor.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.secondLayerDamageTint.get() && !OldAnimationsConfig.instance.damageTintColor.get()) {
 			/* enables coloring the second layer in 1.8 */
 			callback.setReturnValue(true);
 		}

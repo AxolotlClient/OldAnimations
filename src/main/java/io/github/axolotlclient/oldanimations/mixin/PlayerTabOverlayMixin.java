@@ -21,7 +21,6 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
@@ -101,5 +100,11 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 	private int axolotlclient$removeExtraPixels(int par1) {
 		/* corrects for an extra column of pixels added in 1.8+ */
 		return par1 - (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? 1 : 0);
+	}
+
+	@ModifyExpressionValue(method = "renderPing", at = @At(value = "CONSTANT", args = "intValue=11"))
+	private int axolotlclient$movePingElement(int original) {
+		/* move the ping element */
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? 12 : original;
 	}
 }

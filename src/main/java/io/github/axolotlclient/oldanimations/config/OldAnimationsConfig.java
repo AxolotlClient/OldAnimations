@@ -65,7 +65,7 @@ public class OldAnimationsConfig {
 	public final BooleanOption debugTextShadow = new BooleanOption("debugTextShadow", true);
 	public final BooleanOption thirdPersonSneaking = new BooleanOption("thirdPersonSneaking", false);
 	public final BooleanOption allowMiningCancel = new BooleanOption("allowMiningCancel", true);
-	public final BooleanOption damageColor = new BooleanOption("damageColor", true);
+	public final BooleanOption damageTintColor = new BooleanOption("damageTintColor", true);
 	public final BooleanOption stickRod = new BooleanOption("stickRod", false);
 	public final BooleanOption blockingArm = new BooleanOption("blockingArm", true);
 	public final BooleanOption fastItems = new BooleanOption("fastItems", false);
@@ -108,12 +108,15 @@ public class OldAnimationsConfig {
 	public final BooleanOption oldDoorTextures = new BooleanOption("oldDoorTextures", false);
 	public final BooleanOption oldDifficultyButtonLogic = new BooleanOption("oldDifficultyButtonLogic", false);
 	public final BooleanOption moveSprintKeybind = new BooleanOption("moveSprintKeybind", false);
-	public final BooleanOption thirdPersonCapePosition = new BooleanOption("thirdPersonCapePosition", false);
 	public final BooleanOption oldSpongeTexture = new BooleanOption("oldSpongeTexture", false);
 	public final BooleanOption oldTallGrassTexture = new BooleanOption("oldTallGrassTexture", false);
 	public final BooleanOption oldFogGrayScale = new BooleanOption("oldFogGrayScale", true);
 	public final BooleanOption oldDamageTintLighting = new BooleanOption("oldDamageTintLighting", true);
 	public final BooleanOption refreshResourcesRegardless = new BooleanOption("refreshResourcesRegardless", false);
+	public final BooleanOption removeHitBoxEyeLines = new BooleanOption("removeHitBoxEyeLines", false);
+	public final BooleanOption hitboxOffset = new BooleanOption("hitboxOffset", false);
+	public final BooleanOption disableGlintOnBlocks = new BooleanOption("disableGlintOnBlocks", false);
+	public final BooleanOption separateDamageTintFromGlint = new BooleanOption("separateDamageTintFromGlint", false);
 
 	private final Supplier<Boolean>[] suppliers = new Supplier[] {
 		enabled::get,
@@ -154,8 +157,7 @@ public class OldAnimationsConfig {
 		categorySneaking.add(
 			smoothSneaking,
 			slowUpSneak,
-			thirdPersonSneaking,
-			thirdPersonCapePosition
+			thirdPersonSneaking
 		);
 		category.add(categoryItems);
 		categoryItems.add(
@@ -184,9 +186,10 @@ public class OldAnimationsConfig {
 			oldSwingVisual,
 			oldSwingVisualParticles,
 			secondLayerDamageTint,
-			damageColor,
+			damageTintColor,
 			oldDamageTick,
-			oldDamageTintLighting
+			oldDamageTintLighting,
+			separateDamageTintFromGlint
 		);
 		category.add(categoryGUI);
 		categoryGUI.add(
@@ -224,7 +227,8 @@ public class OldAnimationsConfig {
 			oldGlint,
 			oldGuiGlint,
 			oldGlintColor,
-			oldPotionGlint
+			oldPotionGlint,
+			disableGlintOnBlocks
 		);
 		category.add(categoryMisc);
 		categoryMisc.add(
@@ -234,7 +238,9 @@ public class OldAnimationsConfig {
 			oldPickupArm,
 			fixCameraPitch,
 			xpOrbPosition,
-			oldFogGrayScale
+			oldFogGrayScale,
+			removeHitBoxEyeLines,
+			hitboxOffset
 		);
 
 		/* reload the resources upon toggling certain options */

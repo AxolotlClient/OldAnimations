@@ -19,6 +19,8 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
@@ -38,9 +40,18 @@ public class PlayerModelMixin extends HumanoidModel {
 	@Shadow
 	private ModelPart cape;
 
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isSneaking()Z"))
+	private boolean axolotlclient$disableSneakTranslation(Entity instance, Operation<Boolean> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
+			/* we need to remove the sneaking offset since we will be using our own */
+			return false;
+		}
+		return original.call(instance);
+	}
+
 	@Inject(method = "setAngles", at = @At("HEAD"))
 	private void axolotlclient$copyCapePivot(float handSwing, float handSwingAmount, float age, float yaw, float pitch, float scale, Entity entity, CallbackInfo ci, @Share("pivotY") LocalFloatRef pivotY) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonCapePosition.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
 			/* capturing the initial value of the cape's pivot */
 			pivotY.set(cape.pivotY);
 		}
@@ -48,8 +59,9 @@ public class PlayerModelMixin extends HumanoidModel {
 
 	@Inject(method = "setAngles", at = @At("TAIL"))
 	private void axolotlclient$disableSneakCapeTranslations(float handSwing, float handSwingAmount, float age, float yaw, float pitch, float scale, Entity entity, CallbackInfo ci, @Share("pivotY") LocalFloatRef pivotY) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonCapePosition.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
 			/* in order to completely cancel out the cape pivot changes in 1.8, we're gonna re-assign it! */
+			/* this pivot might not actually do anything impactful... not sure why */
 			cape.pivotY = pivotY.get();
 		}
 	}

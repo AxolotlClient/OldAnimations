@@ -18,6 +18,8 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.render.model.ModelPart;
 import net.minecraft.client.render.model.entity.HumanoidModel;
@@ -32,7 +34,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HumanoidModel.class)
 public abstract class HumanoidModelMixin {
-
 	@Shadow
 	public ModelPart rightArm;
 
@@ -47,5 +48,14 @@ public abstract class HumanoidModelMixin {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.blockingArm.get()) {
 			rightArm.rotationY = 0.0f;
 		}
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isSneaking()Z"))
+	private boolean axolotlclient$disableSneakTranslation(Entity instance, Operation<Boolean> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
+			/* we need to remove the sneaking offset since we will be using our own */
+			return false;
+		}
+		return original.call(instance);
 	}
 }

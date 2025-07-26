@@ -30,13 +30,14 @@ public class OldAnimations implements ClientModInitializer {
 	/*
 	blocks item positions (rotations) + fix trapdoors and pressure plates and other crap
 	held pressure plates look a bit different?? idk why THEYRE BIGGER THATS WHY
-	third person item positions toggle?
 	old fence fate model
 	old fast smooth lighting shadows
 	tops of certain blocks have switch uvs
 	tripwire texture and model changes
 	couldrons model and texture
 	improve fake block mining believability - paneblock and tripwireblock are still not accurate
+	rod and bow and block positions and swing position.. can be separate options LOL
+	fix weird fuzzy texture sizes of swords and stuff
 	*/
 
 	public static final String MODID = "axolotlclient-oldanimations";
