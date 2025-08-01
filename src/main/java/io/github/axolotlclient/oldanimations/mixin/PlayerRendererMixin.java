@@ -18,6 +18,8 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
@@ -61,5 +63,11 @@ public abstract class PlayerRendererMixin {
 			/* don't apply third person arm rotation to first person */
 			playerModel.rightHandItemId = 0;
 		}
+	}
+
+	@WrapOperation(method = {"renderPlayerLeftHandModel", "renderPlayerRightHandModel"}, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/entity/PlayerModel;sneaking:Z"))
+	private void legarity$fixVehicleArm(PlayerModel instance, boolean value, Operation<Void> original) {
+		/* fixes MC-1349*/
+		instance.hasVehicle = instance.sneaking = false;
 	}
 }
