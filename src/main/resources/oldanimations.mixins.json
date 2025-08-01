@@ -2,9 +2,9 @@
   "required": true,
   "package": "io.github.axolotlclient.oldanimations.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixinextras": {
-    "minVersion": "0.5.0-rc.2"
-  },
+	"mixinextras": {
+		"minVersion": "0.5.0"
+	},
   "client": [
     "BlockModelAccessor",
     "BlockModelRendererMixin",
