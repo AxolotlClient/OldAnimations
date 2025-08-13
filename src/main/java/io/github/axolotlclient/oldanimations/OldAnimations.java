@@ -28,6 +28,7 @@ import java.util.List;
 public class OldAnimations implements ClientModInitializer {
 
 	/*
+	TODO LIST
 	blocks item positions (rotations) + fix trapdoors and pressure plates and other crap
 	held pressure plates look a bit different?? idk why THEYRE BIGGER THATS WHY
 	old fence fate model
@@ -44,6 +45,7 @@ public class OldAnimations implements ClientModInitializer {
 	is sprint flying different??
 	need to revamp the sneaking options.. third person sneaking position should be separated from smooth sneaking :p
 	oh my god. the custom models/textures are a damn nightmare of a mess
+	need to verify if other players have a different sneaking position
 	*/
 
 	public static final String MODID = "axolotlclient-oldanimations";
