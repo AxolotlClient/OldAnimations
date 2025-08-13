@@ -22,13 +22,13 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import io.github.axolotlclient.oldanimations.ducks.Sneaky;
-import net.minecraft.client.Minecraft;
+import io.github.axolotlclient.oldanimations.util.PlayerUtil;
 import net.minecraft.client.render.entity.FishingBobberRenderer;
 import net.minecraft.entity.living.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(FishingBobberRenderer.class)
@@ -57,7 +57,7 @@ public abstract class FishingBobberEntityRendererMixin {
 	@WrapOperation(method = "render(Lnet/minecraft/entity/FishingBobberEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;getEyeHeight()F"))
 	private float axolotlclient$useLerpEyeHeight_Fish(PlayerEntity instance, Operation<Float> original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.smoothSneaking.get()) {
-			return ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight();
+			return PlayerUtil.INSTANCE.getEyeHeightSneakOffset();
 		}
 		return original.call(instance);
 	}

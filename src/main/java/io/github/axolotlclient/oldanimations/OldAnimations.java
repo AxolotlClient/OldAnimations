@@ -34,10 +34,16 @@ public class OldAnimations implements ClientModInitializer {
 	old fast smooth lighting shadows
 	tops of certain blocks have switch uvs
 	tripwire texture and model changes
-	couldrons model and texture
+	cauldrons model and texture
 	improve fake block mining believability - paneblock and tripwireblock are still not accurate
 	rod and bow and block positions and swing position.. can be separate options LOL
 	fix weird fuzzy texture sizes of swords and stuff
+	fix weird inconsistencies with block item positions between 1.7 and my ported 1.8 code :/
+	certain mob hitboxes should be visually changed
+	fast grass always showns in gui/dropped?
+	is sprint flying different??
+	need to revamp the sneaking options.. third person sneaking position should be separated from smooth sneaking :p
+	oh my god. the custom models/textures are a damn nightmare of a mess
 	*/
 
 	public static final String MODID = "axolotlclient-oldanimations";

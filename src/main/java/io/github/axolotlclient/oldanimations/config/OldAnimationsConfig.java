@@ -41,7 +41,7 @@ public class OldAnimationsConfig {
 	private final OptionCategory categoryBlocking = OptionCategory.create("blockingItemUsing");
 	private final OptionCategory categorySneaking = OptionCategory.create("sneaking");
 	private final OptionCategory categoryItems = OptionCategory.create("items");
-	private final OptionCategory categoryTextures = OptionCategory.create("textures");
+	private final OptionCategory categoryResources = OptionCategory.create("resources");
 	private final OptionCategory categoryCombat = OptionCategory.create("combat");
 	private final OptionCategory categoryGUI = OptionCategory.create("gui");
 	private final OptionCategory categoryDebugOverlay = OptionCategory.create("debugOverlay");
@@ -170,12 +170,12 @@ public class OldAnimationsConfig {
 			stickRod,
 			stopLineTranslateSneak,
 			equipLogic,
-			replaceSkullModel,
 			disableResourcePackItemTransformations,
 			fixThirdPersonHeldItemSneakDeSync
 		);
-		category.add(categoryTextures);
-		categoryTextures.add(
+		category.add(categoryResources);
+		categoryResources.add(
+			replaceSkullModel,
 			fastGrass,
 			oldDoorTextures,
 			oldSpongeTexture,
@@ -263,7 +263,7 @@ public class OldAnimationsConfig {
 				}
 			}
 			if (needsReload) {
-				Minecraft.getInstance().reloadResources();
+				Minecraft.getInstance().submit(() -> Minecraft.getInstance().reloadResources());
 			}
 		});
 	}

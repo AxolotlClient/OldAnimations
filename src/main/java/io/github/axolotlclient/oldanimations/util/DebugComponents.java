@@ -66,7 +66,7 @@ public final class DebugComponents {
 		list.add(String.format(var13, Arrays.copyOf(var14, var14.length)));
 		var13 = "y: %.3f (feet pos, %.3f eyes pos)";
 		/* this eyeheight stuff is actually directly a fix for MC-51150... */
-		var14 = new Object[]{mc.player.getShape().minY, playerPosY + (double)((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight()};
+		var14 = new Object[]{mc.player.getShape().minY, playerPosY + PlayerUtil.INSTANCE.getEyeHeightSneakOffset()};
 		list.add(String.format(var13, Arrays.copyOf(var14, var14.length)));
 		var13 = "z: %.5f (%d) // c: %d (%d)";
 		var14 = new Object[]{playerPosZ, MathHelper.floor(playerPosZ), MathHelper.floor(playerPosZ) >> 4, MathHelper.floor(playerPosZ) & 15};

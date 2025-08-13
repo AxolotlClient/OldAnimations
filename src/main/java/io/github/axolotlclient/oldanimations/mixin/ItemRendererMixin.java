@@ -283,6 +283,11 @@ public abstract class ItemRendererMixin {
 		}
 	}
 
+	@ModifyArg(method = "renderGuiItemModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
+	private ModelTransformations.Type axolotlclient$disableGuiTransforms(ModelTransformations.Type type, @Local(argsOnly = true) ItemStack itemStack) {
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemUtil.isBlacklisted(itemStack) ? ModelTransformations.Type.NONE : type;
+	}
+
 	@Unique
 	private BakedModel axolotlclient$getModel(String model) {
 		return getModelShaper().getManager().getModel(new ModelIdentifier(model, "inventory"));

@@ -25,7 +25,6 @@ import io.github.axolotlclient.oldanimations.util.ItemUtil;
 import net.minecraft.client.render.model.block.ModelTransformation;
 import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SkullItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -44,7 +43,6 @@ public abstract class ModelTransformationsMixin {
 		if (OldAnimationsConfig.isEnabled()) {
 			boolean packTransformsEnabled = !OldAnimationsConfig.instance.disableResourcePackItemTransformations.get();
 			ItemStack heldStack = ItemUtil.getHeldItemStack();
-			ItemStack guiStack = ItemUtil.getGuiItemStack();
 			ModelTransformations.Type firstPerson =  ModelTransformations.Type.FIRST_PERSON;
 			ModelTransformations.Type thirdPerson =  ModelTransformations.Type.THIRD_PERSON;
 
@@ -65,37 +63,6 @@ public abstract class ModelTransformationsMixin {
 							GlStateManager.translatef(0.0F, 1.25F * SCALE, 0.0F);
 						}
 					}
-				}
-			}
-			if (OldAnimationsConfig.instance.replaceSkullModel.get() && ((guiStack != null && guiStack.getItem() instanceof SkullItem) ||
-				(heldStack != null && heldStack.getItem() instanceof SkullItem && packTransformsEnabled))) {
-				/* inverse translations */
-				/* and make skull items have the same item transforms of like apples or diamonds */
-				switch (type) {
-					case FIRST_PERSON:
-						GlStateManager.rotatef(180, 0.0F, 1.0F, 0.0F);
-						GlStateManager.translatef(0.0F, 4.0F * SCALE, 2.0F * SCALE);
-						GlStateManager.rotatef(-135.0F, 0.0F, 1.0F, 0.0F);
-						GlStateManager.rotatef(25.0F, 0.0F, 0.0F, 1.0F);
-						GlStateManager.scalef(1.7F, 1.7F, 1.7F);
-						GlStateManager.scalef(1.0F / 0.55F, 1.0F / 0.55F, 1.0F / 0.55F);
-						return;
-					case THIRD_PERSON:
-						GlStateManager.rotatef(45, 0.0F, 1.0F, 0.0F);
-						GlStateManager.translatef(0.0F, -SCALE, 2.5F * SCALE);
-						GlStateManager.translatef(0.0F, 0.0625F, -3.0F * SCALE);
-						GlStateManager.rotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-						GlStateManager.scalef(0.55F, 0.55F, 0.55F);
-						GlStateManager.scalef(1.0F / 0.25F, 1.0F / 0.25F, 1.0F / 0.25F);
-						GlStateManager.rotatef(-180, 1.0F, 0.0F, 0.0F);
-						return;
-					case GUI:
-						GlStateManager.rotatef(-180, 0.0F, 1.0F, 0.0F);
-						GlStateManager.scalef(1.0F / 0.7F, 1.0F / 0.7F, 1.0F / 0.7F);
-						return;
-					case GROUND:
-					case FIXED:
-					default:
 				}
 			}
 		}

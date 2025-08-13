@@ -4,7 +4,7 @@
 	"blockingItemUsing": "Blocking/Item Using",
 	"sneaking": "Sneaking",
 	"items": "Items",
-	"textures": "Textures",
+	"resources": "Resources",
 	"combat": "Combat",
 	"gui": "GUI",
 	"debugOverlay": "Debug Overlay",

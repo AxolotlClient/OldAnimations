@@ -64,6 +64,12 @@ public abstract class ModelBakeryMixin {
 		List<String> potionComponents = Arrays.asList("bottle_drinkable_empty", "bottle_overlay", "bottle_splash_empty");
 		originalPotions.addAll(potionComponents);
 		itemVariants.put(Items.POTION, originalPotions);
+		/* skulls */
+		//TODO: There HAS to be a better way of doing this T_T
+		List<String> originalSkulls = itemVariants.get(Items.SKULL);
+		List<String> oldSkulls = Arrays.asList("old_skull_skeleton", "old_skull_wither", "old_skull_zombie", "old_skull_char", "old_skull_creeper");
+		originalSkulls.addAll(oldSkulls);
+		itemVariants.put(Items.SKULL, originalSkulls);
     }
 
 	@ModifyReturnValue(method = "loadBlockModel", at = @At("RETURN"))

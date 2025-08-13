@@ -20,8 +20,11 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.entity.layer.CapeLayer;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -52,6 +55,24 @@ public class CapeLayerMixin {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
 			/* optifine attemps to clamp the cape's physics... nuh uh */
 			return Float.MIN_VALUE;
+		}
+		return original;
+	}
+
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;prevY:D"))
+	private double axolotlclient$includeSneakOffset$PrevY(double original, @Local(argsOnly = true) ClientPlayerEntity clientPlayerEntity) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
+			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to other renderings */
+			original += clientPlayerEntity.isSneaking() ? -0.08F : 0.0F;
+		}
+		return original;
+	}
+
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;y:D"))
+	private double axolotlclient$includeSneakOffset$Y(double original, @Local(argsOnly = true) ClientPlayerEntity clientPlayerEntity) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
+			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to other renderings */
+			original += clientPlayerEntity.isSneaking() ? -0.08F : 0.0F;
 		}
 		return original;
 	}

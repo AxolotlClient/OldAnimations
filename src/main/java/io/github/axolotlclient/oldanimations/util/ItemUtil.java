@@ -22,6 +22,7 @@ import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.block.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.*;
 
 import java.util.HashMap;
@@ -58,10 +59,15 @@ public final class ItemUtil {
 		put(ChestBlock.class, true);
 	}};
 
+	//TODO: This might be deprecated in favor of simply checking whether the model is an entity or generated model...
+	// Only skulls, banners, and chests qualify as an entity (tiling/block entity)
+	// AND they would be blacklisted just based on their irregular transformations. Wow.
 	public static boolean isBlacklisted(ItemStack stack) {
 		if (stack == null) return false;
 		/* exclude SkullItem from blacklist based on config condition */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.replaceSkullModel.get() && stack.getItem() instanceof SkullItem) {
+		/* if the skull is NOT a child of builtin/entity, we should remove it from the blacklist */
+		boolean isSkullAnEntityModel = Minecraft.getInstance().getItemRenderer().getModelShaper().getModel(stack).isCustomRenderer();
+		if ((OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.replaceSkullModel.get() || !isSkullAnEntityModel) && stack.getItem() instanceof SkullItem) {
 			return false;
 		}
 		return blacklistedItems.containsKey(stack.getItem().getClass());

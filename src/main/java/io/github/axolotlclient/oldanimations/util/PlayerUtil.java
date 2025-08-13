@@ -18,6 +18,7 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
+import io.github.axolotlclient.oldanimations.ducks.Sneaky;
 import io.github.axolotlclient.oldanimations.mixin.ClientPlayerInteractionManagerAccessor;
 import io.github.axolotlclient.oldanimations.mixin.LivingEntityAccessor;
 import lombok.Setter;
@@ -36,7 +37,6 @@ import net.minecraft.world.WorldSettings;
 import java.util.*;
 
 public final class PlayerUtil {
-
 	public static PlayerUtil INSTANCE = new PlayerUtil();
 	private float miningCooldown;
 	private float miningProgress;
@@ -49,6 +49,10 @@ public final class PlayerUtil {
 
 	public boolean isSelf(Entity entity) {
 		return entity instanceof PlayerEntity && Minecraft.getInstance().player.getNetworkId() == entity.getNetworkId();
+	}
+
+	public float getEyeHeightSneakOffset() {
+		return ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight();
 	}
 
 	public void fakeSwing(LocalClientPlayerEntity player) {

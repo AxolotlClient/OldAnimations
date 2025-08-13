@@ -26,7 +26,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.modules.freelook.Perspective;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import io.github.axolotlclient.oldanimations.ducks.Sneaky;
 import io.github.axolotlclient.oldanimations.util.DamageTint;
 import io.github.axolotlclient.oldanimations.util.IDamageTint;
 import io.github.axolotlclient.oldanimations.util.PlayerUtil;
@@ -110,10 +109,9 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
     private void axolotlclient$addSneakingTranslation(LivingEntity livingEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
         /* in order to match 1.7, we need to elevate the player model while sneaking */
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
-			float eyeHeightOffset = 1.62F - ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight();
 			/* the elevation will be the difference between the player's sneaking eyeheight and their actual eyeheight (1.62 meters) */
 			/* the player model should now move 1:1 with the crosshair */
-			GlStateManager.translatef(0.0F, eyeHeightOffset, 0.0F);
+			GlStateManager.translatef(0.0F, 1.62F - PlayerUtil.INSTANCE.getEyeHeightSneakOffset(), 0.0F);
 		}
     }
 
@@ -137,7 +135,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 	private float axolotlclient$syncNameTag(float f, @Local(argsOnly = true) LivingEntity livingEntity) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
 			/* we must ensurethe nametag is synced with the interpolated player model position */
-			f += ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() - 1.62F;
+			f += PlayerUtil.INSTANCE.getEyeHeightSneakOffset() - 1.62F;
 		}
 		return f;
 	}
@@ -146,7 +144,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 	private double axolotlclient$syncNameTag2(double par2, @Local(argsOnly = true) LivingEntity livingEntity) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
 			/* we must ensure the nametag is synced with the interpolated player model position once again */
-			par2 += ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() - 1.62F;
+			par2 += PlayerUtil.INSTANCE.getEyeHeightSneakOffset() - 1.62F;
 		}
 		return par2;
 	}

@@ -26,9 +26,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import io.github.axolotlclient.oldanimations.ducks.Sneaky;
 import io.github.axolotlclient.oldanimations.util.PlayerUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.TextRenderer;
@@ -103,7 +101,7 @@ public abstract class EntityRenderDispatcherMixin {
 	private void axolotlclient$oldHitBoxBehavior(Args args, @Local(argsOnly = true) Entity entity) {
 		if (OldAnimationsConfig.isEnabled() && PlayerUtil.INSTANCE.isSelf(entity)) {
 			/* sneaking compatibility! */
-			double eyeHeightOffset = OldAnimationsConfig.instance.thirdPersonSneaking.get() ? ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight() - 1.62F : 0.0F;
+			double eyeHeightOffset = OldAnimationsConfig.instance.thirdPersonSneaking.get() ? PlayerUtil.INSTANCE.getEyeHeightSneakOffset() - 1.62F : 0.0F;
 			/* man there were a lot of eyeheight bugs back in the day LOOOL */
 			double hitBoxOffset = OldAnimationsConfig.instance.hitboxOffset.get() ? 1.62F : 0.0F;
 			args.set(1, (double) args.get(1) + eyeHeightOffset + hitBoxOffset);
