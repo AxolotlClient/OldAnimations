@@ -67,7 +67,8 @@ public abstract class PlayerRendererMixin {
 
 	@WrapOperation(method = {"renderPlayerLeftHandModel", "renderPlayerRightHandModel"}, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/entity/PlayerModel;sneaking:Z"))
 	private void legarity$fixVehicleArm(PlayerModel instance, boolean value, Operation<Void> original) {
-		/* fixes MC-1349*/
+		/* fixes MC-1349 */
+		/* this is probably the only non-1.7 related feature that im open to adding */
 		instance.hasVehicle = instance.sneaking = false;
 	}
 }

@@ -32,15 +32,15 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(CapeLayer.class)
 public class CapeLayerMixin {
 
-	@Dynamic("OptiFine")
-	@WrapWithCondition(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 1))
+	@Dynamic("Translation added by OptiFine")
+	@WrapWithCondition(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 1), require = 0)
 	private boolean axolotlclient$disableOptiFineTranslation(float f, float g, float h) {
 		/* optifine attemps to fix 1.8's weird cape position... that's all well and good, but let's just disable that when we use our own :p */
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.thirdPersonSneaking.get();
 	}
 
-	@Dynamic("OptiFine")
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=165.0"))
+	@Dynamic("Clamping value added by OptiFine")
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=165.0"), require = 0)
 	private float axolotlclient$disableOptiFineClamp(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
 			/* optifine attemps to clamp the cape's physics... nuh uh */
@@ -49,8 +49,8 @@ public class CapeLayerMixin {
 		return original;
 	}
 
-	@Dynamic("OptiFine")
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-5.0"))
+	@Dynamic("Clamping value added by OptiFine")
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-5.0"), require = 0)
 	private float axolotlclient$disableOptiFineClamp2(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
 			/* optifine attemps to clamp the cape's physics... nuh uh */

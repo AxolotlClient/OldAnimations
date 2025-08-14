@@ -146,5 +146,11 @@
 	"disableGlintOnBlocks": "Disable Glint on Blocks",
 	"disableGlintOnBlocks.tooltip": "Disables the enchantment glint on blocks with enchantments applied to them. In 1.7, the enchantment glint can only render on items and not blocks!",
 	"separateDamageTintFromGlint": "Render Damage Tint Without Glint",
-	"separateDamageTintFromGlint.tooltip": "If an enchantment glint is present on armor pieces, this option renders the 1.8 damage tint without affecting the glint color which matches 1.7. This option is redundant if \"Damage Tint Color\" is enabled."
+	"separateDamageTintFromGlint.tooltip": "If an enchantment glint is present on armor pieces, this option renders the 1.8 damage tint without affecting the glint color which matches 1.7. This option is redundant if \"Damage Tint Color\" is enabled.",
+	"doubleTapSneak": "Double Tap Sneak to Sprint",
+	"doubleTapSneak.tooltip": "Allows you to double tap your sneak keybind to activate sprinting. This was a bug in 1.7.",
+	"rotationVecYawFix": "Fix Rotation Vector Yaw Delay",
+	"rotationVecYawFix.tooltip": "Introduced in 1.8, the infamous \"mouse delay\" bug was the result of the player's head yaw, which is a smoothened and delayed value, being used within the look vector calculation rather than using the player's actual yaw.",
+	"framedItemLighting": "Framed Item Lighting",
+	"framedItemLighting.tooltip": "Allows framed items to have lighting applied to them just like in 1.7."
 }

@@ -27,25 +27,36 @@ import java.util.List;
 
 public class OldAnimations implements ClientModInitializer {
 
-	/*
-	TODO LIST
+	/* TODO LIST
+
+	--- Project ---
+	add readme
+	update deps (if needed)
+
+	--- Sneaking ---
+	need to verify if other players have a different sneaking position
+
+	--- Items ---
 	blocks item positions (rotations) + fix trapdoors and pressure plates and other crap
+	rod and bow and block positions and swing position.. can be separate options LOL
+
+	--- Textures/Models ---
+	fix weird fuzzy texture sizes of swords and stuff
+	fast grass always showns in gui/dropped?
 	held pressure plates look a bit different?? idk why THEYRE BIGGER THATS WHY
 	old fence fate model
-	old fast smooth lighting shadows
-	tops of certain blocks have switch uvs
+	oh my god. the custom models/textures are a damn nightmare of a mess
 	tripwire texture and model changes
 	cauldrons model and texture
+	tops of certain blocks have switch uvs
+
+	--- World ---
+	old fast smooth lighting shadows
+
+	--- Misc ---
 	improve fake block mining believability - paneblock and tripwireblock are still not accurate
-	rod and bow and block positions and swing position.. can be separate options LOL
-	fix weird fuzzy texture sizes of swords and stuff
-	fix weird inconsistencies with block item positions between 1.7 and my ported 1.8 code :/
 	certain mob hitboxes should be visually changed
-	fast grass always showns in gui/dropped?
-	is sprint flying different??
-	need to revamp the sneaking options.. third person sneaking position should be separated from smooth sneaking :p
-	oh my god. the custom models/textures are a damn nightmare of a mess
-	need to verify if other players have a different sneaking position
+
 	*/
 
 	public static final String MODID = "axolotlclient-oldanimations";

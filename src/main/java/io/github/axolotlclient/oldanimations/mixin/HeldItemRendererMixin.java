@@ -20,11 +20,12 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.ItemUtil;
-import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
@@ -76,19 +77,16 @@ public abstract class HeldItemRendererMixin {
 		axolotlclient$h = null; /* big brain time */
 	}
 
-	@Inject(method = "applyBowNocking", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V"))
-	private void axolotlclient$preBowTransform(float f, ClientPlayerEntity clientPlayerEntity, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldBowRotation.get()) {
-			/* original transformations from 1.7 */
+	@WrapOperation(method = "applyBowNocking", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V"))
+	private void axolotlclient$applyBowTransform(float f, float g, float h, Operation<Void> original) {
+		boolean isEnabled = OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldBowRotation.get();
+		/* original transformations from 1.7 */
+		if (isEnabled) {
 			GlStateManager.rotatef(-335.0F, 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotatef(-50.0F, 0.0F, 1.0F, 0.0F);
 		}
-	}
-
-	@Inject(method = "applyBowNocking", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V", shift = At.Shift.AFTER))
-	private void axolotlclient$postBowTransform(float f, ClientPlayerEntity abstractClientPlayerEntity, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldBowRotation.get()) {
-			/* original transformations from 1.7 */
+		original.call(f, g, h);
+		if (isEnabled) {
 			GlStateManager.rotatef(50.0F, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(335.0F, 0.0F, 0.0F, 1.0F);
 		}

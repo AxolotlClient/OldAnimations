@@ -19,6 +19,7 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -128,11 +129,9 @@ public abstract class ItemRendererMixin {
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlintColor.get() ? -10407781 : color;
 	}
 
-	@WrapOperation(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderEnchantmentGlint(Lnet/minecraft/client/resource/model/BakedModel;)V"))
-	public void axolotlclient$disableBlocksGlint(ItemRenderer instance, BakedModel bakedModel, Operation<Void> original, @Local(argsOnly = true) ItemStack itemStack) {
-		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableGlintOnBlocks.get() || !isGui3d(itemStack)) {
-			original.call(instance, bakedModel);
-		}
+	@WrapWithCondition(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderEnchantmentGlint(Lnet/minecraft/client/resource/model/BakedModel;)V"))
+	private boolean axolotlclient$disableBlocksGlint(ItemRenderer instance, BakedModel bakedModel, @Local(argsOnly = true) ItemStack itemStack) {
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableGlintOnBlocks.get() || !isGui3d(itemStack);
 	}
 
 	@Inject(method = "renderEnchantmentGlint", at = @At("HEAD"), cancellable = true)

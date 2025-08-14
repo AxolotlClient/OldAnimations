@@ -32,6 +32,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ProjectileRenderer.class)
 public abstract class ProjectileRendererMixin {
 
+	//TODO: Should probably separate the mirrored and position options
+
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"))
 	private void axolotlclient$includeEyeHeight(Entity entity, double dx, double dy, double dz, float yaw, float tickDelta, CallbackInfo ci) {
 		if (axolotlclient$shouldMirrorProjectiles()) {

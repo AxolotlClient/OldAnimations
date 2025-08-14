@@ -117,6 +117,9 @@ public class OldAnimationsConfig {
 	public final BooleanOption hitboxOffset = new BooleanOption("hitboxOffset", false);
 	public final BooleanOption disableGlintOnBlocks = new BooleanOption("disableGlintOnBlocks", false);
 	public final BooleanOption separateDamageTintFromGlint = new BooleanOption("separateDamageTintFromGlint", false);
+	public final BooleanOption doubleTapSneak = new BooleanOption("doubleTapSneak", false);
+	public final BooleanOption rotationVecYawFix = new BooleanOption("rotationVecYawFix", true);
+	public final BooleanOption framedItemLighting = new BooleanOption("framedItemLighting", true);
 
 	private final Supplier<Boolean>[] suppliers = new Supplier[] {
 		enabled::get,
@@ -171,7 +174,8 @@ public class OldAnimationsConfig {
 			stopLineTranslateSneak,
 			equipLogic,
 			disableResourcePackItemTransformations,
-			fixThirdPersonHeldItemSneakDeSync
+			fixThirdPersonHeldItemSneakDeSync,
+			framedItemLighting
 		);
 		category.add(categoryResources);
 		categoryResources.add(
@@ -232,11 +236,13 @@ public class OldAnimationsConfig {
 		);
 		category.add(categoryMisc);
 		categoryMisc.add(
+			doubleTapSneak,
 			disableAlexModel,
 			disableSkinLayers,
 			flameOffset,
 			oldPickupArm,
 			fixCameraPitch,
+			rotationVecYawFix,
 			xpOrbPosition,
 			oldFogGrayScale,
 			removeHitBoxEyeLines,

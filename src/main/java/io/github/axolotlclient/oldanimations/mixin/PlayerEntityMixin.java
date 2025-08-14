@@ -37,7 +37,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 	@ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/player/PlayerEntity;y:D", ordinal = 0))
 	private double axolotlclient$includeEyeHeight$Y(double original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
-			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to other renderings */
+			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to cape physics! */
 			original += isSneaking() ? -0.08F : 0.0F;
 		}
 		return original;
@@ -46,7 +46,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 	@ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/player/PlayerEntity;y:D", ordinal = 1))
 	private double axolotlclient$includeEyeHeight$Y2(double original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
-			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to other renderings */
+			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to cape physics! */
 			original += isSneaking() ? -0.08F : 0.0F;
 		}
 		return original;
@@ -55,7 +55,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 	@ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/player/PlayerEntity;y:D", ordinal = 2))
 	private double axolotlclient$includeEyeHeight$Y3(double original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
-			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to other renderings */
+			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to cape physics! */
 			original += isSneaking() ? -0.08F : 0.0F;
 		}
 		return original;
