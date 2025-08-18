@@ -20,13 +20,18 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.ItemUtil;
+import io.github.axolotlclient.oldanimations.util.PlayerUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.HeldItemRenderer;
+import net.minecraft.client.render.entity.PlayerRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.entity.living.LivingEntity;
@@ -50,6 +55,10 @@ public abstract class HeldItemRendererMixin {
 
 	@Shadow
 	private int selectedSlot;
+
+	@Shadow
+	@Final
+	private Minecraft minecraft;
 
 	@Unique
 	private Float axolotlclient$h;
@@ -94,7 +103,9 @@ public abstract class HeldItemRendererMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$applyHeldItemTransforms(LivingEntity livingEntity, ItemStack itemStack, ModelTransformations.Type type, CallbackInfo ci) {
-		if (!areItemPositionsEnabled() || ItemUtil.isBlacklisted(itemStack)) return;
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.itemPositions.get() || ItemUtil.isBlacklisted(itemStack)) {
+			return;
+		}
 		if (renderer.isGui3d(itemStack)) {
 			/* blocks */
 			GlStateManager.rotatef(90.0F + (ItemUtil.shouldRotateBlock(itemStack) ? 180.0F : 0.0F), 0.0F, 1.0F, 0.0F);
@@ -121,7 +132,9 @@ public abstract class HeldItemRendererMixin {
 
 	@ModifyArg(method = "renderInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"), index = 2)
 	private ModelTransformations.Type axolotlclient$changeTransformType(ModelTransformations.Type mode) {
-		return areItemPositionsEnabled() && OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemUtil.isBlacklisted(item) ? ModelTransformations.Type.NONE : mode;
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() &&
+			OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemUtil.isBlacklisted(item) ?
+			ModelTransformations.Type.NONE : mode;
 	}
 
 	@Expression("? != null")
@@ -159,8 +172,44 @@ public abstract class HeldItemRendererMixin {
 		return original;
 	}
 
+	@WrapOperation(method = "setHandLightColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;getEyeHeight()F"))
+	private float axolotlclient$useLerpEyeHeight_Hand(ClientPlayerEntity instance, Operation<Float> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.smoothSneaking.get()) {
+			/* not sure if this will even do anything significant lol */
+			return PlayerUtil.INSTANCE.getEyeHeight();
+		}
+		return original.call(instance);
+	}
+
+	@WrapMethod(method = "renderLeftArm")
+	private void axolotlclient$wrapLeftMapArm(PlayerRenderer playerRenderer, Operation<Void> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldMapArms.get()) {
+			renderMapArm(playerRenderer, 0);
+		} else {
+			original.call(playerRenderer);
+		}
+	}
+
+	@WrapMethod(method = "renderRightArm")
+	private void axolotlclient$wrapRightMapArm(PlayerRenderer playerRenderer, Operation<Void> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldMapArms.get()) {
+			renderMapArm(playerRenderer, 1);
+		} else {
+			original.call(playerRenderer);
+		}
+	}
+
 	@Unique
-	private static boolean areItemPositionsEnabled() {
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get();
+	private void renderMapArm(PlayerRenderer playerRenderer, int ordinal) {
+		/* in 1.7, for some reason, the arms are oriented incorrectly... they're mirrored compared to 1.8 lol */
+		int side = ordinal * 2 - 1;
+		GlStateManager.pushMatrix();
+		GlStateManager.translatef(0.0F, -0.6F, 1.1F * side);
+		GlStateManager.rotatef(-45 * side, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotatef(-90.0F, 0.0F, 0.0F, 1.0F);
+		GlStateManager.rotatef(59.0F, 0.0F, 0.0F, 1.0F);
+		GlStateManager.rotatef(-65 * side, 0.0F, 1.0F, 0.0F);
+		playerRenderer.renderPlayerRightHandModel(minecraft.player);
+		GlStateManager.popMatrix();
 	}
 }

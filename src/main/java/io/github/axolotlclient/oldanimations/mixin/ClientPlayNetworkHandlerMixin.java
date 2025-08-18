@@ -20,18 +20,25 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.network.handler.ClientPlayNetworkHandler;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.network.packet.s2c.play.TitlesS2CPacket;
 import net.minecraft.world.Difficulty;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class ClientPlayNetworkHandlerMixin {
+
+	@Unique
+	private static final String[] axolotlclient$EVENT_MESSAGES = new String[]{"tile.bed.notValid", null, null, "gameMode.changed"};
 
 	@ModifyExpressionValue(method = "handleAddXpOrb", at = @At(value = "CONSTANT", args = "doubleValue=32"))
 	private double axolotlclient$oldOrbRendering(double original) {
@@ -54,9 +61,19 @@ public abstract class ClientPlayNetworkHandlerMixin {
 		}
 	}
 
-	@WrapWithCondition(method = "handleLogin", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;difficulty:Lnet/minecraft/world/Difficulty;"))
+	@WrapWithCondition(method = "handleLogin", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/options/GameOptions;difficulty:Lnet/minecraft/world/Difficulty;"))
 	private boolean axolotlclient$dontUsePacketDifficulty(GameOptions instance, Difficulty value) {
 		/* we're going to set the options difficulty elsewhere, so let's remove this as it's not needed */
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.oldDifficultyButtonLogic.get();
+	}
+
+	@WrapOperation(method = "handleGameEvent", at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC, target = "Lnet/minecraft/network/packet/s2c/play/GameEventS2CPacket;EVENT_MESSAGES:[Ljava/lang/String;"))
+	private String[] axolotlclient$oldEventMessages(Operation<String[]> original) {
+		/* taken from 1.7 */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGameModeCommand.get()) {
+			/* the server still notifies us on game mode changes, so we can easily just adapt this 1.7 code */
+			return axolotlclient$EVENT_MESSAGES;
+		}
+		return original.call();
 	}
 }

@@ -62,8 +62,9 @@ public class CapeLayerMixin {
 	@ModifyExpressionValue(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;prevY:D"))
 	private double axolotlclient$includeSneakOffset$PrevY(double original, @Local(argsOnly = true) ClientPlayerEntity clientPlayerEntity) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
-			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to other renderings */
-			original += clientPlayerEntity.isSneaking() ? -0.08F : 0.0F;
+			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to cape physics! */
+			/* 0.2 * 0.4 = 0.08. values taken straight from 1.7 */
+			original = original + clientPlayerEntity.getEyeHeight() - 1.62F;
 		}
 		return original;
 	}
@@ -71,8 +72,8 @@ public class CapeLayerMixin {
 	@ModifyExpressionValue(method = "render(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;FFFFFFF)V", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;y:D"))
 	private double axolotlclient$includeSneakOffset$Y(double original, @Local(argsOnly = true) ClientPlayerEntity clientPlayerEntity) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
-			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to other renderings */
-			original += clientPlayerEntity.isSneaking() ? -0.08F : 0.0F;
+			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to cape physics! */
+			original = original + clientPlayerEntity.getEyeHeight() - 1.62F;
 		}
 		return original;
 	}

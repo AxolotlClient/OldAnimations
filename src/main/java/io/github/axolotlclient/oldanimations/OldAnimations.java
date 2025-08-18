@@ -34,6 +34,7 @@ public class OldAnimations implements ClientModInitializer {
 	update deps (if needed)
 
 	--- Sneaking ---
+	i really want to switch over to the 1.7 code instead of using the 1.13 code :/
 	need to verify if other players have a different sneaking position
 
 	--- Items ---
@@ -41,14 +42,16 @@ public class OldAnimations implements ClientModInitializer {
 	rod and bow and block positions and swing position.. can be separate options LOL
 
 	--- Textures/Models ---
+	add better compatibility for old textures -> make them variants
 	fix weird fuzzy texture sizes of swords and stuff
-	fast grass always showns in gui/dropped?
-	held pressure plates look a bit different?? idk why THEYRE BIGGER THATS WHY
+	fast grass always shown in gui/dropped?
+	held pressure plates look a bit different?? idk why. THEYRE BIGGER THATS WHY
 	old fence fate model
 	oh my god. the custom models/textures are a damn nightmare of a mess
 	tripwire texture and model changes
 	cauldrons model and texture
 	tops of certain blocks have switch uvs
+	perhaps add an option to hide 1.8 blocks by using textures native to 1.7
 
 	--- World ---
 	old fast smooth lighting shadows

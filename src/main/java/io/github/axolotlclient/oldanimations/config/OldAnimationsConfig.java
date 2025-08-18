@@ -90,7 +90,6 @@ public class OldAnimationsConfig {
 	public final BooleanOption oldSwingVisualParticles = new BooleanOption("oldSwingVisualParticles", true);
 	public final BooleanOption slowUpSneak = new BooleanOption("slowUpSneak", true);
 	public final BooleanOption stopLineTranslateSneak = new BooleanOption("stopLineTranslateSneak", true);
-	public final BooleanOption fixCameraPitch = new BooleanOption("fixCameraPitch", true);
 	public final BooleanOption oldPotionGlint = new BooleanOption("oldPotionGlint", true);
 	public final BooleanOption replaceSkullModel = new BooleanOption("replaceSkullModel", false);
 	public final BooleanOption xpOrbPosition = new BooleanOption("xpOrbPosition", false);
@@ -120,6 +119,8 @@ public class OldAnimationsConfig {
 	public final BooleanOption doubleTapSneak = new BooleanOption("doubleTapSneak", false);
 	public final BooleanOption rotationVecYawFix = new BooleanOption("rotationVecYawFix", true);
 	public final BooleanOption framedItemLighting = new BooleanOption("framedItemLighting", true);
+	public final BooleanOption oldMapArms = new BooleanOption("oldMapArms", true);
+	public final BooleanOption oldGameModeCommand = new BooleanOption("oldGameModeCommand", false);
 
 	private final Supplier<Boolean>[] suppliers = new Supplier[] {
 		enabled::get,
@@ -240,13 +241,14 @@ public class OldAnimationsConfig {
 			disableAlexModel,
 			disableSkinLayers,
 			flameOffset,
+			oldMapArms,
 			oldPickupArm,
-			fixCameraPitch,
 			rotationVecYawFix,
 			xpOrbPosition,
 			oldFogGrayScale,
 			removeHitBoxEyeLines,
-			hitboxOffset
+			hitboxOffset,
+			oldGameModeCommand
 		);
 
 		/* reload the resources upon toggling certain options */

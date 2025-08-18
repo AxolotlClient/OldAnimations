@@ -20,25 +20,24 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import net.minecraft.entity.living.LivingEntity;
+import io.github.axolotlclient.oldanimations.util.PlayerUtil;
 import net.minecraft.entity.living.player.PlayerEntity;
-import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin extends LivingEntity {
+public abstract class PlayerEntityMixin {
 
-	public PlayerEntityMixin(World world) {
-		super(world);
-	}
+	@Shadow
+	public abstract float getEyeHeight();
 
 	@ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/player/PlayerEntity;y:D", ordinal = 0))
 	private double axolotlclient$includeEyeHeight$Y(double original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
 			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to cape physics! */
-			original += isSneaking() ? -0.08F : 0.0F;
+			original = original + getEyeHeight() - 1.62F;
 		}
 		return original;
 	}
@@ -47,7 +46,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 	private double axolotlclient$includeEyeHeight$Y2(double original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
 			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to cape physics! */
-			original += isSneaking() ? -0.08F : 0.0F;
+			original = original + getEyeHeight() - 1.62F;
 		}
 		return original;
 	}
@@ -56,7 +55,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 	private double axolotlclient$includeEyeHeight$Y3(double original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
 			/* sneaking moves the eyeheight down by 0.08 units... we must also make sure this applies to cape physics! */
-			original += isSneaking() ? -0.08F : 0.0F;
+			original = original + getEyeHeight() - 1.62F;
 		}
 		return original;
 	}

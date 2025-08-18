@@ -23,13 +23,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.axolotlclient.modules.freelook.Perspective;
-import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.DamageTint;
 import io.github.axolotlclient.oldanimations.util.IDamageTint;
 import io.github.axolotlclient.oldanimations.util.PlayerUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -105,13 +102,14 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 		return original.call(instance, livingEntity, f, bl);
 	}
 
+	//TODO: this can probably be moved somewhere else!
 	@Inject(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"))
     private void axolotlclient$addSneakingTranslation(LivingEntity livingEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
         /* in order to match 1.7, we need to elevate the player model while sneaking */
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
 			/* the elevation will be the difference between the player's sneaking eyeheight and their actual eyeheight (1.62 meters) */
 			/* the player model should now move 1:1 with the crosshair */
-			GlStateManager.translatef(0.0F, 1.62F - PlayerUtil.INSTANCE.getEyeHeightSneakOffset(), 0.0F);
+			GlStateManager.translatef(0.0F, 1.62F - PlayerUtil.INSTANCE.getEyeHeight(), 0.0F);
 		}
     }
 
@@ -132,30 +130,21 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 	}
 
 	@ModifyArg(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 0), index = 1)
-	private float axolotlclient$syncNameTag(float f, @Local(argsOnly = true) LivingEntity livingEntity) {
+	private float axolotlclient$syncNameTag(float original, @Local(argsOnly = true) LivingEntity livingEntity) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
 			/* we must ensurethe nametag is synced with the interpolated player model position */
-			f += PlayerUtil.INSTANCE.getEyeHeightSneakOffset() - 1.62F;
+			original += PlayerUtil.INSTANCE.getEyeHeight() - 1.62F;
 		}
-		return f;
+		return original;
 	}
 
 	@ModifyArg(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderNameTag(Lnet/minecraft/entity/Entity;DDDLjava/lang/String;FD)V"), index = 2)
-	private double axolotlclient$syncNameTag2(double par2, @Local(argsOnly = true) LivingEntity livingEntity) {
+	private double axolotlclient$syncNameTag2(double original, @Local(argsOnly = true) LivingEntity livingEntity) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
 			/* we must ensure the nametag is synced with the interpolated player model position once again */
-			par2 += PlayerUtil.INSTANCE.getEyeHeightSneakOffset() - 1.62F;
+			original = original + PlayerUtil.INSTANCE.getEyeHeight() - 1.62F;
 		}
-		return par2;
-	}
-
-	@Inject(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V", ordinal = 1))
-	private void axolotlclient$reverseNameplateRotation(LivingEntity livingEntity, double d, double e, double f, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fixCameraPitch.get() &&
-			OldAnimations.AXOLOTLCLIENT && Minecraft.getInstance().options.perspective == Perspective.THIRD_PERSON_FRONT.ordinal()) {
-			/* we need to disable the axolotlclient nameplate rotation in order to use our own! */
-			GlStateManager.rotatef(dispatcher.cameraPitch * 2, 1.0F, 0.0F, 0.0F);
-		}
+		return original;
 	}
 
 	@Override

@@ -20,6 +20,7 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+import io.github.axolotlclient.oldanimations.util.PlayerUtil;
 import net.minecraft.client.entity.particle.EntityPickupParticle;
 import net.minecraft.entity.Entity;
 import org.objectweb.asm.Opcodes;
@@ -37,7 +38,7 @@ public abstract class EntityPickupParticleMixin {
 	private double axolotlclient$includeEyeHeight$PrevTickY(double original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldItemPickup.get()) {
 			/* taken from 1.7 */
-			original += collector.getEyeHeight();
+			original += (OldAnimationsConfig.instance.thirdPersonSneaking.get() ? PlayerUtil.INSTANCE.getEyeHeight() : collector.getEyeHeight());
 		}
 		return original;
 	}
@@ -46,7 +47,7 @@ public abstract class EntityPickupParticleMixin {
 	private double axolotlclient$includeEyeHeight$Y(double original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldItemPickup.get()) {
 			/* taken from 1.7 */
-			original += collector.getEyeHeight();
+			original += (OldAnimationsConfig.instance.thirdPersonSneaking.get() ? PlayerUtil.INSTANCE.getEyeHeight() : collector.getEyeHeight());
 		}
 		return original;
 	}

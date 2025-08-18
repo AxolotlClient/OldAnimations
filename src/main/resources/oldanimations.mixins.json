@@ -18,6 +18,7 @@
 		"EntityRendererMixin",
 		"FishingBobberEntityRendererMixin",
 		"GameGuiMixin",
+		"GameModeCommandMixin",
 		"GameRendererMixin",
 		"GuiElementMixin",
 		"HeldItemLayerMixin",

@@ -20,6 +20,7 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+import io.github.axolotlclient.oldanimations.util.PlayerUtil;
 import net.minecraft.client.render.entity.ProjectileRenderer;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,8 +38,8 @@ public abstract class ProjectileRendererMixin {
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"))
 	private void axolotlclient$includeEyeHeight(Entity entity, double dx, double dy, double dz, float yaw, float tickDelta, CallbackInfo ci) {
 		if (axolotlclient$shouldMirrorProjectiles()) {
-			/* 1.7's projectile position is suspiciously raised by the player's eyeheight minus the projectile y */
-			GlStateManager.translatef(0.0F, 0.12F, 0.0F);
+			/* 1.7's projectile position is suspiciously raised by this eye height value... */
+			GlStateManager.translatef(0.0F, PlayerUtil.INSTANCE.getPlayerEntityEyeHeight(), 0.0F);
 		}
 	}
 

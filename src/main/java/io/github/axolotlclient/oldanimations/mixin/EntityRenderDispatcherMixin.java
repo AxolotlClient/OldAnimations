@@ -28,21 +28,15 @@ import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.PlayerUtil;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.PlayerRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.living.LivingEntity;
-import net.minecraft.world.World;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.Slice;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
@@ -51,22 +45,6 @@ public abstract class EntityRenderDispatcherMixin {
 
 	@Shadow
 	private PlayerRenderer defaultPlayerRenderer;
-
-	@Shadow
-	public float cameraPitch;
-
-	//TODO: This should be merged into AxolotlClient as they already do a translation to fix the nametags which interferes with this
-	@Inject(
-		method = "prepare",
-		at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;cameraYaw:F", ordinal = 0, shift = At.Shift.AFTER),
-		slice = @Slice(from = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/options/GameOptions;perspective:I"))
-	)
-	private void axolotlclient$fixCameraRotation(World world, TextRenderer textRenderer, Entity camera, Entity targetEntity, GameOptions options, float tickDelta, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fixCameraPitch.get()) {
-			/* camera rotation bug. originated in 1.8 and is fixed in 1.9 */
-			cameraPitch *= -1;
-		}
-	}
 
 	@Inject(method = "getRenderer(Lnet/minecraft/entity/Entity;)Lnet/minecraft/client/render/entity/EntityRenderer;", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$defaultToSteve(Entity entity, CallbackInfoReturnable<PlayerRenderer> cir) {
@@ -101,7 +79,7 @@ public abstract class EntityRenderDispatcherMixin {
 	private void axolotlclient$oldHitBoxBehavior(Args args, @Local(argsOnly = true) Entity entity) {
 		if (OldAnimationsConfig.isEnabled() && PlayerUtil.INSTANCE.isSelf(entity)) {
 			/* sneaking compatibility! */
-			double eyeHeightOffset = OldAnimationsConfig.instance.thirdPersonSneaking.get() ? PlayerUtil.INSTANCE.getEyeHeightSneakOffset() - 1.62F : 0.0F;
+			double eyeHeightOffset = OldAnimationsConfig.instance.thirdPersonSneaking.get() ? PlayerUtil.INSTANCE.getEyeHeight() - 1.62F : 0.0F;
 			/* man there were a lot of eyeheight bugs back in the day LOOOL */
 			double hitBoxOffset = OldAnimationsConfig.instance.hitboxOffset.get() ? 1.62F : 0.0F;
 			args.set(1, (double) args.get(1) + eyeHeightOffset + hitBoxOffset);

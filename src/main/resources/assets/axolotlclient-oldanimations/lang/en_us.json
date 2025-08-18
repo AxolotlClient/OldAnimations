@@ -86,15 +86,13 @@
 	"oldDamageTick": "Damage Animation Logic",
 	"oldDamageTick.tooltip": "For some reason in 1.7, the damage animation (hurt tilt, damage tint, etc) are ahead slightly. This option replicates that behavior!",
 	"oldSwingVisual": "Swing During Miss Penalty",
-	"oldSwingVisual.tooltip": "Visually swings the player's arm during during the miss penalty. In 1.7, the miss penalty does not affect combat, so this option sort of emulates that behavior but without touching combat.",
+	"oldSwingVisual.tooltip": "Visually swings the player's arm during the miss penalty. In 1.7, the miss penalty does not affect combat, so this option sort of emulates that behavior but without touching combat.",
 	"oldSwingVisualParticles": "Show Particles on Missed Hits",
 	"oldSwingVisualParticles.tooltip": "Visually shows particles (criticals, sharpness, etc) during missed hits given the appropriate conditions.",
 	"slowUpSneak": "Slow Sneak-Up Animation",
 	"slowUpSneak.tooltip": "Makes the sneaking up animation slower to match 1.7",
 	"stopLineTranslateSneak": "Stop Fishing Rod Line Translation while Sneaking",
 	"stopLineTranslateSneak.tooltip": "Stops the fishing rod's line from translating down while sneaking. Only viewable while in the third person perspective.",
-	"fixCameraPitch": "Fix Camera Pitch Bug",
-	"fixCameraPitch.tooltip": "Fixes the camera pitch being incorrect while in the third person perspective. Affects projectiles, nametags, etc. This is a bug in 1.8!",
 	"oldPotionGlint": "Only Render Glint On Potion Overlay",
 	"oldPotionGlint.tooltip": "Only renders the enchantment glint on the overlay of the potion. This behavior only occurs for the item while it is held in 1.7.",
 	"replaceSkullModel": "Use Old Skull Model",
@@ -152,5 +150,9 @@
 	"rotationVecYawFix": "Fix Rotation Vector Yaw Delay",
 	"rotationVecYawFix.tooltip": "Introduced in 1.8, the infamous \"mouse delay\" bug was the result of the player's head yaw, which is a smoothened and delayed value, being used within the look vector calculation rather than using the player's actual yaw.",
 	"framedItemLighting": "Framed Item Lighting",
-	"framedItemLighting.tooltip": "Allows framed items to have lighting applied to them just like in 1.7."
+	"framedItemLighting.tooltip": "Allows framed items to have lighting applied to them just like in 1.7.",
+	"oldMapArms": "Old Map Player Arms",
+	"oldMapArms.tooltip": "Positions both player arms, which are rendered while holding maps, to be further from the player just like in 1.7. Not only this, but the arms are completely mirrored from each other. This most likely was an oversight in 1.7.",
+	"oldGameModeCommand": "Old Game Mode Command",
+	"oldGameModeCommand.tooltip": "Shows a command upon changing game modes in multiplayer servers just like in 1.7."
 }

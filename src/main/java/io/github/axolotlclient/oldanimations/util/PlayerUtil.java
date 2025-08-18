@@ -51,8 +51,15 @@ public final class PlayerUtil {
 		return entity instanceof PlayerEntity && Minecraft.getInstance().player.getNetworkId() == entity.getNetworkId();
 	}
 
-	public float getEyeHeightSneakOffset() {
+	//TODO make sure this is only applying to the localentityplayer
+	public float getEyeHeight() {
 		return ((Sneaky) Minecraft.getInstance().gameRenderer).axolotlclient$getEyeHeight();
+	}
+
+	public float getPlayerEntityEyeHeight() {
+		/* being so deadass rn, this a real value taken from PlayerEntity#getEyeHeight in 1.7 */
+		/* to make matters worse, when you add 0.08 to 0.12 you get 0.2... this is a conspiracy */
+		return 0.12F;
 	}
 
 	public void fakeSwing(LocalClientPlayerEntity player) {

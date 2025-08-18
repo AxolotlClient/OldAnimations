@@ -64,6 +64,8 @@ public abstract class GameRendererMixin implements Sneaky {
 
 	@Inject(method = "setupCamera", at = @At("HEAD"))
 	protected void axolotlclient$lerpCamera(float partialTicks, int pass, CallbackInfo ci) {
+		/* WorldRenderer#setupRender is where the position of the player is applied handled */
+		/* but we should apply everything here... it's easier :p */
 		/* eye height is interpolated between the last and current camera Y positions */
 		if (!OldAnimationsConfig.isEnabled()) return;
 		if (OldAnimationsConfig.instance.smoothSneaking.get()) {
@@ -99,9 +101,9 @@ public abstract class GameRendererMixin implements Sneaky {
 		if (!OldAnimationsConfig.isEnabled()) {
 			return;
 		}
-		Entity entity = minecraft.getCamera();
+		Entity camera = minecraft.getCamera();
 		if ((OldAnimationsConfig.instance.smoothSneaking.get() || OldAnimationsConfig.instance.slowUpSneak.get())) {
-			float eyeHeight = entity.getEyeHeight();
+			float eyeHeight = camera.isSneaking() ? 1.54F : 1.62F;
 			lastCameraY = cameraY;
 			if (OldAnimationsConfig.instance.slowUpSneak.get() && eyeHeight > cameraY) {
 				/* the value is 0.4f in 1.7, however the math that is applied, when rearranged, */
@@ -117,7 +119,7 @@ public abstract class GameRendererMixin implements Sneaky {
 		/* MC-51150 is already fixed by optifine lmfaoo... */
 		/* in order to actually give players an option to toggle it, */
 		/* i think this overwrite is warranted :)  */
-		BlockPos pos = OldAnimationsConfig.instance.oldFogGrayScale.get() ? new BlockPos(minecraft.getCamera().getEyePosition(1.0F)) : new BlockPos(minecraft.getCamera());
+		BlockPos pos = OldAnimationsConfig.instance.oldFogGrayScale.get() ? new BlockPos(camera.getEyePosition(1.0F)) : new BlockPos(camera);
 		float f = minecraft.world.getBrightness(pos);
 		float g = (float) minecraft.options.viewDistance / 16.0F;
 		float h = f * (1.0F - g) + g;
