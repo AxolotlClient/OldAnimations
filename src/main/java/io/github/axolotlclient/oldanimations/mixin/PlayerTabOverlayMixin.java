@@ -21,11 +21,17 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.gui.overlay.PlayerTabOverlay;
 import net.minecraft.client.network.PlayerInfo;
+import net.minecraft.client.network.handler.ClientPlayNetworkHandler;
+import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.scoreboard.criterion.ScoreboardCriterion;
 import net.minecraft.text.Text;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -36,6 +42,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Slice;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Mixin(value = PlayerTabOverlay.class)
@@ -45,8 +53,74 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 	@Final
 	private Minecraft minecraft;
 
+	//TODO: Player list entries are left adjacent in 1.8... we need to made them centered instead
+
+	@ModifyVariable(method = "render", at = @At("STORE"))
+	private List<PlayerInfo> axolotlclient$doNotSortList(List<PlayerInfo> original, @Local ClientPlayNetworkHandler clientPlayNetworkHandler) {
+		/* 1.7 does not sort the players. we should just convert the online player map to an array list */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.dontSortTabEntries.get()) {
+			return new ArrayList<>(clientPlayNetworkHandler.getOnlinePlayers());
+		}
+		return original;
+	}
+
+	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 0), index = 5)
+	private List<PlayerInfo> axolotlclient$useOldObjectivesPositionLogic(List<PlayerInfo> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldObjectivesPosition.get()) {
+			/* because we're porting the 1.7 logic over below, we can just skip this for loop completely */
+			return Collections.EMPTY_LIST;
+		}
+		return original;
+	}
+
+	@ModifyVariable(method = "render", at = @At("LOAD"), index = 6, ordinal = 1)
+	private int axolotlclient$useOldObjectivesPositionLogic2(int original, @Local(index = 25) String string2) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldObjectivesPosition.get()) {
+			/* taken from 1.7 */
+			return minecraft.textRenderer.getWidth(string2) + 4;
+		}
+		return original;
+	}
+
+	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 0), index = 27)
+	private int axolotlclient$useOldObjectivesPositionLogic3(int original, @Local(index = 22) int w, @Share("localRefAc") LocalIntRef localRefAc) {
+		/* storing the original value for later use */
+		localRefAc.set(original);
+		/* we need to solely use the player name/head position to determine the placement of the objective number like 1.7 */
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldObjectivesPosition.get() ? w : original;
+	}
+
+	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 1), index = 27)
+	private int axolotlclient$undoModifyVariableAbove(int original, @Share("localRefAc") LocalIntRef localRefAc) {
+		/* yep as described in the name, we need to revert the modification done above :p */
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldObjectivesPosition.get() ? localRefAc.get() : original;
+	}
+
+	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 1), index = 12)
+	private int axolotlclient$useOldObjectivesPositionLogic4(int original, @Local(index = 13) int p) {
+		/* rahh */
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldObjectivesPosition.get() ? p - 17 : original;
+	}
+
+	@ModifyExpressionValue(method = "render", at = @At(value = "CONSTANT", args = "intValue=90"))
+	private int axolotlclient$skipRenderingHeartsSpace(int original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.hideScoreboardHearts.get()) {
+			return 0;
+		}
+		return original;
+	}
+
+	@WrapOperation(method = "renderDisplayScore", at = @At(value = "INVOKE", target = "Lnet/minecraft/scoreboard/ScoreboardObjective;getRenderType()Lnet/minecraft/scoreboard/criterion/ScoreboardCriterion$RenderType;"))
+	private ScoreboardCriterion.RenderType axolotlclient$skipRenderingHearts(ScoreboardObjective instance, Operation<ScoreboardCriterion.RenderType> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.hideScoreboardHearts.get()) {
+			/* yep. no more hearts woo */
+			return ScoreboardCriterion.RenderType.INTEGER;
+		}
+		return original.call(instance);
+	}
+
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I", ordinal = 1))
-	private int axolotlclient$replace(List<PlayerInfo> instance, Operation<Integer> original) {
+	private int axolotlclient$replacePlayerListSize(List<PlayerInfo> instance, Operation<Integer> original) {
 		/* renders a fixed amount of player slots just like 1.7 */
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? minecraft.getNetworkHandler().maxPlayerCount : original.call(instance);
 	}
@@ -102,6 +176,7 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 		return par1 - (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? 1 : 0);
 	}
 
+	//TODO: This can be a better injection
 	@ModifyExpressionValue(method = "renderPing", at = @At(value = "CONSTANT", args = "intValue=11"))
 	private int axolotlclient$movePingElement(int original) {
 		/* move the ping element */

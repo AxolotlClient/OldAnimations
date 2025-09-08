@@ -16,15 +16,10 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations;
+package io.github.axolotlclient.oldanimations.util.ducks;
 
-import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.modules.AbstractModule;
-import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+public interface ILivingEntity {
 
-public class AxolotlClientModule extends AbstractModule {
-	@Override
-	public void init() {
-		OldAnimations.runAfterFabricLoad(() -> AxolotlClient.config().rendering.add(OldAnimationsConfig.instance.getCategory(), false));
-	}
+	/* sharing is caring */
+	float axolotlclient$getLastHealth();
 }

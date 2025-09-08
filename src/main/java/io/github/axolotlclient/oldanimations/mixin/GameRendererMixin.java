@@ -26,13 +26,15 @@ import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import io.github.axolotlclient.oldanimations.ducks.Sneaky;
+import io.github.axolotlclient.oldanimations.util.ducks.Sneaky;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.gen.WorldGeneratorType;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -53,6 +55,12 @@ public abstract class GameRendererMixin implements Sneaky {
 	@Shadow
 	private float oldFogGrayScale;
 
+	@Shadow
+	public abstract void renderWorld(float f, long l);
+
+	@Shadow
+	private long lastWorldRenderTime;
+
 	@Unique
 	private float lastCameraY;
 
@@ -61,6 +69,20 @@ public abstract class GameRendererMixin implements Sneaky {
 
 	@Unique
 	private float eyeHeight;
+
+	@WrapOperation(method = "render(FJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;renderWorld(FJ)V"))
+	private void axolotlclient$oldFramerateChunkRendering(GameRenderer instance, float f, long l, Operation<Void> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldFramerateChunkRendering.get()) {
+			/* the difference is most likely negligible here, but it's worth porting for accuracy */
+			if (minecraft.isFramerateValid()) {
+				renderWorld(f, lastWorldRenderTime + 1000000000 / minecraft.options.fpsLimit);
+			} else {
+				renderWorld(f, 0L);
+			}
+		} else {
+			original.call(instance, f, l);
+		}
+	}
 
 	@Inject(method = "setupCamera", at = @At("HEAD"))
 	protected void axolotlclient$lerpCamera(float partialTicks, int pass, CallbackInfo ci) {
@@ -134,6 +156,44 @@ public abstract class GameRendererMixin implements Sneaky {
 		return original;
 	}
 
+	@ModifyExpressionValue(method = "shouldRenderBlockOutline", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/player/PlayerAbilities;canModifyWorld:Z"))
+	private boolean axolotlclient$alwaysShowOutline(boolean original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.alwaysShowOutline.get()) {
+			return true;
+		}
+		return original;
+	}
+
+	@ModifyExpressionValue(method = "renderFog", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/GameRenderer;viewDistance:F", ordinal = 1))
+	private float axolotlclient$renderVoidFog(float original, @Local(argsOnly = true) int i, @Local(argsOnly = true) float f) {
+		/* void fog logic taken straight from 1.7 */
+		float gx = original;
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.voidFog.get()) {
+			Entity entity = minecraft.getCamera();
+			Dimension dimension = minecraft.world.dimension;
+			if (i == 0 &&
+				/* 1.7's hasFog() method */
+				((DimensionAccessor) dimension).getGeneratorType() != WorldGeneratorType.FLAT && !dimension.isDark()) {
+				double d = ((entity.getLightLevel(f) & 15728640) >> 20) / 16.0 + (entity.prevTickY + (entity.y - entity.prevTickY) * f + 4.0) / 32.0;
+				if (d < 1.0) {
+					if (d < 0.0) {
+						d = 0.0;
+					}
+					d *= d;
+					float h = 100.0F * (float) d;
+					if (h < 5.0F) {
+						h = 5.0F;
+					}
+					if (gx > h) {
+						gx = h;
+					}
+				}
+			}
+		}
+		/* welcome back my friend */
+		return gx;
+	}
+
 	@Unique
 	private static float lerp(float delta, float start, float end) { /* taken straight from modern minecraft */
 		return start + delta * (end - start);
@@ -141,7 +201,7 @@ public abstract class GameRendererMixin implements Sneaky {
 
 	@Unique
 	private boolean axolotlclient$isEitherSneakOptionEnabled() {
-		/* if neither of the sneaking options are selection, we might as well just use the original eyeheight */
+		/* if neither of the sneaking options are selected, we might as well just use the original eyeheight */
 		return OldAnimationsConfig.isEnabled() && (OldAnimationsConfig.instance.smoothSneaking.get() || OldAnimationsConfig.instance.slowUpSneak.get());
 	}
 

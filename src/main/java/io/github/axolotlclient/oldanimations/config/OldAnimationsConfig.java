@@ -102,7 +102,6 @@ public class OldAnimationsConfig {
 	public final BooleanOption oldRodRotation = new BooleanOption("oldRodRotation", true);
 	public final BooleanOption oldBowRotation = new BooleanOption("oldBowRotation", true);
 	public final BooleanOption swordBlockThirdPerson = new BooleanOption("swordBlockThirdPerson", true);
-	public final BooleanOption useAndMineDestroyVisual = new BooleanOption("useAndMineDestroyVisual", false);
 	public final BooleanOption fastGrass = new BooleanOption("fastGrass", false);
 	public final BooleanOption oldDoorTextures = new BooleanOption("oldDoorTextures", false);
 	public final BooleanOption oldDifficultyButtonLogic = new BooleanOption("oldDifficultyButtonLogic", false);
@@ -121,6 +120,15 @@ public class OldAnimationsConfig {
 	public final BooleanOption framedItemLighting = new BooleanOption("framedItemLighting", true);
 	public final BooleanOption oldMapArms = new BooleanOption("oldMapArms", true);
 	public final BooleanOption oldGameModeCommand = new BooleanOption("oldGameModeCommand", false);
+	public final BooleanOption alwaysShowOutline = new BooleanOption("alwaysShowOutline", true);
+	public final BooleanOption blockEntityMiningProgress = new BooleanOption("blockEntityMiningProgress", false);
+	public final BooleanOption clientSideEntityMovement = new BooleanOption("clientSideEntityMovement", true);
+	public final BooleanOption oldFramerateChunkRendering = new BooleanOption("oldFramerateChunkRendering", false);
+	public final BooleanOption voidFog = new BooleanOption("voidFog", false);
+	public final BooleanOption dontSortTabEntries = new BooleanOption("dontSortTabEntries", false);
+	public final BooleanOption hideScoreboardHearts = new BooleanOption("hideScoreboardHearts", false);
+	public final BooleanOption oldObjectivesPosition = new BooleanOption("oldObjectivesPosition", false);
+	public final BooleanOption miningProgressResetLogic = new BooleanOption("miningProgressResetLogic", true);
 
 	private final Supplier<Boolean>[] suppliers = new Supplier[] {
 		enabled::get,
@@ -152,8 +160,8 @@ public class OldAnimationsConfig {
 			blockHitting,
 			useAndMine,
 			allowMiningCancel,
+			miningProgressResetLogic,
 			useAndMineParticles,
-			useAndMineDestroyVisual,
 			blockingArm,
 			swordBlockThirdPerson
 		);
@@ -188,6 +196,7 @@ public class OldAnimationsConfig {
 		);
 		category.add(categoryCombat);
 		categoryCombat.add(
+			clientSideEntityMovement,
 			oldSwingVisual,
 			oldSwingVisualParticles,
 			secondLayerDamageTint,
@@ -222,11 +231,14 @@ public class OldAnimationsConfig {
 		categoryGUI.add(categoryTabOverlay);
 		categoryTabOverlay.add(
 			tabDimensions,
+			//TODO: fix compat with axolotlclient
+			disableTabPlayerHeads,
 			disableTabHeader,
-			disableTabFooter
+			disableTabFooter,
+			hideScoreboardHearts,
+			dontSortTabEntries,
+			oldObjectivesPosition
 		);
-		//TODO: fix compat with axolotlclient
-		categoryTabOverlay.add(disableTabPlayerHeads);
 		category.add(categoryEnchantmentGlint);
 		categoryEnchantmentGlint.add(
 			oldGlint,
@@ -248,7 +260,10 @@ public class OldAnimationsConfig {
 			oldFogGrayScale,
 			removeHitBoxEyeLines,
 			hitboxOffset,
-			oldGameModeCommand
+			oldGameModeCommand,
+			alwaysShowOutline,
+			blockEntityMiningProgress,
+			oldFramerateChunkRendering
 		);
 
 		/* reload the resources upon toggling certain options */

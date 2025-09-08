@@ -18,8 +18,6 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
@@ -65,10 +63,11 @@ public abstract class PlayerRendererMixin {
 		}
 	}
 
-	@WrapOperation(method = {"renderPlayerLeftHandModel", "renderPlayerRightHandModel"}, at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/entity/PlayerModel;sneaking:Z"))
-	private void legarity$fixVehicleArm(PlayerModel instance, boolean value, Operation<Void> original) {
+	//TODO: Look into root cause
+	@Inject(method = {"renderPlayerLeftHandModel", "renderPlayerRightHandModel"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/PlayerRenderer;setModelStatus(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;)V", shift = At.Shift.AFTER))
+	private void legarity$fixVehicleArm(ClientPlayerEntity clientPlayerEntity, CallbackInfo ci, @Local PlayerModel playerModel) {
 		/* fixes MC-1349 */
 		/* this is probably the only non-1.7 related feature that im open to adding */
-		instance.hasVehicle = instance.sneaking = false;
+		playerModel.hasVehicle = false;
 	}
 }

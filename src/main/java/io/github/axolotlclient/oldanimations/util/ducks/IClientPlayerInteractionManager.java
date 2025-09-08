@@ -16,11 +16,11 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.oldanimations.ducks;
+package io.github.axolotlclient.oldanimations.util.ducks;
 
-/* welcome back! */
-public interface Sneaky {
+public interface IClientPlayerInteractionManager {
 
-	/* we need to easily share the interpolated eye height with some other classes */
-	float axolotlclient$getEyeHeight();
+	/* stops the mining progress without sending an abort packet. */
+	/* lets the natural packet order take care of stopping mining */
+	void axolotlclient$fakeStopMiningBlock();
 }

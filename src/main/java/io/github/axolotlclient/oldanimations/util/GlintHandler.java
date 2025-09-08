@@ -34,10 +34,15 @@ import java.awt.*;
 import java.util.HashMap;
 
 public final class GlintHandler {
+
+	//TODO: The GUI glint can be improved i think :p
 	private static final HashMap<HashedModel, BakedModel> glintMap = new HashMap<>();
 
 	/* custom glint model */
 	public static BakedModel getModel(BakedModel model) {
+		/* because we're creating new bakedmodels for the sole purpose of recreating the 1.7 enchantment glint, */
+		/* we should reuse the common glint bakedmodels to reduce any crazy memory usage */
+		/* redth is my hero */
 		return glintMap.computeIfAbsent(new HashedModel(model),
 			key -> new BasicBakedModel.Builder(model, CustomTextureAtlasSprite.INSTANCE).build());
 	}

@@ -18,19 +18,14 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
-import net.minecraft.client.ClientPlayerInteractionManager;
+import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.gen.WorldGeneratorType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ClientPlayerInteractionManager.class)
-public interface ClientPlayerInteractionManagerAccessor {
+@Mixin(Dimension.class)
+public interface DimensionAccessor {
 
 	@Accessor
-	float getMiningProgress();
-
-	@Accessor
-	float getMiningSoundTimer();
-
-	@Accessor
-	void setMiningSoundTimer(float time);
+	WorldGeneratorType getGeneratorType();
 }

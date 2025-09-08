@@ -30,8 +30,9 @@ public class OldAnimations implements ClientModInitializer {
 	/* TODO LIST
 
 	--- Project ---
-	add readme
-	update deps (if needed)
+	add readme and a proper to-do list
+	set up modrinth page / submit for review
+	add sane and safe defaults
 
 	--- Sneaking ---
 	i really want to switch over to the 1.7 code instead of using the 1.13 code :/
@@ -40,25 +41,37 @@ public class OldAnimations implements ClientModInitializer {
 	--- Items ---
 	blocks item positions (rotations) + fix trapdoors and pressure plates and other crap
 	rod and bow and block positions and swing position.. can be separate options LOL
+	split layer glint support for armor/spawn egg/firework charges
 
 	--- Textures/Models ---
 	add better compatibility for old textures -> make them variants
 	fix weird fuzzy texture sizes of swords and stuff
 	fast grass always shown in gui/dropped?
-	held pressure plates look a bit different?? idk why. THEYRE BIGGER THATS WHY
+	held pressure plates look a bit different?? idk why. THEY'RE BIGGER THAT'S WHY
 	old fence fate model
 	oh my god. the custom models/textures are a damn nightmare of a mess
 	tripwire texture and model changes
 	cauldrons model and texture
 	tops of certain blocks have switch uvs
-	perhaps add an option to hide 1.8 blocks by using textures native to 1.7
+	MC-262869 - top texture of blocks need to be rotated as noted above
+	MC-262173 - tripwire hook using wrong wood texture
+	MC-277768 - mipmap items
 
 	--- World ---
 	old fast smooth lighting shadows
+	figure out why hurtTime is off by 1 tick in 1.7... this might also impact other aspects of the game
+	1.7 world gen speed
+	MC-195505 - mipmap short grass
+	1.7 fire is different than 1.8... wtf
+	armor stands don't exist in 1.7... hmmm
+	fog is possibly different with the perspective code being added in 1.8... but im not sure to what extent it matters
 
 	--- Misc ---
-	improve fake block mining believability - paneblock and tripwireblock are still not accurate
-	certain mob hitboxes should be visually changed
+	certain mob hitboxes should be visually changed?? perhaps
+	perhaps check if mining progress changed
+	MC-73162 - breaking a painting breaks block behind it?
+	MC-58120 - mob lag??? idk
+	inventory text is lighter in 1.7 ??? interesting must look into :p
 
 	*/
 

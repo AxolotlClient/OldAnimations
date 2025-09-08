@@ -18,45 +18,52 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.impl.AxolotlClientConfigMod;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
 import io.github.axolotlclient.oldanimations.OldAnimations;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+import io.github.axolotlclient.oldanimations.util.ducks.ILivingEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
-import net.minecraft.client.render.Window;
+import net.minecraft.util.math.MathHelper;
+import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameGui.class)
 public abstract class GameGuiMixin {
 
-	//todo: find a better way to do this :p
-	@Unique
-	private boolean bl;
+	@Shadow
+	@Final
+	private Minecraft minecraft;
 
 	@ModifyVariable(method = "renderStatusBars", at = @At(value = "STORE", ordinal = 0), index = 4)
-	private boolean axolotlclient$disableFlashingCheck(boolean value) {
-		bl = value; /* heart flashing local*/
-		return !isHeartFlashingEnabled() && value;
+	private boolean axolotlclient$useOldHealthLogic(boolean value) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.heartFlashing.get()) {
+			/* taken straight from 1.7 */
+			/* MC-2930 aimed to revert this... MC-73438 wants to bring this back.... there is no winning :/ */
+			boolean i3 = minecraft.player.maxHealth / 3 % 2 == 1;
+			if (minecraft.player.maxHealth < 10) {
+				i3 = false;
+			}
+			return i3;
+		}
+		return value;
 	}
 
-	@ModifyArg(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawTexture(IIIIII)V", ordinal = 3), index = 2)
-	private int axolotlclient$enableFlashingCheck(int par1) {
-		return par1 + (isHeartFlashingEnabled() && bl ? 1 : 0) * 9;
-	}
-
-	@Inject(method = "renderStatusBars", at = @At("TAIL"))
-	private void axolotlclient$releaseCapturedLocal(Window window, CallbackInfo ci) {
-		bl = false; /* big brain time */
+	@ModifyExpressionValue(method = "renderStatusBars", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/GameGui;displayHealth:I"))
+	private int axolotlclient$useLastHealthValue(int value) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.heartFlashing.get()) {
+			/* this was removed from 1.8... so i added it back :) */
+			return MathHelper.ceil(((ILivingEntity) minecraft.player).axolotlclient$getLastHealth());
+		}
+		return value;
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;hasCrosshair()Z"))
@@ -65,8 +72,12 @@ public abstract class GameGuiMixin {
 		return (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.alwaysShowCrosshair.get() && !isCustomCrosshair) || original.call(instance);
 	}
 
-	@Unique
-	private static boolean isHeartFlashingEnabled() {
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.heartFlashing.get();
+	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/GameGui;titleTime:I", ordinal = 0))
+	private int axolotlclient$skipTitleRendering(int original) {
+		/* 1.7 doesn't have titles */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableTitles.get()) {
+			return 0;
+		}
+		return original;
 	}
 }
