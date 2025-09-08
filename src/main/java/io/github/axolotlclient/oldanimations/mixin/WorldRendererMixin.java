@@ -18,25 +18,53 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import io.github.axolotlclient.oldanimations.util.PlayerUtil;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.client.render.world.BlockMiningProgress;
 import net.minecraft.client.render.world.WorldRenderer;
-import net.minecraft.entity.living.player.PlayerEntity;
-import net.minecraft.world.HitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 @Mixin(WorldRenderer.class)
-public abstract class WorldRendererMixin {
+public class WorldRendererMixin {
 
-	@Inject(method = "renderBlockOutline", at = @At("HEAD"), cancellable = true)
-	private void axolotlclient$removeOutlineOnFakeMinedBlock(PlayerEntity playerEntity, HitResult hitResult, int i, float f, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.useAndMineDestroyVisual.get() &&
-			PlayerUtil.INSTANCE.isFakeMinedBlock(hitResult.getPos())) {
-			/* in order to REALLY sell the illusion, we must cancel the block outline */
-			ci.cancel();
+	@WrapWithCondition(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/world/WorldRenderer;setupMiningProgressState()V"))
+	private boolean axolotlclient$removeMiningProgressGLState(WorldRenderer instance) {
+		/* we should stop setting these GL states */
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.blockEntityMiningProgress.get();
+	}
+
+	@WrapOperation(method = "renderEntities", at = @At(value = "INVOKE", target = "Ljava/util/Map;values()Ljava/util/Collection;"))
+	private <V extends BlockMiningProgress> Collection<V> axolotlclient$doNotRenderMiningProgress(Map<Integer, BlockMiningProgress> instance, Operation<Collection<V>> original) {
+		/* goodbye france. hello paris */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.blockEntityMiningProgress.get()) {
+			return Collections.emptyList();
 		}
+		return original.call(instance);
+	}
+
+	@WrapWithCondition(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/world/WorldRenderer;restoreMiningProgressState()V"))
+	private boolean axolotlclient$removeMiningProgressGLState2(WorldRenderer instance) {
+		/* we should stop setting these GL states again */
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.blockEntityMiningProgress.get();
+	}
+
+	@WrapOperation(method = "renderMiningProgress", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/state/BlockState;getBlock()Lnet/minecraft/block/Block;", ordinal = 0))
+	private Block axolotlclient$skipBlockEntityCheck(BlockState instance, Operation<Block> original) {
+		/* this should remove the blockentity check stopping the mining progress from showing on them. */
+		/* i definitely don't think this will do anything tho just due to how the block entity rendering works */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.blockEntityMiningProgress.get()) {
+			return Blocks.AIR;
+		}
+		return original.call(instance);
 	}
 }
