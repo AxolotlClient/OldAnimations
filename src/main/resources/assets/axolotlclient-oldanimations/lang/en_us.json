@@ -170,5 +170,7 @@
 	"oldObjectivesPosition": "Old Objectives Position",
 	"oldObjectivesPosition.tooltip": "Positions player list objectives to be in the same position as they are in 1.7. They are aligned with the entity's name rather than with the end of the entry slot.",
 	"miningProgressResetLogic": "Mining Progress Reset Logic",
-	"miningProgressResetLogic.tooltip": "Without prejudice, mining progress WILL be reset when the player stops holding down their left mouse button just like in 1.7."
+	"miningProgressResetLogic.tooltip": "Without prejudice, mining progress WILL be reset when the player stops holding down their left mouse button just like in 1.7.",
+	"rowBasedEntryOrder": "Row Based Entry Order",
+	"rowBasedEntryOrder.tooltip": "In 1.7, the player list entries are arranged across rows rather than down columns."
 }

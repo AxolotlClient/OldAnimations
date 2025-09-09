@@ -129,6 +129,7 @@ public class OldAnimationsConfig {
 	public final BooleanOption hideScoreboardHearts = new BooleanOption("hideScoreboardHearts", false);
 	public final BooleanOption oldObjectivesPosition = new BooleanOption("oldObjectivesPosition", false);
 	public final BooleanOption miningProgressResetLogic = new BooleanOption("miningProgressResetLogic", true);
+	public final BooleanOption rowBasedEntryOrder = new BooleanOption("rowBasedEntryOrder", false);
 
 	private final Supplier<Boolean>[] suppliers = new Supplier[] {
 		enabled::get,
@@ -237,6 +238,7 @@ public class OldAnimationsConfig {
 			disableTabFooter,
 			hideScoreboardHearts,
 			dontSortTabEntries,
+			rowBasedEntryOrder,
 			oldObjectivesPosition
 		);
 		category.add(categoryEnchantmentGlint);

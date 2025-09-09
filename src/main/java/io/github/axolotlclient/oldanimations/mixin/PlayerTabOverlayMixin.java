@@ -43,17 +43,81 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Slice;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-@Mixin(value = PlayerTabOverlay.class)
+@Mixin(PlayerTabOverlay.class /* unmapped name is C_4052762 */)
 public abstract class PlayerTabOverlayMixin extends GuiElement {
 
 	@Shadow
 	@Final
 	private Minecraft minecraft;
 
-	//TODO: Player list entries are left adjacent in 1.8... we need to made them centered instead
+	//TODO: i should audit the code and ensure it's all consistent and good. using shares so often is not a good sign lol
+	// the bedwars module in axolotlclient may or may not conflict... im not sure...
+
+	@ModifyVariable(method = "render", at = @At("STORE"), index = 9)
+	private int axolotlclient$captureLocalN(int original, @Share("localRefN") LocalIntRef localRefN) {
+		/* honestly this could be written better, but, because of the modifications below, */
+		/* the value of n changes. we need it to be the original value later on, so we should */
+		/* store it for that usage */
+		localRefN.set(original);
+		return original;
+	}
+
+	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 2), index = 9)
+	private int axolotlclient$leftToRightEntryPopulation(int original, @Local(index = 10) int l) {
+		/* this local represents the rows per column */
+		/* in 1.7, the value used here is the number of columns however */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.rowBasedEntryOrder.get()) {
+			return l;
+		}
+		return original;
+	}
+
+	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 3), index = 9)
+	private int axolotlclient$leftToRightEntryPopulation2(int original, @Local(index = 10) int l) {
+		/* ditto */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.rowBasedEntryOrder.get()) {
+			return l;
+		}
+		return original;
+	}
+
+	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 4), index = 9)
+	private int axolotlclient$useRightLocal(int original, @Share("localRefN") LocalIntRef localRefN) {
+		/* bro istg. the above modifications kinda mess up the local n. silly mixins */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.rowBasedEntryOrder.get()) {
+			return localRefN.get();
+		}
+		return original;
+	}
+
+	@ModifyVariable(method = "render", at = @At("STORE"), index = 20)
+	private int axolotlclient$captureLocalV(int original, @Share("localRefV") LocalIntRef localRefV) {
+		/* not again... */
+		localRefV.set(original);
+		return original;
+	}
+
+	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 0), index = 20)
+	private int axolotlclient$swapLocals(int original, @Local(index = 21) int t) {
+		/* this local represents the column index */
+		/* in 1.7, the local called here is the row index local */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.rowBasedEntryOrder.get()) {
+			return t;
+		}
+		return original;
+	}
+
+	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 1), index = 21)
+	private int axolotlclient$swapLocals2(int original, @Share("localRefV") LocalIntRef localRefV) {
+		/* this local represents the row index */
+		/* in 1.7, the local called here is the column index local */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.rowBasedEntryOrder.get()) {
+			return localRefV.get();
+		}
+		return  original;
+	}
 
 	@ModifyVariable(method = "render", at = @At("STORE"))
 	private List<PlayerInfo> axolotlclient$doNotSortList(List<PlayerInfo> original, @Local ClientPlayNetworkHandler clientPlayNetworkHandler) {
@@ -64,17 +128,8 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 		return original;
 	}
 
-	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 0), index = 5)
-	private List<PlayerInfo> axolotlclient$useOldObjectivesPositionLogic(List<PlayerInfo> original) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldObjectivesPosition.get()) {
-			/* because we're porting the 1.7 logic over below, we can just skip this for loop completely */
-			return Collections.EMPTY_LIST;
-		}
-		return original;
-	}
-
 	@ModifyVariable(method = "render", at = @At("LOAD"), index = 6, ordinal = 1)
-	private int axolotlclient$useOldObjectivesPositionLogic2(int original, @Local(index = 25) String string2) {
+	private int axolotlclient$useOldObjectivesPositionLogic(int original, @Local(index = 25) String string2) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldObjectivesPosition.get()) {
 			/* taken from 1.7 */
 			return minecraft.textRenderer.getWidth(string2) + 4;
@@ -83,7 +138,7 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 	}
 
 	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 0), index = 27)
-	private int axolotlclient$useOldObjectivesPositionLogic3(int original, @Local(index = 22) int w, @Share("localRefAc") LocalIntRef localRefAc) {
+	private int axolotlclient$useOldObjectivesPositionLogic2(int original, @Local(index = 22) int w, @Share("localRefAc") LocalIntRef localRefAc) {
 		/* storing the original value for later use */
 		localRefAc.set(original);
 		/* we need to solely use the player name/head position to determine the placement of the objective number like 1.7 */
@@ -97,7 +152,7 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 	}
 
 	@ModifyVariable(method = "render", at = @At(value = "LOAD", ordinal = 1), index = 12)
-	private int axolotlclient$useOldObjectivesPositionLogic4(int original, @Local(index = 13) int p) {
+	private int axolotlclient$useOldObjectivesPositionLogic3(int original, @Local(index = 13) int p) {
 		/* rahh */
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldObjectivesPosition.get() ? p - 17 : original;
 	}
@@ -123,6 +178,12 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 	private int axolotlclient$replacePlayerListSize(List<PlayerInfo> instance, Operation<Integer> original) {
 		/* renders a fixed amount of player slots just like 1.7 */
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? minecraft.getNetworkHandler().maxPlayerCount : original.call(instance);
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Ljava/util/List;subList(II)Ljava/util/List;"))
+	private <E extends PlayerInfo> List<E> axolotlclient$dontModifyPlayerList(List<E> list, int fromIndex, int toIndex, Operation<List<E>> original) {
+		/* don't modify the list just like 1.7 */
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? list : original.call(list, fromIndex, toIndex);
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Ljava/lang/Math;min(II)I", ordinal = 1))
@@ -176,10 +237,9 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 		return par1 - (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? 1 : 0);
 	}
 
-	//TODO: This can be a better injection
-	@ModifyExpressionValue(method = "renderPing", at = @At(value = "CONSTANT", args = "intValue=11"))
-	private int axolotlclient$movePingElement(int original) {
+	@ModifyArg(method = "renderPing", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;drawTexture(IIIIII)V"), index = 1)
+	private int axolotlclient$movePingElement(int par1) {
 		/* move the ping element */
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? 12 : original;
+		return par1 - (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tabDimensions.get() ? 1 : 0);
 	}
 }
