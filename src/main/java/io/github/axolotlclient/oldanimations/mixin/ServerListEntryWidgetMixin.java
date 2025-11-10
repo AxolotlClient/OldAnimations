@@ -23,6 +23,7 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.gui.widget.ServerListEntryWidget;
 import net.minecraft.resource.Identifier;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -36,7 +37,7 @@ public abstract class ServerListEntryWidgetMixin {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableUnknownServerIcon.get();
 	}
 
-	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;touchscreen:Z"))
+	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/options/GameOptions;touchscreen:Z"))
 	private boolean axolotlclient$disableSelectionButtons(boolean original) {
 		/* disables the rendering of the server selection buttons */
 		return (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableServerSelectionButtons.get()) && original;

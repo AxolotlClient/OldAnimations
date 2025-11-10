@@ -31,6 +31,7 @@ public class LocalClientPlayerEntityMixin {
 	@ModifyExpressionValue(method = "tickAi", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/player/input/PlayerInput;sneaking:Z", ordinal = 0))
 	private boolean axolotlclient$allowSneakingToStartSprinting(boolean original) {
 		/* this check simply doesn't exist in 1.7 which allows you to basically double tap your sneaking key to sprint lol */
+		/* MC-45235 */
 		return (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.doubleTapSneak.get()) && original;
 	}
 }

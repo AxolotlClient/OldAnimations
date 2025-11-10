@@ -31,6 +31,7 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.entity.living.LivingEntity;
+import net.minecraft.entity.living.mob.hostile.CreeperEntity;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -104,12 +105,23 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 
 	//TODO: this can probably be moved somewhere else!
 	@Inject(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"))
-    private void axolotlclient$addSneakingTranslation(LivingEntity livingEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
-        /* in order to match 1.7, we need to elevate the player model while sneaking */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
-			/* the elevation will be the difference between the player's sneaking eyeheight and their actual eyeheight (1.62 meters) */
-			/* the player model should now move 1:1 with the crosshair */
-			GlStateManager.translatef(0.0F, 1.62F - PlayerUtil.INSTANCE.getEyeHeight(), 0.0F);
+    private void axolotlclient$addTranslation(LivingEntity livingEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
+		if (OldAnimationsConfig.isEnabled()) {
+			if (OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
+				/* in order to match 1.7, we need to elevate the player model while sneaking */
+				/* the elevation will be the difference between the player's sneaking eyeheight and their actual eyeheight (1.62 meters) */
+				/* the player model should now move 1:1 with the crosshair */
+				GlStateManager.translatef(0.0F, 1.62F - PlayerUtil.INSTANCE.getEyeHeight(), 0.0F);
+			}
+
+			if (OldAnimationsConfig.instance.creeperOffset.get() && livingEntity instanceof CreeperEntity) {
+				/* vro was floating in 1.7 fr fr */
+				/* this is not where the actual modification came from. in 1.7, */
+				/* CreeperModel#<init> has an integer local holding the value of 4, whereas in 1.8, it's 6 */
+				/* a 2 pixel difference. we can convert this value by doing 2 / 16 (texture width) to get the value 0.125 of a block */
+				/* MC-3631 */
+				GlStateManager.translatef(0.0F, -0.125F, 0.0F);
+			}
 		}
     }
 

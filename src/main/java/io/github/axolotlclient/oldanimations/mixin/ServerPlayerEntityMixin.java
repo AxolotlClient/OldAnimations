@@ -46,9 +46,9 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
 	@Inject(method = "updateSettings", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/data/DataTracker;update(ILjava/lang/Object;)V"))
 	private void axolotlclient$syncDifficulty(ClientSettingsC2SPacket clientSettingsC2SPacket, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDifficultyButtonLogic.get() &&
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.difficultyLogic.get() &&
 			server.isSingleplayer() && server.getUsername().equals(getName())) {
-			/* every time a singleplayer world loads, the difficulty will be updated with the options difficulty */
+			/* difficulty will be synced and updated anytime the player changes the difficulty */
 			server.setDifficulty(Minecraft.getInstance().options.difficulty);
 		}
 	}

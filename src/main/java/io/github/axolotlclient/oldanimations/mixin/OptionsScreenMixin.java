@@ -23,6 +23,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.options.OptionsScreen;
@@ -36,13 +37,10 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(OptionsScreen.class)
+@Mixin(OptionsScreen.class /* C_1860331 */)
 public abstract class OptionsScreenMixin extends Screen {
 
 	@Shadow
@@ -67,43 +65,10 @@ public abstract class OptionsScreenMixin extends Screen {
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldMultiplayerSettingsPage.get() ? "options.multiplayer.title" : original;
 	}
 
-	@Inject(method = "buttonClicked", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/widget/ButtonWidget;id:I", ordinal = 2))
-	private void axolotlclient$onlySetIfInWorld(ButtonWidget buttonWidget, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDifficultyButtonLogic.get() && minecraft.world == null && buttonWidget.id == 108) {
-			/* this is so silly... but the alternatives are not fun :p */
-			options.difficulty = Difficulty.byId(options.difficulty.getId() + 1 & 3);
-			difficultyButton.message = getButtonLabel(options.difficulty);
-		}
-	}
-
-	@ModifyExpressionValue(method = "buttonClicked", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/widget/ButtonWidget;id:I", ordinal = 2))
-	private int axolotlclient$onlySetIfInWorld(int original) {
-		/* because we're going to be able to toggle this button while not in a world, we can avoid the game crashing by */
-		/* checking if the world is valid before we set the difficulty */
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDifficultyButtonLogic.get() && minecraft.world == null ? -1 : original;
-	}
-
-	@ModifyArg(method = "buttonClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/Difficulty;byId(I)Lnet/minecraft/world/Difficulty;"), index = 0)
-	private int axolotlclient$useOptionsDifficulty(int i) {
-		/* use the options difficulty */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDifficultyButtonLogic.get()) {
-			return options.difficulty.getId() + 1 & 3;
-		}
-		return i;
-	}
-
-	@Inject(method = "buttonClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/options/OptionsScreen;getButtonLabel(Lnet/minecraft/world/Difficulty;)Ljava/lang/String;"))
-	private void axolotlclient$updateOptionsDifficulty(ButtonWidget buttonWidget, CallbackInfo ci) {
-		/* update the options difficulty */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDifficultyButtonLogic.get()) {
-			options.difficulty = Difficulty.byId(options.difficulty.getId() + 1 & 3);
-		}
-	}
-
 	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getDifficulty()Lnet/minecraft/world/Difficulty;"))
 	private Difficulty axolotlclient$tryNotToCrashGame(ClientWorld instance, Operation<Difficulty> original) {
 		/* if we don't do this, our game will crash as no valid world is loaded */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDifficultyButtonLogic.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.difficultyLogic.get()) {
 			return options.difficulty;
 		}
 		return original.call(instance);
@@ -112,9 +77,8 @@ public abstract class OptionsScreenMixin extends Screen {
 	@Expression("? != null")
 	@ModifyExpressionValue(method = "init", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 0))
 	private boolean axolotlclient$skipRealmsNotificationButton(boolean original) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDifficultyButtonLogic.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.difficultyLogic.get()) {
 			/* now, the realms notification button will never be rendered. */
-			/* unfortunately, this was the only injection i could think of to get this feature out in a compatible manner */
 			return true;
 		}
 		return original;
@@ -122,26 +86,37 @@ public abstract class OptionsScreenMixin extends Screen {
 
 	@ModifyExpressionValue(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isInSingleplayer()Z"))
 	private boolean axolotlclient$skipLockedDifficultyRendering(boolean original) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDifficultyButtonLogic.get()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.difficultyLogic.get()) {
 			/* we might as well skip over this to reduce the amount of work needed to replicate the old difficulty button */
 			return false;
 		}
 		return original;
 	}
 
-	@WrapWithCondition(method = "init", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;active:Z", ordinal = 1))
-	private boolean axolotlclient$disableActiveState(ButtonWidget instance, boolean value) {
-		/* you were a pawn */
-		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.oldDifficultyButtonLogic.get();
+	@WrapOperation(method = "init", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/gui/widget/ButtonWidget;active:Z", ordinal = 1))
+	private void axolotlclient$addHardcoreState(ButtonWidget instance, boolean value, Operation<Void> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.difficultyLogic.get()) {
+			if (minecraft.world != null && minecraft.world.getData().isHardcore()) {
+				/* because we basically overwrote the original hardcore button code, we should add this :p */
+				original.call(instance, value);
+				instance.message = I18n.translate("options.difficulty") + ": " + I18n.translate("options.difficulty.hardcore");
+			}
+		} else {
+			original.call(instance, value);
+		}
 	}
 
-	@Inject(method = "init", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;active:Z", ordinal = 1))
-	private void axolotlclient$addHardcoreState(CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDifficultyButtonLogic.get() &&
-			minecraft.world != null && minecraft.world.getData().isHardcore()) {
-			/* because we basically overwrote the original hardcore button code, we should add this :p */
-			difficultyButton.active = false;
-			difficultyButton.message = I18n.translate("options.difficulty") + ": " + I18n.translate("options.difficulty.hardcore");
+	@ModifyExpressionValue(method = "buttonClicked", at = @At(value = "CONSTANT", args = "intValue=108"))
+	private int axolotlclient$updateOptionsDifficulty(int original, @Local(argsOnly = true) ButtonWidget buttonWidget) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.difficultyLogic.get() &&
+			buttonWidget.id == original) {
+			/* mostly adapted from 1.7. we need to update the difficulty option instead of the world difficulty */
+			options.difficulty = Difficulty.byId(options.difficulty.getId() + 1 & 3);
+			difficultyButton.message = getButtonLabel(options.difficulty);
+			/* if we don't save, then the difficulty will not be saved if the user quits the game */
+			/* i was pulling my hair out for a whole month wondering why the difficulty was not saving properly */
+			minecraft.options.save();
 		}
+		return original;
 	}
 }

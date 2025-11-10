@@ -40,29 +40,21 @@ public abstract class ListWidgetMixin {
 	@Shadow
 	protected boolean centerAlongY;
 
-	//TODO: This can probably be written better!
-
-	@Inject(method = "capScrolling", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "capScrolling", at = @At("TAIL"))
 	private void axolotlclient$allowNonNegativeScrolling(CallbackInfo ci) {
 		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.centeredSelectionMenus.get()) {
 			return;
 		}
-
-		ci.cancel();
 		int var1 = getMaxScroll();
-
 		if (var1 < 0) {
 			var1 /= 2;
 		}
-
 		if (!centerAlongY && var1 < 0) {
 			var1 = 0;
 		}
-
 		if (scrollAmount < 0.0F) {
 			scrollAmount = 0.0F;
 		}
-
 		if (scrollAmount > (float) var1) {
 			scrollAmount = (float) var1;
 		}

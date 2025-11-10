@@ -24,7 +24,6 @@ import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.ItemEntityRenderer;
-import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.entity.ItemEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -45,11 +44,6 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 			return 180.0F - dispatcher.cameraYaw;
 		}
 		return angle;
-	}
-
-	@ModifyArg(method = "render(Lnet/minecraft/entity/ItemEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", ordinal = 1))
-	private ModelTransformations.Type axolotlclient$replaceTransform(ModelTransformations.Type type) {
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() ? ModelTransformations.Type.NONE : type;
 	}
 
 	@Inject(method = "render(Lnet/minecraft/entity/ItemEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;)V", ordinal = 1))

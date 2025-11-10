@@ -18,91 +18,19 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
-import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import lombok.Getter;
-import lombok.Setter;
-import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 public final class ItemUtil {
 
-	/* there was no better way of doing this sadly */
-	@Getter
-	@Setter
-	private static ItemStack heldItemStack = null;
-	@Getter
-	@Setter
-	private static ItemStack guiItemStack = null;
-
-	/* some items are not quite compatible with 1.7's item position */
-	private static final Map<Class<?>, Boolean> blacklistedItems = new HashMap<>() {{
-		put(SkullItem.class, true);
-		put(BannerItem.class, true);
-	}};
-
-	/* i fr thought pressure plates and trapdoors were affected by this.. i was wrong */
-	private static final Map<Class<?>, Boolean> thinBlocks = new HashMap<>() {{
-		put(CarpetBlock.class, true);
-		put(SnowLayerBlock.class, true);
-		put(DaylightDetectorBlock.class, true);
-	}};
-
-	/* for some reason, some blocks have alternative rotations in 1.7! */
-	private static final Map<Class<?>, Boolean> rotatableBlocks = new HashMap<>() {{
-		put(DispenserBlock.class, true);
-		put(FurnaceBlock.class, true);
-		put(PumpkinBlock.class, true);
-		put(ChestBlock.class, true);
-	}};
-
-	//TODO: This might be deprecated in favor of simply checking whether the model is an entity or generated model...
-	// Only skulls, banners, and chests qualify as an entity (tiling/block entity)
-	// AND they would be blacklisted just based on their irregular transformations. Wow.
-	public static boolean isBlacklisted(ItemStack stack) {
-		if (stack == null) return false;
-		/* exclude SkullItem from blacklist based on config condition */
-		/* if the skull is NOT a child of builtin/entity, we should remove it from the blacklist */
-		boolean isSkullAnEntityModel = Minecraft.getInstance().getItemRenderer().getModelShaper().getModel(stack).isCustomRenderer();
-		if ((OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.replaceSkullModel.get() || !isSkullAnEntityModel) && stack.getItem() instanceof SkullItem) {
-			return false;
-		}
-		return blacklistedItems.containsKey(stack.getItem().getClass());
+	public static boolean isCustomRenderer(ItemStack stack) {
+		/* items like skulls and banners use a custom model renderer. they are also coincidentally block entities */
+		return Minecraft.getInstance().getItemRenderer().getModelShaper().getModel(stack).isCustomRenderer();
 	}
 
 	public static boolean isBlazeRod(ItemStack stack) {
-		if (stack == null) return false;
 		/* this guy is a con artist */
 		return stack.getItem() == Items.BLAZE_ROD;
-	}
-
-	/* thank you animatium, very cool! */
-	public static boolean isThinBlockItem(ItemStack stack) {
-		if (stack != null) {
-			final Block block = Block.byItem(stack.getItem());
-			if (block == null) return false;
-			return thinBlocks.containsKey(block.getClass());
-		} else {
-			return false;
-		}
-	}
-
-	public static boolean shouldRotateBlock(ItemStack stack) {
-		if (stack != null) {
-			final Block block = Block.byItem(stack.getItem());
-			if (block == null) return false;
-			return rotatableBlocks.containsKey(block.getClass());
-		} else {
-			return false;
-		}
-	}
-
-	public static final class DummyItem extends Item {
-		public static ItemStack getStack() {
-			return new ItemStack(new DummyItem());
-		}
 	}
 }

@@ -20,33 +20,23 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import io.github.axolotlclient.oldanimations.util.*;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.item.ItemModelShaper;
+import io.github.axolotlclient.oldanimations.util.GlintHandler;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
-import net.minecraft.client.render.texture.TextureManager;
-import net.minecraft.client.resource.ModelIdentifier;
 import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.client.resource.model.BakedQuad;
 import net.minecraft.entity.living.LivingEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.ItemStack;
 import net.minecraft.resource.Identifier;
 import net.minecraft.util.math.Direction;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
@@ -60,10 +50,6 @@ public abstract class ItemRendererMixin {
 	private static Identifier ENCHANTMENT_GLINT_LOCATION;
 
 	@Shadow
-	@Final
-	private TextureManager textureManager;
-
-	@Shadow
 	protected abstract void prepareGuiItemRender(int x, int y, boolean gui3d);
 
 	@Shadow
@@ -71,9 +57,6 @@ public abstract class ItemRendererMixin {
 
 	@Shadow
 	public abstract boolean isGui3d(ItemStack itemStack);
-
-	@Shadow
-	public abstract ItemModelShaper getModelShaper();
 
 	@Unique
 	private boolean axolotlclient$isGui;
@@ -87,6 +70,9 @@ public abstract class ItemRendererMixin {
 	@Unique
 	private int axolotlclient$glintColor = -8372020;
 
+	@Unique
+	private boolean axolotlclient$isLayered;
+
 	@Inject(method = "renderItem", at = @At("HEAD"))
 	private void axolotlclient$captureModel(ItemStack stack, BakedModel model, CallbackInfo ci) {
 		axolotlclient$model = model;
@@ -98,6 +84,7 @@ public abstract class ItemRendererMixin {
 		axolotlclient$model = null;
 	}
 
+	//TODO: should be a separate option
 	@ModifyArgs(method = "applyNormal", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;postNormal(FFF)V"))
 	private void axolotlclient$modifyNormals(Args args) {
 		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.fastItems.get()) {
@@ -111,8 +98,7 @@ public abstract class ItemRendererMixin {
 	@ModifyExpressionValue(method = "render(Lnet/minecraft/client/resource/model/BakedModel;ILnet/minecraft/item/ItemStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resource/model/BakedModel;getQuads()Ljava/util/List;"))
 	private List<BakedQuad> axolotlclient$changeToSprite(List<BakedQuad> quads, @Local(argsOnly = true) BakedModel model) {
 		List<BakedQuad> filteredQuads = quads.stream().filter(baked -> baked.getFace() == Direction.SOUTH).toList();
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fastItems.get() && !model.isGui3d() && (axolotlclient$isGui ||
-			(!axolotlclient$isHeld))) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fastItems.get() && !model.isGui3d() && (axolotlclient$isGui || (!axolotlclient$isHeld))) {
 			return filteredQuads;
 		}
 		return quads;
@@ -180,115 +166,32 @@ public abstract class ItemRendererMixin {
 			if (OldAnimationsConfig.instance.disableGlintOnBlocks.get() && isGui3d(stack)) {
 				return;
 			}
-			GlintHandler.renderEnchantmentGlintPre(textureManager, ENCHANTMENT_GLINT_LOCATION, axolotlclient$glintColor);
+			GlintHandler.renderEnchantmentGlintPre(ENCHANTMENT_GLINT_LOCATION, axolotlclient$glintColor);
 			prepareGuiItemRender(x, y, false);
-			GlintHandler.renderEnchantmentGlintPost(textureManager);
+			GlintHandler.renderEnchantmentGlintPost();
 		}
 	}
 
-	@WrapOperation(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;render(Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/item/ItemStack;)V"))
-	private void axolotlclient$useCustomModel$layer0(ItemRenderer instance, BakedModel model, ItemStack stack, Operation<Void> original) {
-		/* renders the potion's overlay WITH the glint like in 1.7 */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldPotionGlint.get() &&
-			!axolotlclient$isGui && stack.getItem() instanceof PotionItem &&
+	@ModifyVariable(method = "renderQuads", at = @At(value = "HEAD"), argsOnly = true)
+	private List<BakedQuad> axolotlclient$filterModelQuads(List<BakedQuad> original, @Local(argsOnly = true) ItemStack itemStack) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlintLayer.get() &&
 			/* just to be safe, let's skip rendering while projectiles and dropped items are 2d */
 			(!OldAnimationsConfig.instance.fastItems.get() || axolotlclient$isHeld)) {
-			model = axolotlclient$getModel("bottle_overlay");
+			/* by default, items with multiple layers are rendered in multiple passes */
+			/* in 1.7, the enchantment glint only shows on the base layer for whatever reason */
+			return original.stream().filter(quad -> axolotlclient$isLayered == (quad.getTintIndex() > 0)).toList();
 		}
-		original.call(instance, model, stack);
+		return original;
 	}
 
-	@Inject(method = "renderItem", at = @At(value = "INVOKE",target = "Lcom/mojang/blaze3d/platform/GlStateManager;popMatrix()V"))
-	private void axolotlclient$useCustomModel$layer1(ItemStack stack, BakedModel model, CallbackInfo ci) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldPotionGlint.get() &&
-			!model.isCustomRenderer() && !axolotlclient$isGui && stack.getItem() instanceof PotionItem &&
-			/* just to be safe, let's skip rendering while projectiles and dropped items are 2d */
+	@Inject(method = "renderItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;popMatrix()V"))
+	private void axolotlclient$renderAdditionalModelLayers(ItemStack itemStack, BakedModel bakedModel, CallbackInfo ci) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlintLayer.get() && !bakedModel.isCustomRenderer() && !bakedModel.isGui3d() && /* gotta make sure we aren't rendering extra crap */
 			(!OldAnimationsConfig.instance.fastItems.get() || axolotlclient$isHeld)) {
-			/* renders the splash/drinkable bottle AFTER the glint rendering like in 1.7 */
-			String id = PotionItem.isSplashPotion(stack.getMetadata()) ? "bottle_splash_empty" : "bottle_drinkable_empty";
-			/* hacky way of rendering the bottle without using the potion's overlay color */
-			render(axolotlclient$getModel(id), ItemUtil.DummyItem.getStack());
+			/* additional layers will be rendered without the glint :> */
+			axolotlclient$isLayered = true;
+			render(bakedModel, itemStack);
+			axolotlclient$isLayered = false;
 		}
-	}
-
-	@Inject(method = "renderGuiItemModel", at = @At(value = "HEAD"))
-	private void axolotlclient$fixDepthAndCaptureStack(ItemStack stack, int x, int y, CallbackInfo ci) {
-		/* honestly, idk why this works, but it does :p */
-		GlStateManager.enableDepthTest();
-	}
-
-	@Inject(method = "renderGuiItemModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
-	private void axolotlclient$captureGuiStack(ItemStack itemStack, int i, int j, CallbackInfo ci) {
-		ItemUtil.setGuiItemStack(itemStack);
-	}
-
-	@Inject(method = "renderGuiItemModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", shift = At.Shift.AFTER))
-	private void axolotlclient$releaseGuiStack(ItemStack itemStack, int i, int j, CallbackInfo ci) {
-		ItemUtil.setGuiItemStack(null);
-	}
-
-	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
-	private void axolotlclient$captureHeldStack(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, CallbackInfo ci) {
-		ItemUtil.setHeldItemStack(itemStack);
-	}
-
-	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", shift = At.Shift.AFTER))
-	private void axolotlclient$releaseHeldStack(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, CallbackInfo ci) {
-		ItemUtil.setHeldItemStack(null);
-	}
-
-	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
-	private void axolotlclient$reverseTransformations(ItemStack itemStack, BakedModel bakedModel, ModelTransformations.Type type, CallbackInfo ci) {
-		/* we can replicate ModelTransformations.Type.NONE by just reversing the default transformations! */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() &&
-			!OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemUtil.isBlacklisted(itemStack)) {
-			float scale;
-			float scale2 = 0.0625F;
-			if (type == ModelTransformations.Type.FIRST_PERSON && !isGui3d(itemStack)) {
-				scale = 1.0F / 1.7F;
-				GlStateManager.scalef(scale, scale, scale);
-				GlStateManager.rotatef(-25.0F, 0.0F, 0.0F, 1.0F);
-				GlStateManager.rotatef(135.0F, 0.0F, 1.0F, 0.0F);
-				GlStateManager.translatef(0.0F, -4.0F * scale2, -2.0F * scale2);
-			} else if (type == ModelTransformations.Type.THIRD_PERSON) {
-				/* fortnite, we need to talk... */
-				Item item = itemStack.getItem();
-				if (item instanceof BlockItem && Minecraft.getInstance().getItemRenderer().isGui3d(itemStack)) {
-					if (Block.byItem(item).getRenderType() == 2) return;
-					scale = 1.0F / 0.375F;
-					GlStateManager.scalef(scale, scale, scale);
-					GlStateManager.rotatef(-170.0F, 0.0F, 0.0F, 1.0F);
-					GlStateManager.rotatef(-10.0F, 1.0F, 0.0F, 0.0F);
-					GlStateManager.rotatef(45.0F, 0.0F, 1.0F, 0.0F);
-					GlStateManager.translatef(0.0F, -1.5F * scale2, 2.75F * scale2);
-				} else if (item == Items.BOW) {
-					GlStateManager.rotatef(45.0F, 0.0F, 0.0F, 1.0F);
-					GlStateManager.rotatef(-5.0F, 1.0F, 0.0F, 0.0F);
-					GlStateManager.rotatef(-80.0F, 0.0F, 1.0F, 0.0F);
-					GlStateManager.translatef(-0.75F * scale2, 0.0F * scale2, -0.25F * scale2);
-				} else if (item.isHandheld()) {
-					scale = 1.0F / 0.85F;
-					GlStateManager.scalef(scale, scale, scale);
-					GlStateManager.rotatef(35.0F, 0.0F, 0.0F, 1.0F);
-					GlStateManager.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-					GlStateManager.translatef(0.0F, (ItemUtil.isBlazeRod(itemStack) ? -0.75F : -1.25F) * scale2, 3.5F * scale2);
-				} else {
-					scale = 1.0F / 0.55F;
-					GlStateManager.scalef(scale, scale, scale);
-					GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
-					GlStateManager.translatef(0.0F, -1.0F * scale2, 3.0F * scale2);
-				}
-			}
-		}
-	}
-
-	@ModifyArg(method = "renderGuiItemModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/block/ModelTransformations;apply(Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
-	private ModelTransformations.Type axolotlclient$disableGuiTransforms(ModelTransformations.Type type, @Local(argsOnly = true) ItemStack itemStack) {
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemUtil.isBlacklisted(itemStack) ? ModelTransformations.Type.NONE : type;
-	}
-
-	@Unique
-	private BakedModel axolotlclient$getModel(String model) {
-		return getModelShaper().getManager().getModel(new ModelIdentifier(model, "inventory"));
 	}
 }

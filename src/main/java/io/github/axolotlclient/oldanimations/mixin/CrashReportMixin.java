@@ -21,20 +21,23 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import net.minecraft.client.render.entity.layer.WornSkullLayer;
-import net.minecraft.entity.living.LivingEntity;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportCategory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(WornSkullLayer.class)
-public class WornSkullLayerMixin {
+import java.util.concurrent.Callable;
 
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;isSneaking()Z"))
-	private boolean axolotlclient$disableSneakTranslation(LivingEntity instance, Operation<Boolean> original) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
-			/* we need to remove the sneaking offset since we will be using our own */
-			return false;
+@Mixin(CrashReport.class)
+public class CrashReportMixin {
+
+	@WrapOperation(method = "fillSystemDetails", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/crash/CrashReportCategory;add(Ljava/lang/String;Ljava/util/concurrent/Callable;)V", ordinal = 0))
+	private void axolotlclient$spoofCrashVersion(CrashReportCategory instance, String string, Callable<String> callable, Operation<Void> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.show1_7_10.get()) {
+			/* blame me for any future confusions ;) */
+			/* on a real note, this injection is kinda poop */
+			callable = () -> "1.7.10";
 		}
-		return original.call(instance);
+		original.call(instance, string, callable);
 	}
 }

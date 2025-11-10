@@ -19,6 +19,7 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -60,6 +61,9 @@ public abstract class GameRendererMixin implements Sneaky {
 
 	@Shadow
 	private long lastWorldRenderTime;
+
+	@Shadow
+	private float viewDistance;
 
 	@Unique
 	private float lastCameraY;
@@ -164,7 +168,65 @@ public abstract class GameRendererMixin implements Sneaky {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "renderFog", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/GameRenderer;viewDistance:F", ordinal = 1))
+	@WrapOperation(method = "setupCamera", at = @At(value = "INVOKE", target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V", remap = false))
+	private void axolotlclient$increaseWorldDepth(float fovy, float aspect, float zNear, float zFar, Operation<Void> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.skyAndCloudPerspective.get()) {
+			/* 14w30b and MC-63179 */
+			/* the following injections are all part of the same feature */
+			/* for some reason, using a slice wasn't working so i had to manually inject with the ordinals... sigh... */
+			/* this feature looks absolutely horrid, but that's just how early minecraft was... lmfao */
+			zFar = viewDistance * 2.0F;
+		}
+		original.call(fovy, aspect, zNear, zFar);
+	}
+
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;matrixMode(I)V", ordinal = 0))
+	private boolean axolotlclient$disableMatrixMode(int i) {
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
+	}
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;matrixMode(I)V", ordinal = 1))
+	private boolean axolotlclient$disableMatrixMode2(int i) {
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
+	}
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;matrixMode(I)V", ordinal = 2))
+	private boolean axolotlclient$disableMatrixMode3(int i) {
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
+	}
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;matrixMode(I)V", ordinal = 3))
+	private boolean axolotlclient$disableMatrixMode4(int i) {
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
+	}
+
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;loadIdentity()V", ordinal = 0))
+	private boolean axolotlclient$dontLoadIdentity() {
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
+	}
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;loadIdentity()V", ordinal = 1))
+	private boolean axolotlclient$dontLoadIdentity2() {
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
+	}
+
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V", remap = false))
+	private boolean axolotlclient$disablePerspective(float fovy, float aspect, float zNear, float zFar) {
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
+	}
+
+	@WrapWithCondition(method = "renderClouds", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;matrixMode(I)V"))
+	private boolean axolotlclient$disableMatrixMode5(int i) {
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
+	}
+
+	@WrapWithCondition(method = "renderClouds", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;loadIdentity()V"))
+	private boolean axolotlclient$dontLoadIdentity3() {
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
+	}
+
+	@WrapWithCondition(method = "renderClouds", at = @At(value = "INVOKE", target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V", remap = false))
+	private boolean axolotlclient$disablePerspective2(float fovy, float aspect, float zNear, float zFar) {
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
+	}
+
+	@ModifyExpressionValue(method = "renderFog", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/render/GameRenderer;viewDistance:F", ordinal = 1))
 	private float axolotlclient$renderVoidFog(float original, @Local(argsOnly = true) int i, @Local(argsOnly = true) float f) {
 		/* void fog logic taken straight from 1.7 */
 		float gx = original;

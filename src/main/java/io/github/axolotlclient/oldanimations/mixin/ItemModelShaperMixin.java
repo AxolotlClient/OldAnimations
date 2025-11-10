@@ -19,6 +19,10 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+import net.minecraft.block.Block;
+import net.minecraft.block.FireBlock;
+import net.minecraft.block.LiquidBlock;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.render.item.ItemModelShaper;
 import net.minecraft.client.resource.ModelIdentifier;
 import net.minecraft.client.resource.model.BakedModel;
@@ -39,7 +43,7 @@ public abstract class ItemModelShaperMixin {
 
 	@Inject(method = "getModel(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/client/resource/model/BakedModel;", at = @At("HEAD"), cancellable = true)
  	private void axolotlclient$useCustomModel$skull(ItemStack stack, CallbackInfoReturnable<BakedModel> cir) {
- 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.replaceSkullModel.get() && stack.getItem() instanceof SkullItem) {
+ 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.skullModel.get() && stack.getItem() instanceof SkullItem) {
 			String id = switch (stack.getMetadata()) {
 				case 0 -> "old_skull_skeleton";
 				case 1 -> "old_skull_wither";
@@ -49,5 +53,17 @@ public abstract class ItemModelShaperMixin {
 			};
 			cir.setReturnValue(getManager().getModel(new ModelIdentifier(id, "inventory")));
  		}
+
+		/* this was a pain in the ass to figure out... */
+		if (Block.byItem(stack.getItem()) instanceof LiquidBlock) {
+			if (Block.byItem(stack.getItem()).getMaterial() == Material.WATER) {
+				cir.setReturnValue(getManager().getModel(new ModelIdentifier("water", "inventory")));
+			} else if (Block.byItem(stack.getItem()).getMaterial() == Material.LAVA) {
+				cir.setReturnValue(getManager().getModel(new ModelIdentifier("lava", "inventory")));
+			}
+		}
+		if (Block.byItem(stack.getItem()) instanceof FireBlock) {
+			cir.setReturnValue(getManager().getModel(new ModelIdentifier("fire", "inventory")));
+		}
  	}
 }

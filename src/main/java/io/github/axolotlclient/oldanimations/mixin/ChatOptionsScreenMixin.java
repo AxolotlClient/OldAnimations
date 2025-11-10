@@ -27,6 +27,7 @@ import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.model.PlayerModelPart;
 import net.minecraft.client.resource.language.I18n;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -60,6 +61,7 @@ public class ChatOptionsScreenMixin extends Screen {
 	@Unique
 	private int axolotlclient$i;
 
+	//TODO: Can this be done better? most likely-
 	@ModifyVariable(method = "init", at = @At("LOAD"), index = 1)
 	private int axolotlclient$captureAndUpdateLocal(int original) {
 		/* this is a horrible injection, but its all i could come up with :p */
@@ -67,7 +69,7 @@ public class ChatOptionsScreenMixin extends Screen {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "init", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/options/ChatOptionsScreen;CHAT_OPTIONS:[Lnet/minecraft/client/options/GameOptions$Option;"))
+	@ModifyExpressionValue(method = "init", at = @At(value = "FIELD", opcode = Opcodes.GETSTATIC, target = "Lnet/minecraft/client/gui/screen/options/ChatOptionsScreen;CHAT_OPTIONS:[Lnet/minecraft/client/options/GameOptions$Option;"))
 	private GameOptions.Option[] axolotlclient$removeReducedDebugInfo(GameOptions.Option[] original) {
 		/* this modification is really stupid and needs to be re-written */
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldMultiplayerSettingsPage.get() ? OLD_CHAT_OPTIONS : original;
@@ -78,6 +80,8 @@ public class ChatOptionsScreenMixin extends Screen {
 		/* adds a cape toggle button */
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldMultiplayerSettingsPage.get()) {
 			int i = axolotlclient$i + 1 /* because of the shitty injections above, i need to add 1 */;
+			/* in 1.8.1, this "multiplayer settings" text was removed in favor of saying "chat settings" due to MC-69983 */
+			/* the text still exists in the lang files tho :p */
 			axolotlclient$multiplayerOptionsTitle = I18n.translate("options.multiplayer.title");
 			if (i % 2 == 1) {
 				i++;

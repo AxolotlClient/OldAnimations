@@ -67,7 +67,7 @@ public abstract class PlayerRendererMixin {
 	@Inject(method = {"renderPlayerLeftHandModel", "renderPlayerRightHandModel"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/PlayerRenderer;setModelStatus(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;)V", shift = At.Shift.AFTER))
 	private void legarity$fixVehicleArm(ClientPlayerEntity clientPlayerEntity, CallbackInfo ci, @Local PlayerModel playerModel) {
 		/* fixes MC-1349 */
-		/* this is probably the only non-1.7 related feature that im open to adding */
+		/* this is probably the only one of the few bug fixes that im open to adding */
 		playerModel.hasVehicle = false;
 	}
 }

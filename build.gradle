@@ -34,6 +34,8 @@ repositories {
 }
 
 loom {
+	accessWidenerPath.set(file("src/main/resources/oldanimations.accesswidener"))
+
 	mods {
 		"axolotlclient-oldanimations" {
 			sourceSet("main")

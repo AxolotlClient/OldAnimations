@@ -20,6 +20,8 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.oldanimations.OldAnimations;
@@ -34,6 +36,7 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.UseAction;
+import net.minecraft.util.crash.CrashReportCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.HitResult;
@@ -44,6 +47,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.concurrent.Callable;
 
 @Mixin(value = Minecraft.class, priority = 2050 /* priority needed for custom window title */)
 public abstract class MinecraftMixin {
@@ -111,14 +116,14 @@ public abstract class MinecraftMixin {
 		/* honestly it's been a pain in the ass trying to get the method below to actually not flag grimac's packet order checks */
 		/* so this was my solution. wait for the tickBlockMining method to start mining. */
 		/* this actually allows the use item packet to be sent before start mining packet if you spam click both mouse buttons fast enough */
-		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.allowMiningCancel.get() || !axolotlclient$hasUseAction();
+		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.allowMiningCancel.get() || !axolotlclient$hasUseAction() || !interactionManager.hasAttackCooldown();
 	}
 
 	@ModifyExpressionValue(method = "doUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientPlayerInteractionManager;isMiningBlock()Z"))
 	private boolean axolotlclient$allowMiningCancel(boolean original) {
 		/* this may flag an anticheat... but so do the other clients, so we should be as safe as them */
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.allowMiningCancel.get() &&
-			axolotlclient$hasUseAction()) {
+		/* MC-70359 massacred my boy */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.allowMiningCancel.get() && axolotlclient$hasUseAction()) {
 			return false;
 		}
 		return original;
@@ -168,6 +173,24 @@ public abstract class MinecraftMixin {
 			Display.setTitle(title);
 			axolotlclient$lastTitle = title;
 		}
+	}
+
+	@WrapOperation(method = "populateCrashReport", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/crash/CrashReportCategory;add(Ljava/lang/String;Ljava/util/concurrent/Callable;)V", ordinal = 0))
+	private void axolotlclient$spoofCrashVersionAgain(CrashReportCategory instance, String string, Callable<String> callable, Operation<Void> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.show1_7_10.get()) {
+			/* we do a little trolling frfr ;) */
+			/* ughhh, this injection is kinda poop */
+			callable = () -> "1.7.10";
+		}
+		original.call(instance, string, callable);
+	}
+
+	@ModifyExpressionValue(method = "initSnooper", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;gameVersion:Ljava/lang/String;"))
+	private String axolotlclient$spoofSnooperVersionAgain(String original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.show1_7_10.get()) {
+			return "1.7.10";
+		}
+		return original;
 	}
 
 	@Unique

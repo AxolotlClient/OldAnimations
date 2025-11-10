@@ -31,8 +31,7 @@ public class OldAnimations implements ClientModInitializer {
 
 	--- Project ---
 	add readme and a proper to-do list
-	set up modrinth page / submit for review
-	add sane and safe defaults
+	add more categories (particles, sounds, blocks, etc...)
 
 	--- Sneaking ---
 	i really want to switch over to the 1.7 code instead of using the 1.13 code :/
@@ -40,38 +39,39 @@ public class OldAnimations implements ClientModInitializer {
 
 	--- Items ---
 	blocks item positions (rotations) + fix trapdoors and pressure plates and other crap
-	rod and bow and block positions and swing position.. can be separate options LOL
-	split layer glint support for armor/spawn egg/firework charges
+	MC-57895 - stairs are wrong direction
 
 	--- Textures/Models ---
-	add better compatibility for old textures -> make them variants
 	fix weird fuzzy texture sizes of swords and stuff
 	fast grass always shown in gui/dropped?
 	held pressure plates look a bit different?? idk why. THEY'RE BIGGER THAT'S WHY
-	old fence fate model
-	oh my god. the custom models/textures are a damn nightmare of a mess
-	tripwire texture and model changes
-	cauldrons model and texture
-	tops of certain blocks have switch uvs
 	MC-262869 - top texture of blocks need to be rotated as noted above
 	MC-262173 - tripwire hook using wrong wood texture
-	MC-277768 - mipmap items
+	MC-277768 && MC-57574 && MC-195505 - mipmap items/blocks
+	improve old skull stuff?
+	anisotrophic filtering on items in 1.7
 
 	--- World ---
-	old fast smooth lighting shadows
 	figure out why hurtTime is off by 1 tick in 1.7... this might also impact other aspects of the game
-	1.7 world gen speed
-	MC-195505 - mipmap short grass
-	1.7 fire is different than 1.8... wtf
-	armor stands don't exist in 1.7... hmmm
-	fog is possibly different with the perspective code being added in 1.8... but im not sure to what extent it matters
+	1.7 world gen speed??
+	block destroy progress whiteness
+	figure out how to separate certain models (flowers from flower pot, etc)
+
+	--- Mobs ---
+	squids make footstep noises MC-4934
+	witch bugged potion bottle
+	mobs instant item pick up
+
+	-- Version Number --
+	serverlistentry 1.8.9
+	minecraftserver 1.8.9
+	integrated server 1.8.9
 
 	--- Misc ---
-	certain mob hitboxes should be visually changed?? perhaps
-	perhaps check if mining progress changed
 	MC-73162 - breaking a painting breaks block behind it?
-	MC-58120 - mob lag??? idk
-	inventory text is lighter in 1.7 ??? interesting must look into :p
+	framed items are not centered - MC-8662
+	mobentity blockentity? WHAT THE HELL IS THIS SUPPOSED TO MEAN RAHHH
+	MC-5270 - suffocation screen order (buggy lava)
 
 	*/
 

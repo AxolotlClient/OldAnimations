@@ -28,6 +28,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.ItemUtil;
 import io.github.axolotlclient.oldanimations.util.PlayerUtil;
+import net.minecraft.block.Block;
+import net.minecraft.block.CarpetBlock;
+import net.minecraft.block.FenceBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.HeldItemRenderer;
@@ -36,6 +39,8 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.entity.living.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -44,7 +49,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(HeldItemRenderer.class)
+@Mixin(HeldItemRenderer.class /* C_7203066 */)
 public abstract class HeldItemRendererMixin {
 	@Shadow
 	@Final
@@ -60,15 +65,6 @@ public abstract class HeldItemRendererMixin {
 	@Final
 	private Minecraft minecraft;
 
-	@Unique
-	private Float axolotlclient$h;
-
-	@ModifyVariable(method = "renderInFirstPerson", at = @At("STORE"), index = 4)
-	private float axolotlclient$captureLocalH(float value) {
-		axolotlclient$h = value; /* swing progress */
-		return value;
-	}
-
 	@ModifyArg(method = "renderInFirstPerson",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;applyFirstPersonTransform(FF)V"),
 		slice = @Slice(
@@ -77,13 +73,9 @@ public abstract class HeldItemRendererMixin {
 		),
 		index = 1
 	)
-	public float axolotlclient$allowUseAndSwing(float g) {
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.blockHitting.get() ? axolotlclient$h : g;
-	}
-
-	@Inject(method = "renderInFirstPerson", at = @At("TAIL"))
-	private void axolotlclient$releaseCapturedLocal(float f, CallbackInfo ci) {
-		axolotlclient$h = null; /* big brain time */
+	public float axolotlclient$allowUseAndSwing(float g, @Local(index = 1, argsOnly = true) float f) {
+		/* we are using the swing progress. the local is culled (?) before we can use it */
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.blockHitting.get() ? minecraft.player.getHandSwingProcess(f) : g;
 	}
 
 	@WrapOperation(method = "applyBowNocking", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V"))
@@ -103,12 +95,17 @@ public abstract class HeldItemRendererMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$applyHeldItemTransforms(LivingEntity livingEntity, ItemStack itemStack, ModelTransformations.Type type, CallbackInfo ci) {
-		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.itemPositions.get() || ItemUtil.isBlacklisted(itemStack)) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.itemPositions.get() || ItemUtil.isCustomRenderer(itemStack)) {
 			return;
 		}
 		if (renderer.isGui3d(itemStack)) {
-			/* blocks */
-			GlStateManager.rotatef(90.0F + (ItemUtil.shouldRotateBlock(itemStack) ? 180.0F : 0.0F), 0.0F, 1.0F, 0.0F);
+//			Item item = itemStack.getItem();
+//			if (item instanceof BlockItem) {
+//				Block block = Block.byItem(item);
+//				if (block instanceof FenceBlock) {
+//					GlStateManager.rotatef(270.0F, 0.0F, 1.0F, 0.0F);
+//				}
+//			}
 		} else {
 			/* original transformations from 1.7 */
 			GlStateManager.translatef(0.0F, -0.3F, 0.0F);
@@ -117,24 +114,28 @@ public abstract class HeldItemRendererMixin {
 			GlStateManager.rotatef(335.0F, 0.0F, 0.0F, 1.0F);
 			GlStateManager.translatef(-0.9375F, -0.0625F, 0.0F);
 			/* we need to adapt the 1.7 transformations to fit in 1.8 */
+			/* these translations are taken from snapshot 14w25a which introduced item/block models */
+			GlStateManager.translatef(0.5F, 0.5F, 0.25F);
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
-			GlStateManager.translatef(-0.5F, 0.5F, 0.03125F);
+			GlStateManager.translatef(0.0F, 0.0F, 0.28125F);
 		}
 	}
 
 	@Inject(method = "renderInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$applyRodRotation(float partialTicks, CallbackInfo ci) {
 		/* original transformation from 1.7 */
-		if (OldAnimationsConfig.isEnabled() && (OldAnimationsConfig.instance.oldRodRotation.get() || OldAnimationsConfig.instance.disableResourcePackItemTransformations.get()) && item.getItem().shouldRotate()) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() && item.getItem().shouldRotate()) {
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 		}
 	}
 
-	@ModifyArg(method = "renderInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"), index = 2)
-	private ModelTransformations.Type axolotlclient$changeTransformType(ModelTransformations.Type mode) {
-		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() &&
-			OldAnimationsConfig.instance.disableResourcePackItemTransformations.get() && !ItemUtil.isBlacklisted(item) ?
-			ModelTransformations.Type.NONE : mode;
+	//TODO: We can simplify this by moving it to the source
+	@WrapOperation(method = "renderInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
+	private void axolotlclient$disableResourcePackTransformations(HeldItemRenderer instance, LivingEntity livingEntity, ItemStack itemStack, ModelTransformations.Type type, Operation<Void> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() && !ItemUtil.isCustomRenderer(itemStack)) {
+			type = ModelTransformations.Type.NONE;
+		}
+		original.call(instance, livingEntity, itemStack, type);
 	}
 
 	@Expression("? != null")

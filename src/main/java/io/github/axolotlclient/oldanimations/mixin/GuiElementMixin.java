@@ -31,6 +31,7 @@ public abstract class GuiElementMixin {
 	@ModifyArg(method = "drawString", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;drawWithShadow(Ljava/lang/String;FFI)I"), index = 0)
 	private String axolotlclient$spoofTitleVersion(String string, @Local(argsOnly = true, ordinal = 0) int i, @Local(argsOnly = true, ordinal = 2) int k) {
 		/* an absolutely atrocious hack to get the title version to say 1.7.10. this should be changed one day */
+		/* wonder why the client brand is not showing... not my issue i think */
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.show1_7_10.get() &&
 			string.contains("1.8.9") && i == 2 && k == -1 /* this will only target the titlescreen drawString invocation hopefully */) {
 			string = string.replace("1.8.9", "1.7.10");

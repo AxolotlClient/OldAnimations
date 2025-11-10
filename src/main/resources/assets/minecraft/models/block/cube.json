@@ -1,0 +1,16 @@
+{
+	"__comment": "In 1.7, there are some models with rotated faces?? Why is it not like that in 1.8??",
+	"elements": [
+		{   "from": [ 0, 0, 0 ],
+			"to": [ 16, 16, 16 ],
+			"faces": {
+				"down":  { "texture": "#down", "cullface": "down", "rotation": 270 },
+				"up":    { "texture": "#up", "cullface": "up", "rotation": 270},
+				"north": { "texture": "#south", "cullface": "north" },
+				"south": { "texture": "#west", "cullface": "south" },
+				"west":  { "texture": "#east", "cullface": "west" },
+				"east":  { "texture": "#north", "cullface": "east" }
+			}
+		}
+	]
+}

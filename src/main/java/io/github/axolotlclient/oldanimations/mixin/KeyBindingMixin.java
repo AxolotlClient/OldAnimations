@@ -34,6 +34,7 @@ public class KeyBindingMixin {
 		@Local(ordinal = 0, index = 1, argsOnly = true) String string,
 		@Local(ordinal = 0, index = 2, argsOnly = true) int i
 	) {
+		/* MC-70305 is the culprit */
 		/* honestly this is a very silly injection, but idk a better way */
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.moveSprintKeybind.get() &&
 			"key.sprint".equals(string) && i == 29 && "key.categories.movement".equals(original)) {

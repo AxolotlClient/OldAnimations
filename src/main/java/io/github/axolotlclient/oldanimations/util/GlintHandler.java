@@ -25,17 +25,14 @@ import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.texture.TextureAtlas;
-import net.minecraft.client.render.texture.TextureManager;
 import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.client.resource.model.BasicBakedModel;
 import net.minecraft.resource.Identifier;
 
-import java.awt.*;
 import java.util.HashMap;
 
 public final class GlintHandler {
 
-	//TODO: The GUI glint can be improved i think :p
 	private static final HashMap<HashedModel, BakedModel> glintMap = new HashMap<>();
 
 	/* custom glint model */
@@ -43,16 +40,18 @@ public final class GlintHandler {
 		/* because we're creating new bakedmodels for the sole purpose of recreating the 1.7 enchantment glint, */
 		/* we should reuse the common glint bakedmodels to reduce any crazy memory usage */
 		/* redth is my hero */
-		return glintMap.computeIfAbsent(new HashedModel(model),
-			key -> new BasicBakedModel.Builder(model, CustomTextureAtlasSprite.INSTANCE).build());
+		return glintMap.computeIfAbsent(
+			new HashedModel(model), key ->
+				new BasicBakedModel.Builder(model, CustomTextureAtlasSprite.INSTANCE).build()
+		);
 	}
 
-	public static void renderEnchantmentGlintPre(TextureManager textureManager, Identifier glintTexture, int color) {
+	public static void renderEnchantmentGlintPre(Identifier glintTexture, int color) {
 		GlStateManager.enableRescaleNormal();
 	    GlStateManager.depthFunc(518);
 	    GlStateManager.disableLighting();
 	    GlStateManager.depthMask(false);
-	    textureManager.bind(glintTexture);
+	    Minecraft.getInstance().getTextureManager().bind(glintTexture);
 	    GlStateManager.enableAlphaTest();
 	    GlStateManager.alphaFunc(516, 0.1F);
 	    GlStateManager.enableBlend();
@@ -63,17 +62,30 @@ public final class GlintHandler {
 	    if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlintColor.get()) {
 		    GlStateManager.color4f(0.5F, 0.25F, 0.8F, 1.0F);
 	    } else {
-			Color rgba = new Color(color);
-		    GlStateManager.color4f(rgba.getRed() / 255.0F, rgba.getGreen() / 255.0F, rgba.getBlue() / 255.0F, rgba.getAlpha() / 255.0F);
+			float a = (float) (color >> 24 & 0xFF) / 255.0f;
+			float r = (float) (color >> 16 & 0xFF) / 255.0f;
+			float g = (float) (color >> 8 & 0xFF) / 255.0f;
+			float b = (float) (color & 0xFF) / 255.0f;
+		    GlStateManager.color4f(r, g, b, a);
 	    }
 
 	    GlStateManager.pushMatrix();
 	}
 
-    public static void renderEnchantmentGlintPost(TextureManager textureManager) {
-		GlStateManager.translatef(-0.25F, -0.25F, -0.25F);
-        GlStateManager.scalef(0.5F, 0.5F, 0.5F);
-      	renderFace();
+    public static void renderEnchantmentGlintPost() {
+		/* values used to adapt 1.8 sprite rendering to 1.7's position */
+		GlStateManager.scalef(0.5F, 0.5F, 0.5F);
+		GlStateManager.translatef(0.0F, -0.25F, 0.0F);
+
+		/* because of how models work, using a model to render the 1.7 gui glint will not work. it will be frozen :( */
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder builder = tessellator.getBuilder();
+		builder.begin(7, DefaultVertexFormat.POSITION_TEX);
+		/* goodbye for loop. hello inlined functions */
+		drawGlint(builder, (float) (Minecraft.getTime() % 3000L) / 3000.0F, 4.0F);
+		drawGlint(builder, (float) (Minecraft.getTime() % 4873L) / 4873.0F, -1.0F);
+		tessellator.end();
+
       	GlStateManager.popMatrix();
       	GlStateManager.blendFuncSeparate(770, 771, 1, 0);
       	GlStateManager.depthMask(true);
@@ -82,22 +94,16 @@ public final class GlintHandler {
       	GlStateManager.disableAlphaTest();
       	GlStateManager.disableRescaleNormal();
       	GlStateManager.disableLighting();
-      	textureManager.bind(TextureAtlas.BLOCKS_LOCATION);
+		Minecraft.getInstance().getTextureManager().bind(TextureAtlas.BLOCKS_LOCATION);
     }
-	private static void renderFace() {
-	   Tessellator tessellator = Tessellator.getInstance();
-	   BufferBuilder builder = tessellator.getBuilder();
-	   builder.begin(7, DefaultVertexFormat.POSITION_TEX);
-	   drawGlint(builder, (float)(Minecraft.getTime() % 3000L) / 3000.0F);
-	   drawGlint(builder, (float)(Minecraft.getTime() % 4873L) / 4873.0F - 0.0625F);
-	   tessellator.end();
-	}
 
-	private static void drawGlint(BufferBuilder builder, double width) {
-	   double height = 0.0625F;
-	   builder.vertex(0.0F, 0.0F, 0.0F).texture(width + height * (double)4.0F, height).nextVertex();
-	   builder.vertex(1.0F, 0.0F, 0.0F).texture(width + height * (double)5.0F, height).nextVertex();
-	   builder.vertex(1.0F, 1.0F, 0.0F).texture(width + height, 0.0F).nextVertex();
-	   builder.vertex(0.0F, 1.0F, 0.0F).texture(width, 0.0F).nextVertex();
+	private static void drawGlint(BufferBuilder builder, float speed, float skew) {
+		/* sprite rendering taken from FireballRenderer#render */
+		/* the values are adapted from 1.7. they are simplified heavily. a lot of math refactoring wooo */
+		float dimension = 20.0F / 256.0F;
+		builder.vertex(-0.5, -0.25, 0.0).texture(speed + dimension * skew, dimension).nextVertex();
+		builder.vertex(0.5, -0.25, 0.0).texture(speed + dimension + dimension * skew, dimension).nextVertex();
+		builder.vertex(0.5, 0.75, 0.0).texture(speed + dimension, 0.0F).nextVertex();
+		builder.vertex(-0.5, 0.75, 0.0).texture(speed, 0.0F).nextVertex();
 	}
 }

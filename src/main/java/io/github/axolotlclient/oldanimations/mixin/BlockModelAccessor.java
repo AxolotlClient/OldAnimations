@@ -18,15 +18,33 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import net.minecraft.client.render.model.block.BlockElement;
 import net.minecraft.client.render.model.block.BlockModel;
+import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.resource.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
+import java.util.List;
 import java.util.Map;
 
 @Mixin(BlockModel.class)
 public interface BlockModelAccessor {
+
+	/* saw this in the spongepowered discord server :p */
+	@Invoker("<init>")
+	static BlockModel createBlockModel(List<BlockElement> list, Map<String, String> map, boolean bl, boolean bl2, ModelTransformations modelTransformations) {
+		throw new AssertionError();
+	}
+
+	@Invoker("<init>")
+	static BlockModel createBlockModel(Identifier identifier, List<BlockElement> list, Map<String, String> map, boolean bl, boolean bl2, ModelTransformations modelTransformations) {
+		throw new AssertionError();
+	}
+
+	@Accessor
+	ModelTransformations getTransformations();
 
 	@Accessor
 	Map<String, String> getTextures();

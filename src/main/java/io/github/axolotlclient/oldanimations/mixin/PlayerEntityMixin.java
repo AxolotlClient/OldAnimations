@@ -19,8 +19,9 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import io.github.axolotlclient.oldanimations.util.PlayerUtil;
 import net.minecraft.entity.living.player.PlayerEntity;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,5 +59,13 @@ public abstract class PlayerEntityMixin {
 			original = original + getEyeHeight() - 1.62F;
 		}
 		return original;
+	}
+
+	@WrapOperation(method = "moveEntityWithVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;isSprinting()Z"))
+	private boolean axolotlclient$oldFlightSpeed(PlayerEntity instance, Operation<Boolean> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldFlightSpeed.get()) {
+			return false;
+		}
+		return original.call(instance);
 	}
 }

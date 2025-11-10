@@ -80,7 +80,7 @@ public abstract class EntityRenderDispatcherMixin {
 		if (OldAnimationsConfig.isEnabled() && PlayerUtil.INSTANCE.isSelf(entity)) {
 			/* sneaking compatibility! */
 			double eyeHeightOffset = OldAnimationsConfig.instance.thirdPersonSneaking.get() ? PlayerUtil.INSTANCE.getEyeHeight() - 1.62F : 0.0F;
-			/* man there were a lot of eyeheight bugs back in the day LOOOL */
+			/* man there were a lot of eyeheight bugs back in the day LOOOL - MC-4077 */
 			double hitBoxOffset = OldAnimationsConfig.instance.hitboxOffset.get() ? 1.62F : 0.0F;
 			args.set(1, (double) args.get(1) + eyeHeightOffset + hitBoxOffset);
 			args.set(4, (double) args.get(4) + eyeHeightOffset + hitBoxOffset);

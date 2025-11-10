@@ -1,0 +1,6 @@
+{
+	"parent": "block/fence_gate_inventory",
+	"textures": {
+		"texture": "blocks/planks_big_oak"
+	}
+}
