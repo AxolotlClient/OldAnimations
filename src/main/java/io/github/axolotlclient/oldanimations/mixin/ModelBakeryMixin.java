@@ -21,16 +21,13 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import io.github.axolotlclient.oldanimations.util.OldItemModelGenerator;
 import net.minecraft.client.render.model.block.*;
-import net.minecraft.client.render.texture.TextureAtlas;
 import net.minecraft.client.resource.model.ModelBakery;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.resource.Identifier;
 import net.minecraft.util.math.Direction;
 import org.lwjgl.util.vector.Vector3f;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -52,10 +49,6 @@ public abstract class ModelBakeryMixin {
 	@Shadow
 	protected abstract Identifier getModelsJsonLocation(Identifier identifier);
 
-	@Shadow
-	@Final
-	private TextureAtlas blockAtlas;
-
 	@Unique
 	private static final Map<String, String> SKULL_TEXTURES = Map.of(
 		"char", "items/skull_steve",
@@ -67,14 +60,6 @@ public abstract class ModelBakeryMixin {
 
 	@Unique
 	private static final Identifier BUILTIN_GENERATED = new Identifier("minecraft:builtin/generated");
-
-	@Unique
-	private final OldItemModelGenerator oldItemModelGenerator = new OldItemModelGenerator();
-
-	@ModifyReturnValue(method = "generateItemModels(Lnet/minecraft/client/render/model/block/BlockModel;)Lnet/minecraft/client/render/model/block/BlockModel;", at = @At(value = "RETURN"))
-	private BlockModel axolotlclient$useOurItemModelGenerator(BlockModel original, @Local(argsOnly = true) BlockModel blockModel) {
-		return oldItemModelGenerator.generate(blockAtlas, blockModel);
-	}
 
     @Inject(method = "registerItemVariants", at = @At("TAIL"))
     private void axolotlclient$registerCustomModels(CallbackInfo ci) {

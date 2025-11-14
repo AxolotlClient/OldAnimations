@@ -158,6 +158,7 @@ public class OldAnimationsConfig {
 	public final BooleanOption fenceGateItemModel = new BooleanOption("fenceGateItemModel", true);
 	public final BooleanOption fenceGateWallMode = new BooleanOption("fenceGateWallMode", true);
 	public final BooleanOption defaultWolfCollarColor = new BooleanOption("defaultWolfCollarColor", true);
+	public final BooleanOption itemModelSideQuadRendering = new BooleanOption("itemModelSideQuadRendering", true);
 
 	private final Supplier<Boolean>[] suppliers = new Supplier[] {
 		enabled::get,
@@ -168,7 +169,8 @@ public class OldAnimationsConfig {
 		fastSmoothLighting::get,
 		modelShadeAndAmbientOcclusion::get,
 		fenceGateItemModel::get,
-		fenceGateWallMode::get
+		fenceGateWallMode::get,
+		itemModelSideQuadRendering::get
 	};
 	private final boolean[] previousStates = {
 		enabled.get(),
@@ -179,7 +181,8 @@ public class OldAnimationsConfig {
 		fastSmoothLighting.get(),
 		modelShadeAndAmbientOcclusion.get(),
 		fenceGateItemModel.get(),
-		fenceGateWallMode.get()
+		fenceGateWallMode.get(),
+		itemModelSideQuadRendering.get()
 	};
 
 	public static boolean isEnabled() {
@@ -226,7 +229,8 @@ public class OldAnimationsConfig {
 			skullModel,
 			fastGrass,
 			fire,
-			fenceGateItemModel
+			fenceGateItemModel,
+			itemModelSideQuadRendering
 		);
 		category.add(categoryCombat);
 		categoryCombat.add(

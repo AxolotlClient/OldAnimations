@@ -42,7 +42,7 @@ public class OldAnimations implements ClientModInitializer {
 	MC-57895 - stairs are wrong direction
 
 	--- Textures/Models ---
-	fix weird fuzzy texture sizes of swords and stuff
+	fix weird fuzzy texture sizes of swords and stuff - THIS WAS MIP MAP
 	fast grass always shown in gui/dropped?
 	held pressure plates look a bit different?? idk why. THEY'RE BIGGER THAT'S WHY
 	MC-262869 - top texture of blocks need to be rotated as noted above

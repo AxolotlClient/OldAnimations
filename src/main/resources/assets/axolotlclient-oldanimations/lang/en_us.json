@@ -222,5 +222,7 @@
 	"fenceGateWallMode": "Fence Gate Wall Connection",
 	"fenceGateWallMode.tooltip": "Fixes a bug introduced in 1.8 where the fence gate will prematurely enter \"wall\" mode.",
 	"defaultWolfCollarColor": "Default Wolf Collar Color",
-	"defaultWolfCollarColor.tooltip": "Changes the default wolf collar color from orange to red like in 1.7 and 1.9+. Only works in singleplayer!"
+	"defaultWolfCollarColor.tooltip": "Changes the default wolf collar color from orange to red like in 1.7 and 1.9+. Only works in singleplayer!",
+	"itemModelSideQuadRendering": "Item Model Side Rendering",
+	"itemModelSideQuadRendering.tooltip": "Renders the side elements of an item using 1.7's rendering logic."
 }
