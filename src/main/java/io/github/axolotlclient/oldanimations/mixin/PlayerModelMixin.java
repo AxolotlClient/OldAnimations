@@ -49,20 +49,20 @@ public class PlayerModelMixin extends HumanoidModel {
 		return original.call(instance);
 	}
 
-	@Inject(method = "setAngles", at = @At("HEAD"))
+	@Inject(method = "setupAnimation", at = @At("HEAD"))
 	private void axolotlclient$copyCapePivot(float handSwing, float handSwingAmount, float age, float yaw, float pitch, float scale, Entity entity, CallbackInfo ci, @Share("pivotY") LocalFloatRef pivotY) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
 			/* capturing the initial value of the cape's pivot */
-			pivotY.set(cape.pivotY);
+			pivotY.set(cape.y);
 		}
 	}
 
-	@Inject(method = "setAngles", at = @At("TAIL"))
+	@Inject(method = "setupAnimation", at = @At("TAIL"))
 	private void axolotlclient$disableSneakCapeTranslations(float handSwing, float handSwingAmount, float age, float yaw, float pitch, float scale, Entity entity, CallbackInfo ci, @Share("pivotY") LocalFloatRef pivotY) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get()) {
 			/* in order to completely cancel out the cape pivot changes in 1.8, we're gonna re-assign it! */
 			/* this pivot might not actually do anything impactful... not sure why */
-			cape.pivotY = pivotY.get();
+			cape.y = pivotY.get();
 		}
 	}
 

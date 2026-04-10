@@ -20,15 +20,15 @@ package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
-import net.minecraft.client.gui.screen.ResourcePackScreen;
+import net.minecraft.client.gui.screen.ResourcePacksScreen;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(ResourcePackScreen.class)
+@Mixin(ResourcePacksScreen.class)
 public class ResourcePackScreenMixin {
 
-	@ModifyExpressionValue(method = "init", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/screen/ResourcePackScreen;changed:Z"))
+	@ModifyExpressionValue(method = "init", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/screen/ResourcePacksScreen;changed:Z"))
 	private boolean axolotlclient$refreshResourcesWhenDone(boolean original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.refreshResourcesRegardless.get()) {
 			return false;
@@ -36,7 +36,7 @@ public class ResourcePackScreenMixin {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "buttonClicked", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/screen/ResourcePackScreen;changed:Z"))
+	@ModifyExpressionValue(method = "buttonClicked", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/screen/ResourcePacksScreen;changed:Z"))
 	private boolean axolotlclient$refreshResourcesWhenDone2(boolean original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.refreshResourcesRegardless.get()) {
 			return true;

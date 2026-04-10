@@ -37,7 +37,7 @@ public abstract class PlayerRendererMixin {
 	@Shadow
 	public abstract PlayerModel getModel();
 
-	@Inject(method = "setModelStatus", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/entity/PlayerModel;leftHandItemId:I"))
+	@Inject(method = "setModelStatus", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/entity/PlayerModel;itemInLeftHand:I"))
 	private void axolotlclient$reAssignShownLayer(ClientPlayerEntity entity, CallbackInfo ci) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.disableSkinLayers.get()) {
 			/* 1.7 doesn't have any skin layers except for the headwear */
@@ -55,19 +55,19 @@ public abstract class PlayerRendererMixin {
 		}
 	}
 
-	@Inject(method = {"renderPlayerLeftHandModel", "renderPlayerRightHandModel"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/PlayerRenderer;setModelStatus(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;)V", shift = At.Shift.AFTER))
+	@Inject(method = {"renderPlayerLeftHandModel", "renderRightHand"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/PlayerRenderer;setModelStatus(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;)V", shift = At.Shift.AFTER))
 	private void axolotlclient$dontSetModelStatus(ClientPlayerEntity player, CallbackInfo ci, @Local PlayerModel playerModel) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldPickupArm.get()) {
 			/* don't apply third person arm rotation to first person */
-			playerModel.rightHandItemId = 0;
+			playerModel.itemInRightHand = 0;
 		}
 	}
 
 	//TODO: Look into root cause
-	@Inject(method = {"renderPlayerLeftHandModel", "renderPlayerRightHandModel"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/PlayerRenderer;setModelStatus(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;)V", shift = At.Shift.AFTER))
+	@Inject(method = {"renderPlayerLeftHandModel", "renderRightHand"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/PlayerRenderer;setModelStatus(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;)V", shift = At.Shift.AFTER))
 	private void legarity$fixVehicleArm(ClientPlayerEntity clientPlayerEntity, CallbackInfo ci, @Local PlayerModel playerModel) {
 		/* fixes MC-1349 */
 		/* this is probably the only one of the few bug fixes that im open to adding */
-		playerModel.hasVehicle = false;
+		playerModel.riding = false;
 	}
 }

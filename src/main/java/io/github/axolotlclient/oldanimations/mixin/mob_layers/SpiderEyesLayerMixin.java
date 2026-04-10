@@ -23,7 +23,7 @@ import io.github.axolotlclient.oldanimations.util.DamageTint;
 import io.github.axolotlclient.oldanimations.util.IDamageTint;
 import net.minecraft.client.render.entity.SpiderRenderer;
 import net.minecraft.client.render.entity.layer.SpiderEyesLayer;
-import net.minecraft.entity.living.mob.hostile.SpiderEntity;
+import net.minecraft.entity.living.mob.monster.SpiderEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,7 +39,7 @@ public abstract class SpiderEyesLayerMixin {
 	@Final
 	private SpiderRenderer<SpiderEntity> parent;
 
-	@Inject(method = "render(Lnet/minecraft/entity/living/mob/hostile/SpiderEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/Model;render(Lnet/minecraft/entity/Entity;FFFFFF)V", shift = At.Shift.AFTER))
+	@Inject(method = "render(Lnet/minecraft/entity/living/mob/monster/SpiderEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/Model;render(Lnet/minecraft/entity/Entity;FFFFFF)V", shift = At.Shift.AFTER))
     private void axolotlclient$addDamageBrightness(SpiderEntity spiderEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
 		/* colors the entity's layer red just like 1.7 */
 		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.secondLayerDamageTint.get() || !OldAnimationsConfig.instance.damageTintColor.get()) {

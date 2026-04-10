@@ -18,14 +18,16 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
+import java.util.List;
+
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.GlintHandler;
-import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.entity.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.client.resource.model.BakedQuad;
 import net.minecraft.entity.living.LivingEntity;
@@ -39,8 +41,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-
-import java.util.List;
 
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
@@ -85,7 +85,7 @@ public abstract class ItemRendererMixin {
 	}
 
 	//TODO: should be a separate option
-	@ModifyArgs(method = "applyNormal", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;postNormal(FFF)V"))
+	@ModifyArgs(method = "applyNormal", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/vertex/BufferBuilder;postNormal(FFF)V"))
 	private void axolotlclient$modifyNormals(Args args) {
 		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.fastItems.get()) {
 			return;
@@ -104,18 +104,18 @@ public abstract class ItemRendererMixin {
 		return quads;
 	}
 
-	@ModifyArg(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderEnchantmentGlint(Lnet/minecraft/client/resource/model/BakedModel;)V"))
+	@ModifyArg(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/ItemRenderer;renderEnchantmentGlint(Lnet/minecraft/client/resource/model/BakedModel;)V"))
 	public BakedModel axolotlclient$replaceModel(BakedModel model) {
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlint.get() ? GlintHandler.getModel(model) : model;
 	}
 
-	@ModifyArg(method = "render(Lnet/minecraft/client/resource/model/BakedModel;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;render(Lnet/minecraft/client/resource/model/BakedModel;ILnet/minecraft/item/ItemStack;)V"), index = 1)
+	@ModifyArg(method = "render(Lnet/minecraft/client/resource/model/BakedModel;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/ItemRenderer;render(Lnet/minecraft/client/resource/model/BakedModel;ILnet/minecraft/item/ItemStack;)V"), index = 1)
 	private int axolotlclient$replaceColor(int color) {
 		axolotlclient$glintColor = color;
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlintColor.get() ? -10407781 : color;
 	}
 
-	@WrapWithCondition(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderEnchantmentGlint(Lnet/minecraft/client/resource/model/BakedModel;)V"))
+	@WrapWithCondition(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/ItemRenderer;renderEnchantmentGlint(Lnet/minecraft/client/resource/model/BakedModel;)V"))
 	private boolean axolotlclient$disableBlocksGlint(ItemRenderer instance, BakedModel bakedModel, @Local(argsOnly = true) ItemStack itemStack) {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableGlintOnBlocks.get() || !isGui3d(itemStack);
 	}
@@ -137,19 +137,19 @@ public abstract class ItemRendererMixin {
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlint.get() ? 1.0F / original : original;
 	}
 
-	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
+	@Inject(method = "renderItemInHand(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/ItemRenderer;renderItemInHand(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$fastItemOffset(ItemStack stack, ModelTransformations.Type transformationType, CallbackInfo ci) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fastItems.get()) {
 			GlStateManager.translatef(0.0F, 0.0F, -0.0625F);
 		}
 	}
 
-	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At("HEAD"))
+	@Inject(method = "renderItemInHand(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At("HEAD"))
 	private void axolotlclient$captureHeldMode(ItemStack stack, LivingEntity entity, ModelTransformations.Type transformationType, CallbackInfo ci) {
 		axolotlclient$isHeld = true;
 	}
 
-	@Inject(method = "renderHeldItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At("TAIL"))
+	@Inject(method = "renderItemInHand(Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At("TAIL"))
 	private void axolotlclient$releaseHeldMode(ItemStack stack, LivingEntity entity, ModelTransformations.Type transformationType, CallbackInfo ci) {
 		axolotlclient$isHeld = false;
 	}
@@ -184,7 +184,7 @@ public abstract class ItemRendererMixin {
 		return original;
 	}
 
-	@Inject(method = "renderItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;popMatrix()V"))
+	@Inject(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;popMatrix()V"))
 	private void axolotlclient$renderAdditionalModelLayers(ItemStack itemStack, BakedModel bakedModel, CallbackInfo ci) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGlintLayer.get() && !bakedModel.isCustomRenderer() && !bakedModel.isGui3d() && /* gotta make sure we aren't rendering extra crap */
 			(!OldAnimationsConfig.instance.fastItems.get() || axolotlclient$isHeld)) {

@@ -54,17 +54,17 @@ public abstract class GameRendererMixin implements Sneaky {
 	private Minecraft minecraft;
 
 	@Shadow
-	private float oldFogGrayScale;
-
-	@Shadow
 	public abstract void renderWorld(float f, long l);
 
 	@Shadow
 	private long lastWorldRenderTime;
 
 	@Shadow
-	private float viewDistance;
-
+	private float lastFogBrightness;
+	@Shadow
+	private float fogBrightness;
+	@Shadow
+	private float renderDistance;
 	@Unique
 	private float lastCameraY;
 
@@ -103,14 +103,14 @@ public abstract class GameRendererMixin implements Sneaky {
 
 	@ModifyVariable(method = "transformCamera", at = @At(value = "STORE"), ordinal = 1)
 	private float axolotlclient$useLerpEyeHeight(float eyeHeight, @Local Entity entity) {
-		if (entity instanceof LivingEntity && ((LivingEntity)entity).isSleeping()) {
+		if (entity instanceof LivingEntity && ((LivingEntity) entity).isSleeping()) {
 			/* just use the 1.8 eyeheight while sleeping :p */
 			return eyeHeight;
 		}
 		return axolotlclient$isEitherSneakOptionEnabled() ? axolotlclient$getEyeHeight() : eyeHeight;
 	}
 
-	@ModifyArg(method = "renderAxisIndicators", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"), index = 1)
+	@ModifyArg(method = "renderAxisIndicators", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;translatef(FFF)V"), index = 1)
 	private float axolotlclient$useLerpEyeHeight_Debug(float x) {
 		return axolotlclient$isEitherSneakOptionEnabled() ? axolotlclient$getEyeHeight() : x; /* debug crosshair parity */
 	}
@@ -121,7 +121,7 @@ public abstract class GameRendererMixin implements Sneaky {
 		return (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.alwaysShowCrosshair.get() && !isCustomCrosshair) || original.call(instance);
 	}
 
-	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;updateHeldItem()V")) /* placed below null check */
+	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/ItemInHandRenderer;tick()V")) /* placed below null check */
 	private void axolotlclient$onTick(CallbackInfo ci) {
 		/* updates the current eye height */
 		if (!OldAnimationsConfig.isEnabled()) {
@@ -149,10 +149,10 @@ public abstract class GameRendererMixin implements Sneaky {
 		float f = minecraft.world.getBrightness(pos);
 		float g = (float) minecraft.options.viewDistance / 16.0F;
 		float h = f * (1.0F - g) + g;
-		oldFogGrayScale = oldFogGrayScale + (h - oldFogGrayScale) * 0.1F;
+		fogBrightness = fogBrightness + (h - fogBrightness) * 0.1F;
 	}
 
-	@ModifyExpressionValue(method = "applyHurtCam", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;hurtTime:I"))
+	@ModifyExpressionValue(method = "applyHurtCam", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;damagedTime:I"))
 	private int axolotlclient$oldDamageTick(int original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDamageTick.get()) {
 			return Math.max(original - 1, 0);
@@ -160,7 +160,7 @@ public abstract class GameRendererMixin implements Sneaky {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "shouldRenderBlockOutline", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/player/PlayerAbilities;canModifyWorld:Z"))
+	@ModifyExpressionValue(method = "shouldRenderBlockOutline", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/player/PlayerAbilities;canModifyWorld:Z"))
 	private boolean axolotlclient$alwaysShowOutline(boolean original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.alwaysShowOutline.get()) {
 			return true;
@@ -175,33 +175,37 @@ public abstract class GameRendererMixin implements Sneaky {
 			/* the following injections are all part of the same feature */
 			/* for some reason, using a slice wasn't working so i had to manually inject with the ordinals... sigh... */
 			/* this feature looks absolutely horrid, but that's just how early minecraft was... lmfao */
-			zFar = viewDistance * 2.0F;
+			zFar = renderDistance * 2.0F;
 		}
 		original.call(fovy, aspect, zNear, zFar);
 	}
 
-	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;matrixMode(I)V", ordinal = 0))
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;matrixMode(I)V", ordinal = 0))
 	private boolean axolotlclient$disableMatrixMode(int i) {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
 	}
-	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;matrixMode(I)V", ordinal = 1))
+
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;matrixMode(I)V", ordinal = 1))
 	private boolean axolotlclient$disableMatrixMode2(int i) {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
 	}
-	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;matrixMode(I)V", ordinal = 2))
+
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;matrixMode(I)V", ordinal = 2))
 	private boolean axolotlclient$disableMatrixMode3(int i) {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
 	}
-	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;matrixMode(I)V", ordinal = 3))
+
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;matrixMode(I)V", ordinal = 3))
 	private boolean axolotlclient$disableMatrixMode4(int i) {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
 	}
 
-	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;loadIdentity()V", ordinal = 0))
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;loadIdentity()V", ordinal = 0))
 	private boolean axolotlclient$dontLoadIdentity() {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
 	}
-	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;loadIdentity()V", ordinal = 1))
+
+	@WrapWithCondition(method = "render(IFJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;loadIdentity()V", ordinal = 1))
 	private boolean axolotlclient$dontLoadIdentity2() {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
 	}
@@ -211,12 +215,12 @@ public abstract class GameRendererMixin implements Sneaky {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
 	}
 
-	@WrapWithCondition(method = "renderClouds", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;matrixMode(I)V"))
+	@WrapWithCondition(method = "renderClouds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;matrixMode(I)V"))
 	private boolean axolotlclient$disableMatrixMode5(int i) {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
 	}
 
-	@WrapWithCondition(method = "renderClouds", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;loadIdentity()V"))
+	@WrapWithCondition(method = "renderClouds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;loadIdentity()V"))
 	private boolean axolotlclient$dontLoadIdentity3() {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
 	}
@@ -226,7 +230,7 @@ public abstract class GameRendererMixin implements Sneaky {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skyAndCloudPerspective.get();
 	}
 
-	@ModifyExpressionValue(method = "renderFog", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/render/GameRenderer;viewDistance:F", ordinal = 1))
+	@ModifyExpressionValue(method = "setupFog", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/render/GameRenderer;renderDistance:F", ordinal = 1))
 	private float axolotlclient$renderVoidFog(float original, @Local(argsOnly = true) int i, @Local(argsOnly = true) float f) {
 		/* void fog logic taken straight from 1.7 */
 		float gx = original;
@@ -235,8 +239,8 @@ public abstract class GameRendererMixin implements Sneaky {
 			Dimension dimension = minecraft.world.dimension;
 			if (i == 0 &&
 				/* 1.7's hasFog() method */
-				((DimensionAccessor) dimension).getGeneratorType() != WorldGeneratorType.FLAT && !dimension.isDark()) {
-				double d = ((entity.getLightLevel(f) & 15728640) >> 20) / 16.0 + (entity.prevTickY + (entity.y - entity.prevTickY) * f + 4.0) / 32.0;
+				((DimensionAccessor) dimension).getGeneratorType() != WorldGeneratorType.FLAT && !dimension.hasNoSky()) {
+				double d = ((entity.getLightLevel(f) & 15728640) >> 20) / 16.0 + (entity.prevY + (entity.y - entity.prevY) * f + 4.0) / 32.0;
 				if (d < 1.0) {
 					if (d < 0.0) {
 						d = 0.0;

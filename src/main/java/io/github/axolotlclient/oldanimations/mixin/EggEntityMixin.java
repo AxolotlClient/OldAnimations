@@ -22,7 +22,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.entity.particle.ParticleType;
-import net.minecraft.entity.thrown.EggEntity;
+import net.minecraft.entity.projectile.EggEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

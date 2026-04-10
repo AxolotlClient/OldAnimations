@@ -53,10 +53,14 @@ public abstract class OptionsScreenMixin extends Screen {
 	@Shadow
 	public abstract String getButtonLabel(Difficulty difficulty);
 
-	@WrapWithCondition(method = "init", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 5))
-	private <E> boolean axolotlclient$disableSkinCustomizationButton(List<?> instance, E e) {
+	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 5))
+	private <E> boolean axolotlclient$disableSkinCustomizationButton(List<?> instance, E e, Operation<Boolean> original) {
 		/* disables the rendering of the skin customization button */
-		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableSkinCustomizationButton.get();
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableSkinCustomizationButton.get()) {
+			return original.call(instance, e);
+		} else {
+			return false;
+		}
 	}
 
 	@ModifyExpressionValue(method = "init", at = @At(value = "CONSTANT", args = "stringValue=options.chat.title"))
@@ -84,7 +88,7 @@ public abstract class OptionsScreenMixin extends Screen {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isInSingleplayer()Z"))
+	@ModifyExpressionValue(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isSingleplayer()Z"))
 	private boolean axolotlclient$skipLockedDifficultyRendering(boolean original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.difficultyLogic.get()) {
 			/* we might as well skip over this to reduce the amount of work needed to replicate the old difficulty button */

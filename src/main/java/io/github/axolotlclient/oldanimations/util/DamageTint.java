@@ -18,8 +18,8 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.platform.GlStateManager;
 
 import java.nio.FloatBuffer;
 

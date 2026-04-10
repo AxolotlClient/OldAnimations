@@ -23,7 +23,7 @@ import io.github.axolotlclient.oldanimations.util.DamageTint;
 import io.github.axolotlclient.oldanimations.util.IDamageTint;
 import net.minecraft.client.render.entity.EnderDragonRenderer;
 import net.minecraft.client.render.entity.layer.EnderDragonEyesLayer;
-import net.minecraft.entity.living.mob.hostile.boss.EnderDragonEntity;
+import net.minecraft.entity.living.mob.monster.boss.EnderDragonEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -38,7 +38,7 @@ public abstract class EnderDragonEyesLayerMixin {
 	@Final
 	private EnderDragonRenderer parent;
 
-	@Inject(method = "render(Lnet/minecraft/entity/living/mob/hostile/boss/EnderDragonEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/Model;render(Lnet/minecraft/entity/Entity;FFFFFF)V", shift = At.Shift.AFTER))
+	@Inject(method = "render(Lnet/minecraft/entity/living/mob/monster/boss/EnderDragonEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/Model;render(Lnet/minecraft/entity/Entity;FFFFFF)V", shift = At.Shift.AFTER))
     private void axolotlclient$addDamageBrightness(EnderDragonEntity enderDragonEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci) {
 		/* colors the entity's layer red just like 1.7 */
 		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.secondLayerDamageTint.get() || !OldAnimationsConfig.instance.damageTintColor.get()) {

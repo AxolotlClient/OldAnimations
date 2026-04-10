@@ -28,7 +28,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.living.ArmorStandEntity;
 import net.minecraft.entity.living.LivingEntity;
-import net.minecraft.entity.living.mob.hostile.GuardianEntity;
+import net.minecraft.entity.living.mob.monster.GuardianEntity;
 import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -54,11 +54,11 @@ public abstract class LivingEntityMixin extends Entity implements ILivingEntity 
 	/* NOTE: the following two injections already exist in optifine, however, for people not using it, */
 	/* i think it would be preferred to add an option in this mod seeing as it's relevant to 1.7 */
 
-	@ModifyExpressionValue(method = "getRotationVec", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;prevHeadYaw:F"))
+	@ModifyExpressionValue(method = "getRotationVec", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;lastHeadYaw:F"))
 	private float axolotlclient$usePrevYaw(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.rotationVecYawFix.get()) {
 			/* don't use the prev head yaw as it is not accurate compared to prev yaw */
-			original = prevYaw;
+			original = lastYaw;
 		}
 		return original;
 	}
@@ -72,7 +72,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingEntity 
 		return original;
 	}
 
-	@Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V", ordinal = 1))
+	@Inject(method = "takeDamage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V", ordinal = 1))
 	private void axolotlclient$cacheLastHealth(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.heartFlashing.get()) {
 			/* light work, no reaction */
@@ -80,7 +80,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingEntity 
 		}
 	}
 
-	@WrapOperation(method = "moveEntityWithVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;isLocallyControlled()Z"))
+	@WrapOperation(method = "moveRelative", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;isLocallyControlled()Z"))
 	private boolean axolotlclient$clientSidedEntityMovement(LivingEntity instance, Operation<Boolean> original) {
 		/* in 1.7, entity movement/velocity has a clientside prediction component whereas in 1.8, it's solely serverside */
 		/* due to the nature of the prediction, and its conflict with entity position packets, entities have choppy movement */
@@ -88,7 +88,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingEntity 
 		/* funnily enough, squids have insanely responsive knockback :p */
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.clientSideEntityMovement.get() &&
 			/* these entities don't exist in 1.7 so we should just avoid messing with their position */
-			Minecraft.getInstance().isInSingleplayer() && /* this only makes sense to be available in singleplayer */
+			Minecraft.getInstance().isSingleplayer() && /* this only makes sense to be available in singleplayer */
 			!(instance instanceof ArmorStandEntity) && !(instance instanceof GuardianEntity)) {
 			return true;
 		}

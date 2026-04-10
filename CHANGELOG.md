@@ -1,3 +1,7 @@
+### 1.1.0
+
+- port to Ornithe Gen2
+
 ### 1.0.0
 
 - initial release

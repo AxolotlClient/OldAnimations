@@ -22,7 +22,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.living.mob.passive.animal.tamable.WolfEntity;
+import net.minecraft.entity.living.mob.passive.animal.tameable.WolfEntity;
 import net.minecraft.item.DyeColor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,10 +30,10 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(WolfEntity.class)
 public class WolfEntityMixin {
 
-	@WrapOperation(method = "initDataTracker", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/DyeColor;getId()I"))
+	@WrapOperation(method = "registerSyncedData", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/DyeColor;getId()I"))
 	private int axolotlclient$fixCollarColor(DyeColor instance, Operation<Integer> original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.defaultWolfCollarColor.get() &&
-			Minecraft.getInstance().isInSingleplayer()) {
+			Minecraft.getInstance().isSingleplayer()) {
 			/* MC-54109 - the metadata and id are switched here in 1.8 for some reason */
 			/* this fix was backported from 15w46a :) */
 			return instance.getMetadata();

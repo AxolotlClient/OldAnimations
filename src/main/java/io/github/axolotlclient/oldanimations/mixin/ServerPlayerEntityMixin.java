@@ -44,7 +44,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 		super(world, gameProfile);
 	}
 
-	@Inject(method = "updateSettings", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/data/DataTracker;update(ILjava/lang/Object;)V"))
+	@Inject(method = "updateSettings", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/data/SyncedData;update(ILjava/lang/Object;)V"))
 	private void axolotlclient$syncDifficulty(ClientSettingsC2SPacket clientSettingsC2SPacket, CallbackInfo ci) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.difficultyLogic.get() &&
 			server.isSingleplayer() && server.getUsername().equals(getName())) {

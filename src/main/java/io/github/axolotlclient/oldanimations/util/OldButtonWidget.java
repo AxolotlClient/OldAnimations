@@ -18,10 +18,10 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
 
 public class OldButtonWidget extends ButtonWidget {
 

@@ -19,12 +19,13 @@
 package io.github.axolotlclient.oldanimations;
 
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 
 public class AxolotlClientModule extends AbstractModule {
 	@Override
 	public void init() {
-		OldAnimations.runAfterFabricLoad(() -> AxolotlClient.config().rendering.add(OldAnimationsConfig.instance.getCategory(), false));
+		Events.CLIENT_READY.register(() -> AxolotlClient.config().rendering.add(OldAnimationsConfig.instance.getCategory(), false));
 	}
 }

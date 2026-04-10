@@ -21,11 +21,11 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.menu.InventoryMenuScreen;
 import net.minecraft.client.gui.screen.inventory.menu.SurvivalInventoryScreen;
+import net.minecraft.client.render.platform.GlStateManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public class InventoryMenuScreenMixin extends Screen {
 
 	//TODO: This implementation is not perfect :(
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Lighting;turnOff()V", ordinal = 1))
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/Lighting;turnOff()V", ordinal = 1))
 	private void axolotlclient$changeLightingStateChange(Operation<Void> original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.inventoryTextLighting.get() && axolotlclient$isValidState()) {
 			/* weird. MC-16608 */
@@ -44,7 +44,7 @@ public class InventoryMenuScreenMixin extends Screen {
 		}
 	}
 
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/inventory/menu/InventoryMenuScreen;drawForeground(II)V"))
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/inventory/menu/InventoryMenuScreen;renderLabels(II)V"))
 	private void axolotlclient$changeTextColor(InventoryMenuScreen instance, int i, int j, Operation<Void> original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.inventoryTextLighting.get() && axolotlclient$isInSurvivalInventory()) {
 			/* this is not the right modification. forgive me :/ */
@@ -53,7 +53,7 @@ public class InventoryMenuScreenMixin extends Screen {
 		original.call(instance, i, j);
 	}
 
-	@WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Lighting;turnOnGui()V", ordinal = 1))
+	@WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/Lighting;turnOnGui()V", ordinal = 1))
 	private boolean axolotlclient$removeLightingStateChange2() {
 		/* yup. goodbye */
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.inventoryTextLighting.get() || !axolotlclient$isValidState();
@@ -62,7 +62,7 @@ public class InventoryMenuScreenMixin extends Screen {
 	@Unique
 	private boolean axolotlclient$isValidState() {
 		/* the bug only affected guis like hoppers and chests. not the survival inventory for some reason?? */
-		return minecraft.player.inventory.getMainHandStack() != null && !axolotlclient$isInSurvivalInventory();
+		return minecraft.player.inventory.getCursorItem() != null && !axolotlclient$isInSurvivalInventory();
 	}
 
 	@Unique

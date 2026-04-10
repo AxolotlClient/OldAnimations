@@ -18,14 +18,14 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
-import io.github.axolotlclient.oldanimations.util.ducks.Sneaky;
 import io.github.axolotlclient.oldanimations.mixin.LivingEntityAccessor;
+import io.github.axolotlclient.oldanimations.util.ducks.Sneaky;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MobType;
 import net.minecraft.entity.living.LivingEntity;
-import net.minecraft.entity.living.MobType;
 import net.minecraft.entity.living.effect.StatusEffect;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.entity.particle.ParticleType;
@@ -50,9 +50,9 @@ public final class PlayerUtil {
 
 	public void fakeSwing(LocalClientPlayerEntity player) {
 		int armSwingAnimationEnd = ((LivingEntityAccessor) player).getArmSwingAnimationEnd();
-		if ((!player.handSwinging || player.handSwingTicks >= armSwingAnimationEnd / 2 || player.handSwingTicks < 0)) {
-			player.handSwingTicks = -1;
-			player.handSwinging = true;
+		if ((!player.armSwinging || player.armSwingingTicks >= armSwingAnimationEnd / 2 || player.armSwingingTicks < 0)) {
+			player.armSwingingTicks = -1;
+			player.armSwinging = true;
 		}
 	}
 
@@ -65,9 +65,9 @@ public final class PlayerUtil {
 			}
 			float g;
 			if (isLivingEntity) {
-				g = EnchantmentHelper.modifyDamage(player.getStackInHand(), ((LivingEntity) entity).getMobType());
+				g = EnchantmentHelper.modifyDamage(player.getItemInHand(), ((LivingEntity) entity).getMobType());
 			} else {
-				g = EnchantmentHelper.modifyDamage(player.getStackInHand(), MobType.UNDEFINED);
+				g = EnchantmentHelper.modifyDamage(player.getItemInHand(), MobType.UNDEFINED);
 			}
 			if (g > 0.0F) {
 				Minecraft.getInstance().particleManager.addEmitter(entity, ParticleType.CRIT_MAGIC);

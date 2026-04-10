@@ -29,37 +29,37 @@ public class ItemFrameRendererMixin {
 
 	/* wow */
 
-	@WrapWithCondition(method = "renderItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;disableLighting()V"))
+	@WrapWithCondition(method = "renderDisplayItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;disableLighting()V"))
 	private boolean axolotlclient$allowLighting() {
 		/* taken from 1.7 */
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.framedItemLighting.get();
 	}
 
-	@WrapWithCondition(method = "renderItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;pushLightingAttributes()V"))
+	@WrapWithCondition(method = "renderDisplayItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;pushLightingAttributes()V"))
 	private boolean axolotlclient$allowLighting2() {
 		/* taken from 1.7 */
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.framedItemLighting.get();
 	}
 
-	@WrapWithCondition(method = "renderItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Lighting;turnOff()V"))
+	@WrapWithCondition(method = "renderDisplayItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/Lighting;turnOff()V"))
 	private boolean axolotlclient$allowLighting3() {
 		/* taken from 1.7 */
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.framedItemLighting.get();
 	}
 
-	@WrapWithCondition(method = "renderItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Lighting;turnOn()V"))
+	@WrapWithCondition(method = "renderDisplayItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/Lighting;turnOn()V"))
 	private boolean axolotlclient$allowLighting4() {
 		/* taken from 1.7 */
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.framedItemLighting.get();
 	}
 
-	@WrapWithCondition(method = "renderItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;popAttributes()V"))
+	@WrapWithCondition(method = "renderDisplayItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;popAttributes()V"))
 	private boolean axolotlclient$allowLighting5() {
 		/* taken from 1.7 */
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.framedItemLighting.get();
 	}
 
-	@WrapWithCondition(method = "renderItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;enableLighting()V"))
+	@WrapWithCondition(method = "renderDisplayItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;enableLighting()V"))
 	private boolean axolotlclient$allowLighting6() {
 		/* taken from 1.7 */
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.framedItemLighting.get();

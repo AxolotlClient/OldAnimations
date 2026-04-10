@@ -44,7 +44,7 @@ public final class DebugComponents {
 		list.add("Minecraft " + (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.show1_7_10.get() ? "1.7.10" : "1.8.9") + " (" + Minecraft.getCurrentFps() + " fps, " + RenderChunk.updateCounter + " chunk updates)");
 		list.add(mc.worldRenderer.getChunkDebugInfo()); /* this will return different data than in 1.7 unfortunately */
 		list.add(mc.worldRenderer.getEntityDebugInfo());
-		list.add("P: " + mc.particleManager.getParticlesDebugInfo() + ". T: " + mc.world.getEntitiesDebugInfo());
+		list.add("P: " + mc.particleManager.getDebugInfo() + ". T: " + mc.world.getDebugInfo());
 		list.add(mc.world.getChunkSourceDebugInfo());
 		list.add("");
 		return list;

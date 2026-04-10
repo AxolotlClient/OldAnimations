@@ -18,6 +18,8 @@
 
 package io.github.axolotlclient.oldanimations.config;
 
+import java.util.function.BooleanSupplier;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -28,8 +30,6 @@ import lombok.Getter;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
-
-import java.util.function.Supplier;
 
 public class OldAnimationsConfig {
 
@@ -160,7 +160,7 @@ public class OldAnimationsConfig {
 	public final BooleanOption defaultWolfCollarColor = new BooleanOption("defaultWolfCollarColor", true);
 	public final BooleanOption itemModelSideQuadRendering = new BooleanOption("itemModelSideQuadRendering", true);
 
-	private final Supplier<Boolean>[] suppliers = new Supplier[] {
+	private final BooleanSupplier[] suppliers = new BooleanSupplier[]{
 		enabled::get,
 		skullModel::get,
 		fastGrass::get,
@@ -346,7 +346,7 @@ public class OldAnimationsConfig {
 			boolean reloadPotionCache = false;
 			boolean reloadWorld = false;
 			for (int i = 0; i < suppliers.length; i++) {
-				boolean current = suppliers[i].get();
+				boolean current = suppliers[i].getAsBoolean();
 				if (current != previousStates[i]) {
 					previousStates[i] = current;
 					if (i == 4) {
@@ -359,7 +359,7 @@ public class OldAnimationsConfig {
 				}
 			}
 			if (needsReload) {
-				Minecraft.getInstance().reloadResourcesSync();
+				Minecraft.getInstance().reloadResources();
 				reloadPotionColors = true;
 			} else {
 				if (reloadPotionCache) reloadPotionColors = true;

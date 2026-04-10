@@ -24,12 +24,12 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.PlayerUtil;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.PlayerRenderer;
+import net.minecraft.client.render.vertex.Tesselator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.living.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -65,11 +65,11 @@ public abstract class EntityRenderDispatcherMixin {
 		return original;
 	}
 
-	@WrapOperation(method = "renderHitbox", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/Tessellator;end()V"))
-	private void axolotlclient$cancelDraw(Tessellator instance, Operation<Void> original) {
+	@WrapOperation(method = "renderHitbox", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/vertex/Tesselator;end()V"))
+	private void axolotlclient$cancelDraw(Tesselator instance, Operation<Void> original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.removeHitBoxEyeLines.get()) {
 			/* this is a neat trick to cancel rendering... although maybe i should remove the unused code at that */
-			instance.getBuilder().end();
+			instance.getBuffer().end();
 		} else {
 			original.call(instance);
 		}

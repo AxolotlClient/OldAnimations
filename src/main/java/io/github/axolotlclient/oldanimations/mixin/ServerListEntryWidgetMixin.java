@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(ServerListEntryWidget.class)
 public abstract class ServerListEntryWidgetMixin {
 
-	@WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ServerListEntryWidget;m_5818390(IILnet/minecraft/resource/Identifier;)V", ordinal = 1))
+	@WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ServerListEntryWidget;drawIcon(IILnet/minecraft/resource/Identifier;)V", ordinal = 1))
 	private boolean axolotlclient$disableUnknownServerIcon(ServerListEntryWidget instance, int i, int j, Identifier identifier) {
 		/* disables the rendering of the unknown server icon */
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.disableUnknownServerIcon.get();

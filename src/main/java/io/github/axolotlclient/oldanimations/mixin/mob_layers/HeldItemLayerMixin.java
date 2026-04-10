@@ -21,15 +21,15 @@ package io.github.axolotlclient.oldanimations.mixin.mob_layers;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.ItemUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.HeldItemRenderer;
+import net.minecraft.client.render.ItemInHandRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.layer.HeldItemLayer;
+import net.minecraft.client.render.entity.layer.ItemInHandLayer;
 import net.minecraft.client.render.model.block.ModelTransformations;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -44,7 +44,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(HeldItemLayer.class)
+@Mixin(ItemInHandLayer.class)
 public abstract class HeldItemLayerMixin {
 
 	@Shadow
@@ -80,7 +80,7 @@ public abstract class HeldItemLayerMixin {
 		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() ? 3 : original.call(instance);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/ItemInHandRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
 	private void axolotlclient$applyHeldItemLayerTransforms(LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, float l, CallbackInfo ci, @Local ItemStack itemStack) {
 		if (!OldAnimationsConfig.isEnabled() || ItemUtil.isCustomRenderer(itemStack)) return;
 		Item item = itemStack.getItem();
@@ -113,7 +113,7 @@ public abstract class HeldItemLayerMixin {
 					GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 					GlStateManager.translatef(0.0F, -0.125F, 0.0F);
 				}
-				parent.translate();
+				parent.glTranslate();
 				GlStateManager.scalef(var7, -var7, var7);
 				GlStateManager.rotatef(-100.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef(45.0F, 0.0F, 1.0F, 0.0F);
@@ -128,11 +128,11 @@ public abstract class HeldItemLayerMixin {
 		}
 	}
 
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
-	private void axolotlclient$disableResourcePackTransformations(HeldItemRenderer instance, LivingEntity livingEntity, ItemStack itemStack, ModelTransformations.Type type, Operation<Void> original) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() && !ItemUtil.isCustomRenderer(itemStack)) {
-			type = ModelTransformations.Type.NONE;
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/ItemInHandRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
+	private void axolotlclient$disableResourcePackTransformations(ItemInHandRenderer instance, LivingEntity entity, ItemStack item, ModelTransformations.Type transform, Operation<Void> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() && !ItemUtil.isCustomRenderer(item)) {
+			transform = ModelTransformations.Type.NONE;
 		}
-		original.call(instance, livingEntity, itemStack, type);
+		original.call(instance, entity, item, transform);
 	}
 }

@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(LocalClientPlayerEntity.class)
 public class LocalClientPlayerEntityMixin {
 
-	@ModifyExpressionValue(method = "tickAi", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/player/input/PlayerInput;sneaking:Z", ordinal = 0))
+	@ModifyExpressionValue(method = "mobTick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/entity/living/player/Input;sneaking:Z", ordinal = 0))
 	private boolean axolotlclient$allowSneakingToStartSprinting(boolean original) {
 		/* this check simply doesn't exist in 1.7 which allows you to basically double tap your sneaking key to sprint lol */
 		/* MC-45235 */

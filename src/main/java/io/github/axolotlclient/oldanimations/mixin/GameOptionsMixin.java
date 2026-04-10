@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.Shadow;
 public class GameOptionsMixin {
 
 	@Shadow
-	public KeyBinding[] horbarKeyBindings;
+	public KeyBinding[] hotbarKeyBindings;
 
 	@Shadow
 	public KeyBinding fullscreenKey;
@@ -129,6 +129,6 @@ public class GameOptionsMixin {
 			streamToggleMicKey,
 			fullscreenKey
 		},
-		horbarKeyBindings
+		hotbarKeyBindings
 	);
 }

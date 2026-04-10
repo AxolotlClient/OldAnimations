@@ -60,7 +60,7 @@ public abstract class ClientPlayNetworkHandlerMixin {
 	@Unique
 	private static final String[] axolotlclient$EVENT_MESSAGES = new String[]{"tile.bed.notValid", null, null, "gameMode.changed"};
 
-	@ModifyExpressionValue(method = "handleAddXpOrb", at = @At(value = "CONSTANT", args = "doubleValue=32"))
+	@ModifyExpressionValue(method = "handleAddExperienceOrb", at = @At(value = "CONSTANT", args = "doubleValue=32"))
 	private double axolotlclient$oldOrbRendering(double original) {
 		return original / (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.xpOrbPosition.get() ?
 			/* MC-4167 and MC-12013 yall suck */

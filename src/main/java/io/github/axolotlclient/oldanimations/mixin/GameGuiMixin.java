@@ -48,8 +48,8 @@ public abstract class GameGuiMixin {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.heartFlashing.get()) {
 			/* taken straight from 1.7 */
 			/* MC-2930 aimed to revert this... MC-73438 wants to bring this back.... there is no winning :/ */
-			boolean i3 = minecraft.player.maxHealth / 3 % 2 == 1;
-			if (minecraft.player.maxHealth < 10) {
+			boolean i3 = minecraft.player.getMaxHealth() / 3 % 2 == 1;
+			if (minecraft.player.getMaxHealth() < 10) {
 				i3 = false;
 			}
 			return i3;

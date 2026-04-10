@@ -72,7 +72,7 @@ public abstract class ClientPlayerInteractionManagerMixin implements IClientPlay
 		return true;
 	}
 
-	@ModifyExpressionValue(method = "updateBlockMining", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientPlayerInteractionManager;isMiningBlock(Lnet/minecraft/util/math/BlockPos;)Z"))
+	@ModifyExpressionValue(method = "tickBlockMining", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientPlayerInteractionManager;isMiningBlock(Lnet/minecraft/util/math/BlockPos;)Z"))
 	private boolean axolotlclient$fixMiningStatePacketLogic(boolean original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.miningProgressResetLogic.get()) {
 			/* this code is not taken from 1.7 exactly, rather, it's an attempt to recreate a similar mining progress resetting behavior */

@@ -22,7 +22,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.DamageTint;
 import io.github.axolotlclient.oldanimations.util.IDamageTint;
@@ -31,7 +31,7 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.entity.living.LivingEntity;
-import net.minecraft.entity.living.mob.hostile.CreeperEntity;
+import net.minecraft.entity.living.mob.monster.CreeperEntity;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -71,7 +71,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 		axolotlclient$h = h;
 	}
 
-	@WrapOperation(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderHand(Lnet/minecraft/entity/living/LivingEntity;FFFFFF)V", ordinal = 1))
+	@WrapOperation(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderModel(Lnet/minecraft/entity/living/LivingEntity;FFFFFF)V", ordinal = 1))
 	private void axolotlclient$cancelDamageBrightness(LivingEntityRenderer<?> instance, LivingEntity livingEntity, float f, float g, float h, float i, float j, float k, Operation<Void> original) {
 		original.call(instance, livingEntity, f, g, h, i, j, k);
 
@@ -104,7 +104,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 	}
 
 	//TODO: this can probably be moved somewhere else!
-	@Inject(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"))
+	@Inject(method = "render(Lnet/minecraft/entity/living/LivingEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;translatef(FFF)V"))
     private void axolotlclient$addTranslation(LivingEntity livingEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
 		if (OldAnimationsConfig.isEnabled()) {
 			if (OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
@@ -125,7 +125,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 		}
     }
 
-	@ModifyExpressionValue(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;hurtTime:I"))
+	@ModifyExpressionValue(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;damagedTimer:I"))
 	private int axolotlclient$oldDamageTick(int original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDamageTick.get()) {
 			return Math.max(original - 1, 0);
@@ -141,7 +141,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 		return original;
 	}
 
-	@ModifyArg(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 0), index = 1)
+	@ModifyArg(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;translatef(FFF)V", ordinal = 0), index = 1)
 	private float axolotlclient$syncNameTag(float original, @Local(argsOnly = true) LivingEntity livingEntity) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.thirdPersonSneaking.get() && PlayerUtil.INSTANCE.isSelf(livingEntity)) {
 			/* we must ensurethe nametag is synced with the interpolated player model position */
@@ -169,11 +169,11 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 		final int i = getOverlayColor(livingEntity, f, partialTicks);
 		final boolean flag = (i >> 24 & 0xFF) > 0;
 
-		int hurtTime = livingEntity.hurtTime;
+		int hurtTime = livingEntity.damagedTimer;
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDamageTick.get()) {
 			hurtTime = Math.max(hurtTime - 1, 0);
 		}
-		final boolean flag1 = hurtTime > 0 || livingEntity.deathTime > 0;
+		final boolean flag1 = hurtTime > 0 || livingEntity.deathTicks > 0;
 
 		if (!flag && !flag1) {
 			return false;

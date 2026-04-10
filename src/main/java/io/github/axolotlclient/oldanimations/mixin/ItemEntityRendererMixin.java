@@ -19,11 +19,11 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.ItemEntityRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.entity.ItemEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,7 +38,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 		super(dispatcher);
 	}
 
-	@ModifyArg(method = "applyItemBobbing", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V"), index = 0)
+	@ModifyArg(method = "applyItemBobbing", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;rotatef(FFFF)V"), index = 0)
 	private float axolotlclient$itemFacePlayer(float angle, @Local boolean bl) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fastItems.get() && !bl) {
 			return 180.0F - dispatcher.cameraYaw;
@@ -46,7 +46,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 		return angle;
 	}
 
-	@Inject(method = "render(Lnet/minecraft/entity/ItemEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;)V", ordinal = 1))
+	@Inject(method = "render(Lnet/minecraft/entity/ItemEntity;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/ItemRenderer;renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;)V", ordinal = 1))
 	private void axolotlclient$applyItemEntityPosition(ItemEntity itemEntity, double d, double e, double f, float g, float h, CallbackInfo ci) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fastItems.get()) {
 			/* half of a pixel, matches 1.7's sprite rendering */

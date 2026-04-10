@@ -62,7 +62,7 @@ public class WornSkullLayerMixin {
 		return original.call(instance);
 	}
 
-	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V"), index = 0)
+	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;rotatef(FFFF)V"), index = 0)
 	private float axolotlclient$oldBlockRotation(float f) {
 		/* taken from 1.7 */
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.skullLayerRendering.get()) {

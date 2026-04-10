@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(FireChargeItem.class)
 public class FireChargeItemMixin extends Item {
 
-	@WrapOperation(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;playSound(DDDLjava/lang/String;FF)V"))
+	@WrapOperation(method = "useOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;playSound(DDDLjava/lang/String;FF)V"))
 	private void axolotlclient$fireChargeSound(World instance, double d, double e, double f, String string, float g, float h, Operation<Void> original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.fireChargeSound.get()) {
 			string = "fire.ignite";

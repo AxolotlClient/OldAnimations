@@ -34,20 +34,20 @@ public class BlockMixin {
 
 	@Shadow
 	@Final
-	public static Block.Sound WOOD_SOUND;
+	public static Block.Sounds WOOD_SOUNDS;
 
-	@Inject(method = "setSound", at = @At("RETURN"))
-	private void axolotlclient$oldBlockSounds(Block.Sound sound, CallbackInfoReturnable<Block> cir) {
+	@Inject(method = "setSounds", at = @At("RETURN"))
+	private void axolotlclient$oldBlockSounds(Block.Sounds sounds, CallbackInfoReturnable<Block> cir) {
 		if (OldAnimationsConfig.isEnabled()) {
 			Block block = (Block) (Object) this;
 			if (OldAnimationsConfig.instance.fireSound.get() && block instanceof FireBlock) {
 				/* the sound of jumping around in fire uses the wood sound in 1.7 and prior :D */
-				block.sound = WOOD_SOUND;
+				block.sounds = WOOD_SOUNDS;
 			}
 
 			if (OldAnimationsConfig.instance.hopperSound.get() && block instanceof HopperBlock) {
 				/* why were these blocks using wood sounds LMFAOOO */
-				block.sound = WOOD_SOUND;
+				block.sounds = WOOD_SOUNDS;
 			}
 		}
 	}

@@ -61,7 +61,7 @@ public abstract class PlayerEntityMixin {
 		return original;
 	}
 
-	@WrapOperation(method = "moveEntityWithVelocity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;isSprinting()Z"))
+	@WrapOperation(method = "moveRelative", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;isSprinting()Z"))
 	private boolean axolotlclient$oldFlightSpeed(PlayerEntity instance, Operation<Boolean> original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldFlightSpeed.get()) {
 			return false;

@@ -35,7 +35,7 @@ public class HumanoidSkullModelMixin {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skullBlockRendering.get();
 	}
 
-	@WrapWithCondition(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelPart;setPivot(FFF)V"))
+	@WrapWithCondition(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelPart;setPos(FFF)V"))
 	private boolean axolotlclient$disableHatLayer2(ModelPart instance, float f, float g, float h) {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skullBlockRendering.get();
 	}
@@ -45,12 +45,12 @@ public class HumanoidSkullModelMixin {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skullBlockRendering.get();
 	}
 
-	@WrapWithCondition(method = "setAngles", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/ModelPart;rotationY:F"))
+	@WrapWithCondition(method = "setupAnimation", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/ModelPart;rotationY:F"))
 	private boolean axolotlclient$disableHatLayer4(ModelPart instance, float value) {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skullBlockRendering.get();
 	}
 
-	@WrapWithCondition(method = "setAngles", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/ModelPart;rotationX:F"))
+	@WrapWithCondition(method = "setupAnimation", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/ModelPart;rotationX:F"))
 	private boolean axolotlclient$disableHatLayer5(ModelPart instance, float value) {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.skullBlockRendering.get();
 	}

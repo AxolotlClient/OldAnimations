@@ -24,8 +24,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.ItemUtil;
-import net.minecraft.client.render.HeldItemRenderer;
-import net.minecraft.client.render.entity.layer.WitchHeldItemLayer;
+import net.minecraft.client.render.ItemInHandRenderer;
+import net.minecraft.client.render.entity.layer.WitchItemInHandLayer;
 import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -33,11 +33,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-@Mixin(WitchHeldItemLayer.class)
+@Mixin(WitchItemInHandLayer.class)
 public class WitchHeldItemLayerMixin {
 	/* each modified value was adapted painstakingly from 1.7 */
 
-	@WrapOperation(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 2))
+	@WrapOperation(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;translatef(FFF)V", ordinal = 2))
 	private void axolotlclient$oldWitchLayerTransform(float f, float g, float h, Operation<Void> original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			g = 0.1875F;
@@ -46,7 +46,7 @@ public class WitchHeldItemLayerMixin {
 		original.call(f, g, h);
 	}
 
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=30.0"))
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=30.0"))
 	private float axolotlclient$oldWitchLayerTransform2(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return 20.0F;
@@ -54,7 +54,7 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-5.0"))
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-5.0"))
 	private float axolotlclient$oldWitchLayerTransform3(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return 45.0F;
@@ -62,7 +62,7 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-0.125", ordinal = 0))
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-0.125", ordinal = 0))
 	private float axolotlclient$oldWitchLayerTransform4(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return 0.3125F;
@@ -70,7 +70,7 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-45.0"))
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-45.0"))
 	private float axolotlclient$oldWitchLayerTransform5(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return -20.0F;
@@ -78,7 +78,7 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-20.0", ordinal = 1))
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-20.0", ordinal = 1))
 	private float axolotlclient$oldWitchLayerTransform6(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return 45.0F;
@@ -86,7 +86,7 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-0.0625", ordinal = 1))
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-0.0625", ordinal = 1))
 	private float axolotlclient$oldWitchLayerTransform7(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return -0.125F;
@@ -94,12 +94,12 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@WrapWithCondition(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 5))
+	@WrapWithCondition(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;translatef(FFF)V", ordinal = 5))
 	private boolean axolotlclient$wrapWitchLayerTranslate(float f, float g, float h) {
 		return false;
 	}
 
-	@ModifyArg(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V", ordinal = 7), index = 1)
+	@ModifyArg(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;rotatef(FFFF)V", ordinal = 7), index = 1)
 	private float axolotlclient$oldWitchLayerTransform8(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return -100.0F;
@@ -107,7 +107,7 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@ModifyArg(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V", ordinal = 8), index = 1)
+	@ModifyArg(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;rotatef(FFFF)V", ordinal = 8), index = 1)
 	private float axolotlclient$oldWitchLayerTransform9(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return -45.0F;
@@ -115,7 +115,7 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@WrapOperation(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 6))
+	@WrapOperation(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;translatef(FFF)V", ordinal = 6))
 	private void axolotlclient$oldWitchLayerTransform10(float f, float g, float h, Operation<Void> original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			f = 0.25F;
@@ -124,7 +124,7 @@ public class WitchHeldItemLayerMixin {
 		original.call(f, g, h);
 	}
 
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=0.875"))
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=0.875"))
 	private float axolotlclient$oldWitchLayerTransform11(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return 0.375F;
@@ -132,7 +132,7 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-20.0", ordinal = 2))
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-20.0", ordinal = 2))
 	private float axolotlclient$oldWitchLayerTransform12(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return 60.0F;
@@ -140,7 +140,7 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-60.0"))
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-60.0"))
 	private float axolotlclient$oldWitchLayerTransform13(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return -90.0F;
@@ -148,7 +148,7 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-30.0"))
+	@ModifyExpressionValue(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "CONSTANT", args = "floatValue=-30.0"))
 	private float axolotlclient$oldWitchLayerTransform14(float original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get()) {
 			return 20.0F;
@@ -156,11 +156,11 @@ public class WitchHeldItemLayerMixin {
 		return original;
 	}
 
-	@WrapOperation(method = "render(Lnet/minecraft/entity/living/mob/hostile/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/HeldItemRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
-	private void axolotlclient$disableResourcePackTransformations(HeldItemRenderer instance, LivingEntity livingEntity, ItemStack itemStack, ModelTransformations.Type type, Operation<Void> original) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() && !ItemUtil.isCustomRenderer(itemStack)) {
-			type = ModelTransformations.Type.NONE;
+	@WrapOperation(method = "render(Lnet/minecraft/entity/living/mob/monster/WitchEntity;FFFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/ItemInHandRenderer;render(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V"))
+	private void axolotlclient$disableResourcePackTransformations(ItemInHandRenderer instance, LivingEntity entity, ItemStack item, ModelTransformations.Type transform, Operation<Void> original) {
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.itemPositions.get() && !ItemUtil.isCustomRenderer(item)) {
+			transform = ModelTransformations.Type.NONE;
 		}
-		original.call(instance, livingEntity, itemStack, type);
+		original.call(instance, entity, item, transform);
 	}
 }

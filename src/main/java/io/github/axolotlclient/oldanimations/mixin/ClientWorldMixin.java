@@ -51,7 +51,7 @@ public abstract class ClientWorldMixin extends World {
 			if (world.isAir(blockPos)) {
 				if (random.nextInt(8) > blockPos.getY() &&
 					/* 1.7's hasFog() method */
-					((DimensionAccessor) dimension).getGeneratorType() != WorldGeneratorType.FLAT && !dimension.isDark()) {
+					((DimensionAccessor) dimension).getGeneratorType() != WorldGeneratorType.FLAT && !dimension.hasNoSky()) {
 					addParticle(ParticleType.SUSPENDED_DEPTH, blockPos.getX() + random.nextFloat(), blockPos.getY() + random.nextFloat(), blockPos.getZ() + random.nextFloat(), 0.0, 0.0, 0.0);
 				}
 			} else {

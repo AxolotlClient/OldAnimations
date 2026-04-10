@@ -18,13 +18,13 @@
 
 package io.github.axolotlclient.oldanimations.util;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.texture.TextureAtlas;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.client.resource.model.BasicBakedModel;
 import net.minecraft.resource.Identifier;
@@ -78,8 +78,8 @@ public final class GlintHandler {
 		GlStateManager.translatef(0.0F, -0.25F, 0.0F);
 
 		/* because of how models work, using a model to render the 1.7 gui glint will not work. it will be frozen :( */
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder builder = tessellator.getBuilder();
+		Tesselator tessellator = Tesselator.getInstance();
+		BufferBuilder builder = tessellator.getBuffer();
 		builder.begin(7, DefaultVertexFormat.POSITION_TEX);
 		/* goodbye for loop. hello inlined functions */
 		drawGlint(builder, (float) (Minecraft.getTime() % 3000L) / 3000.0F, 4.0F);

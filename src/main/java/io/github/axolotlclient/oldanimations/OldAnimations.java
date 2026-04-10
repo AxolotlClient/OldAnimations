@@ -22,9 +22,6 @@ import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class OldAnimations implements ClientModInitializer {
 
 	/* TODO LIST
@@ -32,6 +29,7 @@ public class OldAnimations implements ClientModInitializer {
 	--- Project ---
 	add readme and a proper to-do list
 	add more categories (particles, sounds, blocks, etc...)
+	Some Mixins could benefit from using @Slice instead of multiple injectors
 
 	--- Sneaking ---
 	i really want to switch over to the 1.7 code instead of using the 1.13 code :/
@@ -76,34 +74,10 @@ public class OldAnimations implements ClientModInitializer {
 	*/
 
 	public static final String MODID = "axolotlclient-oldanimations";
-	public static boolean AXOLOTLCLIENT;
-
-	private static OldAnimations instance;
-
-	// Since AxolotlClient may initialize this class as a module before it gets loaded as a mod by fabric we have to defer the former to run after the latter.
-	// But since the load order is non-deterministic this may not always be the case
-	private static boolean loadedByFabric;
-	private static final List<Runnable> tasks = new ArrayList<>();
-
-	public OldAnimations() {
-		if (instance != null) {
-			throw new IllegalStateException();
-		}
-		loadedByFabric = true;
-		instance = this;
-		tasks.forEach(Runnable::run);
-		tasks.clear();
-	}
-
-	public static void runAfterFabricLoad(Runnable task) {
-		if (loadedByFabric) {
-			task.run();
-		} else tasks.add(task);
-	}
+	public static boolean AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
 
 	@Override
 	public void initClient() {
 		OldAnimationsConfig.instance.initConfig();
-		AXOLOTLCLIENT = FabricLoader.getInstance().isModLoaded("axolotlclient");
 	}
 }

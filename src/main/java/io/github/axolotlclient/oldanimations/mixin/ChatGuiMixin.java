@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ChatGui.class)
 public class ChatGuiMixin {
 
-	@WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;enableBlend()V"))
+	@WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;enableBlend()V"))
 	private boolean axolotlclient$oldChatOpacityState() {
 		/* MC-36812 */
 		/* forge actually fixes this in 1.7 funnily enough */
@@ -35,7 +35,7 @@ public class ChatGuiMixin {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.buggedChatOpacity.get();
 	}
 
-	@WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;disableAlphaTest()V"))
+	@WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;disableAlphaTest()V"))
 	private boolean axolotlclient$oldChatOpacityState2() {
 		return !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.buggedChatOpacity.get();
 	}

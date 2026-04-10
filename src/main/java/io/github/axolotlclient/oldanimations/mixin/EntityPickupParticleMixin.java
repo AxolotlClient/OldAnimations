@@ -34,7 +34,7 @@ public abstract class EntityPickupParticleMixin {
 	@Shadow
 	private Entity collector;
 
-	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/Entity;prevTickY:D"))
+	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/Entity;prevY:D"))
 	private double axolotlclient$includeEyeHeight$PrevTickY(double original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldItemPickup.get()) {
 			/* taken from 1.7 */

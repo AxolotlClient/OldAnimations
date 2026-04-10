@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(GameModeCommand.class)
 public class GameModeCommandMixin {
 
-	@ModifyExpressionValue(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/Gamerules;getBoolean(Ljava/lang/String;)Z"))
+	@ModifyExpressionValue(method = "run", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/GameRules;getBoolean(Ljava/lang/String;)Z"))
 	private boolean axolotlclient$dontShowMessage(boolean original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldGameModeCommand.get()) {
 			/* since we show the game mode feedback else where, we should just cancel this */

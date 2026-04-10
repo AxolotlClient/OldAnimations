@@ -38,10 +38,10 @@ public abstract class HumanoidModelMixin {
 	public ModelPart rightArm;
 
 	@Inject(
-		method = "setAngles", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/ModelPart;rotationY:F", shift = At.Shift.AFTER),
+		method = "setupAnimation", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/render/model/ModelPart;rotationY:F", shift = At.Shift.AFTER),
 		slice = @Slice(
-			from = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/render/model/entity/HumanoidModel;rightHandItemId:I", ordinal = 0),
-			to = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/render/model/entity/HumanoidModel;rightHandItemId:I", ordinal = 2)
+			from = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/render/model/entity/HumanoidModel;itemInRightHand:I", ordinal = 0),
+			to = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/render/model/entity/HumanoidModel;itemInRightHand:I", ordinal = 2)
 		)
 	)
 	private void axolotlclient$oldArmPosition(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn, CallbackInfo ci) {

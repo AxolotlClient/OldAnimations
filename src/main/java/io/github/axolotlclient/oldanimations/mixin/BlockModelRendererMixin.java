@@ -18,13 +18,13 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.DoublePlantBlock;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.client.render.block.BlockModelRenderer;
+import net.minecraft.client.render.vertex.BufferBuilder;
 import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BlockModelRenderer.class)
 public class BlockModelRendererMixin {
 
-	@Inject(method = "render(Lnet/minecraft/world/WorldView;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/block/state/BlockState;Lnet/minecraft/util/math/BlockPos;Lcom/mojang/blaze3d/vertex/BufferBuilder;Z)Z", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "render(Lnet/minecraft/world/WorldView;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/block/state/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/render/vertex/BufferBuilder;Z)Z", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$fixDoubleBlockDestroyModelDelay(WorldView worldView, BakedModel bakedModel, BlockState blockState, BlockPos blockPos, BufferBuilder bufferBuilder, boolean bl, CallbackInfoReturnable<Boolean> cir) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.tallBlockBreakSync.get()) {
 			/* finally, i have fixed MC-53439 */
