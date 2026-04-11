@@ -14,7 +14,7 @@ var client = "3.1.10-beta.1"
 var config = "3.1.13"
 var osl = "0.17.2"
 var legacyLwjgl3 = "1.2.11"
-version = "1.1.0"
+version = "1.1.0-beta.2"
 group = "io.github.axolotlclient.oldanimations"
 base.archivesName = "AxolotlClient-OldAnimations"
 

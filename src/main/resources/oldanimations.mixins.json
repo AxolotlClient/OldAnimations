@@ -8,6 +8,7 @@
 	"client": [
 		"AmbientOcclusionFaceMixin",
 		"BeaconRendererMixin",
+		"BlockEntityRenderDispatcherMixin",
 		"BlockMixin",
 		"BlockModelAccessor",
 		"BlockModelRendererMixin",
