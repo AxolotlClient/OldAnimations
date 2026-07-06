@@ -54,6 +54,7 @@ public abstract class PlayerTabOverlayMixin extends GuiElement {
 
 	//TODO: i should audit the code and ensure it's all consistent and good. using shares so often is not a good sign lol
 	// the bedwars module in axolotlclient may or may not conflict... im not sure...
+	// there are some locals throwing errors. will have to fix those
 
 	@ModifyVariable(method = "render", at = @At("STORE"), index = 9)
 	private int axolotlclient$captureLocalN(int original, @Share("localRefN") LocalIntRef localRefN) {

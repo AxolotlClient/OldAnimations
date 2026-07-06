@@ -30,6 +30,7 @@ public abstract class BlockEntityRenderDispatcherMixin {
 
 	@WrapMethod(method = "render(Lnet/minecraft/block/entity/BlockEntity;FI)V")
 	private void disableBlockEntityMiningProgress(BlockEntity blockEntity, float tickDelta, int blockMiningProgress, Operation<Void> original) {
+		//todo: double check this logic/feature
 		if (blockMiningProgress == -1 || !OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.blockEntityMiningProgress.get()) {
 			original.call(blockEntity, tickDelta, blockMiningProgress);
 		}

@@ -155,6 +155,7 @@ public abstract class GameRendererMixin implements Sneaky {
 	@ModifyExpressionValue(method = "applyHurtCam", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;damagedTime:I"))
 	private int axolotlclient$oldDamageTick(int original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDamageTick.get()) {
+			//todo: find the source
 			return Math.max(original - 1, 0);
 		}
 		return original;

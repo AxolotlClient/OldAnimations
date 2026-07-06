@@ -21,6 +21,7 @@ package io.github.axolotlclient.oldanimations.mixin;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.render.model.block.*;
 import net.minecraft.client.resource.model.ModelBakery;
 import net.minecraft.item.Item;
@@ -68,6 +69,19 @@ public abstract class ModelBakeryMixin {
 		List<String> oldSkulls = Arrays.asList("old_skull_skeleton", "old_skull_wither", "old_skull_zombie", "old_skull_char", "old_skull_creeper");
 		originalSkulls.addAll(oldSkulls);
 		itemVariants.put(Items.SKULL, originalSkulls);
+
+
+		/* i really dont want to do this */
+		/* in order for 1.7 fast graphics leaves blocks, we need to have them on standby */
+		/* aka they need to actually exist as their own block*/
+		List<String> originalLeaves = itemVariants.get(Item.byBlock(Blocks.LEAVES));
+		List<String> opaqueLeaves = Arrays.asList("oak_leaves_opaque", "spruce_leaves_opaque", "birch_leaves_opaque", "jungle_leaves_opaque");
+		originalLeaves.addAll(opaqueLeaves);
+		itemVariants.put(Item.byBlock(Blocks.LEAVES), originalLeaves);
+		List<String> originalLeaves2 = itemVariants.get(Item.byBlock(Blocks.LEAVES2));
+		List<String> opaqueLeaves2 = Arrays.asList("acacia_leaves_opaque", "dark_oak_leaves_opaque");
+		originalLeaves2.addAll(opaqueLeaves2);
+		itemVariants.put(Item.byBlock(Blocks.LEAVES2), originalLeaves2);
     }
 
 	@ModifyReturnValue(method = "loadBlockModel", at = @At("RETURN"))
@@ -180,6 +194,7 @@ public abstract class ModelBakeryMixin {
 			}
 		}
 
+		/* these two models below have some tomfoolery going on. sorry */
 		if (OldAnimationsConfig.instance.fenceGateItemModel.get()) {
 			/* thought it would be nice to hardcode this in */
 			/* this model is only used for the held item/inventory/dropped item */
@@ -192,11 +207,30 @@ public abstract class ModelBakeryMixin {
 				if (end > begin) {
 					/* we needed to extract the wood type from the identifier location */
 					String type = model.substring(begin, end);
-					BlockModelAccessor blockModel = (BlockModelAccessor) original;
-					blockModel.setParentLocation(new Identifier("minecraft:block/" + type + "_fence_gate_inventory"));
+					((BlockModelAccessor) original).setParentLocation(new Identifier("minecraft:block/" + type + "_fence_gate_inventory"));
 				}
 			}
 		}
+
+		//todo: uhm..
+//		if (OldAnimationsConfig.instance.oldFastLeavesTextures.get()) {
+//			String search = "models/block/";
+//			String suffix = "_leaves.json";
+//			int typeStart = model.indexOf(search);
+//			if (typeStart >= 0) {
+//				int begin = typeStart + search.length();
+//				int end = model.indexOf(suffix, begin);
+//				if (end > begin) {
+//					String type = model.substring(begin, end);
+//					if (type.equals("dark_oak")) {
+//						/* silly naming scheme */
+//						type = "big_oak";
+//					}
+//					/* only replacing the texture here. i doubt id need to replace the parent model too :p */
+//					((BlockModelAccessor) original).getTextures().put("all", "blocks/leaves_" + type + "_opaque");
+//				}
+//			}
+//		}
 
 		return original;
 	}

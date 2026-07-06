@@ -128,6 +128,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 	@ModifyExpressionValue(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/living/LivingEntity;damagedTimer:I"))
 	private int axolotlclient$oldDamageTick(int original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldDamageTick.get()) {
+			//todo: find source T-T
 			return Math.max(original - 1, 0);
 		}
 		return original;

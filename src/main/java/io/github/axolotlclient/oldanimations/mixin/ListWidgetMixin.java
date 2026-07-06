@@ -48,9 +48,9 @@ public abstract class ListWidgetMixin {
 		int var1 = getMaxScroll();
 		if (var1 < 0) {
 			var1 /= 2;
-		}
-		if (!centerAlongY && var1 < 0) {
-			var1 = 0;
+			if (!centerAlongY) {
+				var1 = 0;
+			}
 		}
 		if (scrollAmount < 0.0F) {
 			scrollAmount = 0.0F;
@@ -58,6 +58,9 @@ public abstract class ListWidgetMixin {
 		if (scrollAmount > (float) var1) {
 			scrollAmount = (float) var1;
 		}
+
+		//todo: why is this causing a bug. what
+//		scrollAmount = MathHelper.clamp(scrollAmount, 0.0F, (float) var1);
 	}
 
 	@ModifyArgs(method = "getMaxScroll", at = @At(value = "INVOKE", target = "Ljava/lang/Math;max(II)I"))

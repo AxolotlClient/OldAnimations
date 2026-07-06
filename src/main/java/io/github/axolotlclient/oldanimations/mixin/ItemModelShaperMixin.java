@@ -19,10 +19,12 @@
 package io.github.axolotlclient.oldanimations.mixin;
 
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+import io.github.axolotlclient.oldanimations.util.OpaqueLeavesHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.FireBlock;
 import net.minecraft.block.LiquidBlock;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.render.item.ItemModelShaper;
 import net.minecraft.client.resource.ModelIdentifier;
 import net.minecraft.client.resource.model.BakedModel;
@@ -42,7 +44,7 @@ public abstract class ItemModelShaperMixin {
 	public abstract ModelManager getManager();
 
 	@Inject(method = "getModel(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/client/resource/model/BakedModel;", at = @At("HEAD"), cancellable = true)
- 	private void axolotlclient$useCustomModel$skull(ItemStack stack, CallbackInfoReturnable<BakedModel> cir) {
+ 	private void axolotlclient$useCustomModels(ItemStack stack, CallbackInfoReturnable<BakedModel> cir) {
  		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.skullModel.get() && stack.getItem() instanceof SkullItem) {
 			String id = switch (stack.getMetadata()) {
 				case 0 -> "old_skull_skeleton";
@@ -53,6 +55,16 @@ public abstract class ItemModelShaperMixin {
 			};
 			cir.setReturnValue(getManager().getModel(new ModelIdentifier(id, "inventory")));
  		}
+
+		/* first feature im adding in 2026 lol. im rusty. sorry */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.opaqueLeavesTextures.get()) {
+			Block block = Block.byItem(stack.getItem());
+			if (OpaqueLeavesHandler.isOpaqueLeavesBlock(block)) {
+				BlockState state = block.getStateFromMetadata(stack.getMetadata());
+				cir.setReturnValue(getManager().getModel(new ModelIdentifier(
+					OpaqueLeavesHandler.getVariantName(block, state) + "_leaves_opaque", "inventory")));
+			}
+		}
 
 		/* this was a pain in the ass to figure out... */
 		if (Block.byItem(stack.getItem()) instanceof LiquidBlock) {

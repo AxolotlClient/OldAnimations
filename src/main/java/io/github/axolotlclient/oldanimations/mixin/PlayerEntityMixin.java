@@ -22,6 +22,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.living.player.PlayerEntity;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -63,7 +64,8 @@ public abstract class PlayerEntityMixin {
 
 	@WrapOperation(method = "moveRelative", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;isSprinting()Z"))
 	private boolean axolotlclient$oldFlightSpeed(PlayerEntity instance, Operation<Boolean> original) {
-		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldFlightSpeed.get()) {
+		/* pretty sure this is only in singleplayer */
+		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.oldFlightSpeed.get() && Minecraft.getInstance().isSingleplayer()) {
 			return false;
 		}
 		return original.call(instance);

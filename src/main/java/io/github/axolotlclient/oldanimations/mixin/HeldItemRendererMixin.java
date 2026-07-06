@@ -94,6 +94,7 @@ public abstract class HeldItemRendererMixin {
 			return;
 		}
 		if (renderer.isGui3d(itemStack)) {
+			//todo: some blocks are weirdly rotated
 //			Item item = itemStack.getItem();
 //			if (item instanceof BlockItem) {
 //				Block block = Block.byItem(item);

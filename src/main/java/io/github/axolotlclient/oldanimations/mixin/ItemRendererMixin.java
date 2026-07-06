@@ -18,19 +18,20 @@
 
 package io.github.axolotlclient.oldanimations.mixin;
 
-import java.util.List;
-
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.GlintHandler;
+import io.github.axolotlclient.oldanimations.util.OpaqueLeavesHandler;
+import net.minecraft.block.Block;
 import net.minecraft.client.render.entity.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.client.resource.model.BakedQuad;
 import net.minecraft.entity.living.LivingEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.Identifier;
 import net.minecraft.util.math.Direction;
@@ -41,6 +42,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+
+import java.util.List;
 
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
@@ -72,6 +75,9 @@ public abstract class ItemRendererMixin {
 
 	@Unique
 	private boolean axolotlclient$isLayered;
+
+	@Unique
+	private boolean axolotlclient$fastGraphics;
 
 	@Inject(method = "renderItem", at = @At("HEAD"))
 	private void axolotlclient$captureModel(ItemStack stack, BakedModel model, CallbackInfo ci) {
@@ -192,6 +198,72 @@ public abstract class ItemRendererMixin {
 			axolotlclient$isLayered = true;
 			render(bakedModel, itemStack);
 			axolotlclient$isLayered = false;
+		}
+	}
+
+	//todo: can this feature be more concise? i have like 4 mixin injections. hmmm
+	@Inject(method = "renderItemInHand(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;blendFuncSeparate(IIII)V", shift = At.Shift.AFTER))
+	private void axolotlclient$fastGraphicsLeavesPre$held(ItemStack item, BakedModel model, ModelTransformations.Type transform, CallbackInfo ci) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.oldFastLeaves.get()
+			|| OldAnimationsConfig.instance.opaqueLeavesTextures.get()) {
+			return;
+		}
+		axolotlclient$fastGraphics = false;
+		if (item.getItem() instanceof BlockItem) {
+			/* MC-57356 */
+			/* to my knowledge, leaf blocks are the only blocks affected by fast/fancy graphics */
+			/* when it comes to their render layer. if theyre in their solid mode when it comes to world rendering */
+			/* then we know fast graphics was enabled and so we can make the rendered item solid as well */
+			/* we wont be messing with any other blocks */
+			if (OpaqueLeavesHandler.isOpaqueLeavesBlock(Block.byItem(item.getItem()))) {
+				axolotlclient$fastGraphics = true;
+				GlStateManager.disableAlphaTest();
+				GlStateManager.disableBlend();
+			}
+		}
+	}
+
+	@Inject(method = "renderItemInHand(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;Lnet/minecraft/client/render/model/block/ModelTransformations$Type;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/ItemRenderer;renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;)V", shift = At.Shift.AFTER))
+	private void axolotlclient$fastGraphicsLeavesPost$held(ItemStack item, BakedModel model, ModelTransformations.Type transform, CallbackInfo ci) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.oldFastLeaves.get()
+			|| OldAnimationsConfig.instance.opaqueLeavesTextures.get()) {
+			return;
+		}
+		if (axolotlclient$fastGraphics) {
+			GlStateManager.enableAlphaTest();
+			GlStateManager.enableBlend();
+			axolotlclient$fastGraphics = false;
+		}
+	}
+
+	@Inject(method = "renderGuiItemModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;blendFunc(II)V", shift = At.Shift.AFTER))
+	private void axolotlclient$fastGraphicsLeavesPre$gui(ItemStack item, int x, int y, CallbackInfo ci) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.oldFastLeaves.get()
+			|| OldAnimationsConfig.instance.opaqueLeavesTextures.get()) {
+			return;
+		}
+		axolotlclient$fastGraphics = false;
+		if (item.getItem() instanceof BlockItem) {
+			/* ditto */
+			if (OpaqueLeavesHandler.isOpaqueLeavesBlock(Block.byItem(item.getItem()))) {
+				axolotlclient$fastGraphics = true;
+				GlStateManager.disableAlphaTest();
+				GlStateManager.disableBlend();
+			}
+		}
+	}
+
+	@Inject(method = "renderGuiItemModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/ItemRenderer;renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/resource/model/BakedModel;)V", shift = At.Shift.AFTER))
+	private void axolotlclient$fastGraphicsLeavesPost$gui(ItemStack item, int x, int y, CallbackInfo ci) {
+		if (!OldAnimationsConfig.isEnabled() || !OldAnimationsConfig.instance.oldFastLeaves.get()
+			|| OldAnimationsConfig.instance.opaqueLeavesTextures.get()) {
+			return;
+		}
+		if (axolotlclient$fastGraphics) {
+			/* vanilla calls disableAlphaTest() right after this anyway, so we only */
+			/* need to restore blend here to avoid leaking a disabled-blend state */
+			GlStateManager.enableBlend();
+			axolotlclient$fastGraphics = false;
 		}
 	}
 }

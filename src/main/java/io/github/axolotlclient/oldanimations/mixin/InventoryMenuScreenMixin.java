@@ -48,6 +48,7 @@ public class InventoryMenuScreenMixin extends Screen {
 	private void axolotlclient$changeTextColor(InventoryMenuScreen instance, int i, int j, Operation<Void> original) {
 		if (OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.inventoryTextLighting.get() && axolotlclient$isInSurvivalInventory()) {
 			/* this is not the right modification. forgive me :/ */
+			//todo: find source
 			j = 3552822;
 		}
 		original.call(instance, i, j);

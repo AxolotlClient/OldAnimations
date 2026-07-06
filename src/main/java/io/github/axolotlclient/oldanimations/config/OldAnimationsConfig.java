@@ -159,6 +159,8 @@ public class OldAnimationsConfig {
 	public final BooleanOption fenceGateWallMode = new BooleanOption("fenceGateWallMode", true);
 	public final BooleanOption defaultWolfCollarColor = new BooleanOption("defaultWolfCollarColor", true);
 	public final BooleanOption itemModelSideQuadRendering = new BooleanOption("itemModelSideQuadRendering", true);
+	public final BooleanOption oldFastLeaves = new BooleanOption("oldFastLeaves", true);
+	public final BooleanOption opaqueLeavesTextures = new BooleanOption("opaqueLeavesTextures", true);
 
 	private final BooleanSupplier[] suppliers = new BooleanSupplier[]{
 		enabled::get,
@@ -170,7 +172,8 @@ public class OldAnimationsConfig {
 		modelShadeAndAmbientOcclusion::get,
 		fenceGateItemModel::get,
 		fenceGateWallMode::get,
-		itemModelSideQuadRendering::get
+		itemModelSideQuadRendering::get,
+		opaqueLeavesTextures::get
 	};
 	private final boolean[] previousStates = {
 		enabled.get(),
@@ -182,7 +185,8 @@ public class OldAnimationsConfig {
 		modelShadeAndAmbientOcclusion.get(),
 		fenceGateItemModel.get(),
 		fenceGateWallMode.get(),
-		itemModelSideQuadRendering.get()
+		itemModelSideQuadRendering.get(),
+		opaqueLeavesTextures.get()
 	};
 
 	public static boolean isEnabled() {
@@ -230,7 +234,9 @@ public class OldAnimationsConfig {
 			fastGrass,
 			fire,
 			fenceGateItemModel,
-			itemModelSideQuadRendering
+			itemModelSideQuadRendering,
+			oldFastLeaves,
+			opaqueLeavesTextures
 		);
 		category.add(categoryCombat);
 		categoryCombat.add(
@@ -340,6 +346,7 @@ public class OldAnimationsConfig {
 		configManager.load();
 	}
 
+	//todo: rewrite this to be more readable. also need to better document whats going on here
 	private void reloadResources() {
 		MinecraftClientEvents.TICK_END.register(client -> {
 			boolean needsReload = false;
@@ -351,7 +358,7 @@ public class OldAnimationsConfig {
 					previousStates[i] = current;
 					if (i == 4) {
 						reloadPotionCache = true;
-					} else if (i == 5 || i == 8) {
+					} else if (i == 5 || i == 8 || i == 10) {
 						reloadWorld = true;
 					} else {
 						needsReload = true;

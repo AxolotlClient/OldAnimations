@@ -53,6 +53,8 @@ public abstract class ItemModelGeneratorMixin {
 
 	@Unique
 	private List<BlockElement> axolotlclient$oldAddSideElements(TextureAtlasSprite textureAtlasSprite, String string, int i) {
+		/* this was all manually ported/adapted from 1.7's held item renderer */
+
 		List<BlockElement> list = Lists.newArrayList();
 
 		int width = textureAtlasSprite.getWidth();

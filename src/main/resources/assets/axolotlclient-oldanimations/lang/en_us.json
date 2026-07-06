@@ -224,5 +224,9 @@
 	"defaultWolfCollarColor": "Default Wolf Collar Color",
 	"defaultWolfCollarColor.tooltip": "Changes the default wolf collar color from orange to red like in 1.7 and 1.9+. Only works in singleplayer!",
 	"itemModelSideQuadRendering": "Item Model Side Rendering",
-	"itemModelSideQuadRendering.tooltip": "Renders the side elements of an item using 1.7's rendering logic."
+	"itemModelSideQuadRendering.tooltip": "Renders the side elements of an item using 1.7's rendering logic.",
+	"oldFastLeaves": "Old Fast Leaves",
+	"oldFastLeaves.tooltip": "Renders leaves block items as solid when graphics is set to fast. If \"Old Opaque Leaves Textures\" is enabled, this option will not do anything.",
+	"opaqueLeavesTextures": "Opaque Leaves Textures",
+	"opaqueLeavesTextures.tooltip": "Uses the old opaque leaves textures from 1.7 when graphics is set to fast."
 }

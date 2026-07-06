@@ -112,6 +112,8 @@ public abstract class MinecraftMixin {
 
 	@WrapOperation(method = "doAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ClientPlayerInteractionManager;startMiningBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;)Z"))
 	private boolean axolotlclient$dontUseAndMine(ClientPlayerInteractionManager instance, BlockPos blockPos, Direction direction, Operation<Boolean> original) {
+		//todo: double check this in 2026 fr
+
 		/* this is NOT taken from 1.7 */
 		/* honestly it's been a pain in the ass trying to get the method below to actually not flag grimac's packet order checks */
 		/* so this was my solution. wait for the tickBlockMining method to start mining. */
@@ -150,6 +152,8 @@ public abstract class MinecraftMixin {
 
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void axolotlclient$spoofTitleVersion(CallbackInfo ci) {
+		//todo: i can probably make this better
+
 		/* nostalgia! */
 		if (!OldAnimationsConfig.isEnabled() || Display.getTitle() == null) {
 			return;
