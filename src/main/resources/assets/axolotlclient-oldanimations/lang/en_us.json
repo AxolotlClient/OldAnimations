@@ -228,5 +228,7 @@
 	"oldFastLeaves": "Old Fast Leaves",
 	"oldFastLeaves.tooltip": "Renders leaves block items as solid when graphics is set to fast. If \"Old Opaque Leaves Textures\" is enabled, this option will not do anything.",
 	"opaqueLeavesTextures": "Opaque Leaves Textures",
-	"opaqueLeavesTextures.tooltip": "Uses the old opaque leaves textures from 1.7 when graphics is set to fast."
+	"opaqueLeavesTextures.tooltip": "Uses the old opaque leaves textures from 1.7 when graphics is set to fast.",
+	"guiBlockItemsMipmap": "GUI Block Items Mipmap",
+	"guiBlockItemsMipmap.tooltip": "Allows block items rendered in GUIs to have mipmapping applied to them similar to 1.7. The level of mipmapping is controlled through the in-game option."
 }

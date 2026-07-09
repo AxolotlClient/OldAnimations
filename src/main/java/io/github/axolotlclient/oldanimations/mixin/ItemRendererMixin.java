@@ -25,6 +25,7 @@ import io.github.axolotlclient.oldanimations.config.OldAnimationsConfig;
 import io.github.axolotlclient.oldanimations.util.GlintHandler;
 import io.github.axolotlclient.oldanimations.util.OpaqueLeavesHandler;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.entity.ItemRenderer;
 import net.minecraft.client.render.model.block.ModelTransformations;
 import net.minecraft.client.render.platform.GlStateManager;
@@ -265,5 +266,15 @@ public abstract class ItemRendererMixin {
 			GlStateManager.enableBlend();
 			axolotlclient$fastGraphics = false;
 		}
+	}
+
+	@ModifyArg(method = "renderGuiItemModel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/texture/Texture;pushFilter(ZZ)V"), index = 1)
+	private boolean axolotlclient$guiItemsMipmap(boolean original) {
+		/* MC-57574 and MC-277768. idk why there was 2 bug reports */
+		/* in 1.7, the gui block items had mipmapping affect them since they were the same blocks used for world rendering */
+		/* in 1.8, there is a distinction between block items and actual world rendered blocks */
+		/* luckily it's easy to turn on mipmapping for rendered items */
+		return OldAnimationsConfig.isEnabled() && OldAnimationsConfig.instance.guiBlockItemsMipmap.get() ?
+			Minecraft.getInstance().options.mipmapLevels > 0 : original;
 	}
 }

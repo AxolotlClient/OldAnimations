@@ -40,14 +40,12 @@ public class OldAnimations implements ClientModInitializer {
 	MC-57895 - stairs are wrong direction
 
 	--- Textures/Models ---
-	fix weird fuzzy texture sizes of swords and stuff - THIS WAS MIP MAP
-	fast grass always shown in gui/dropped?
+	fast grass always shown in gui/dropped despite graphics option
 	held pressure plates look a bit different?? idk why. THEY'RE BIGGER THAT'S WHY
 	MC-262869 - top texture of blocks need to be rotated as noted above
 	MC-262173 - tripwire hook using wrong wood texture
-	MC-277768 && MC-57574 && MC-195505 - mipmap items/blocks
 	improve old skull stuff?
-	anisotrophic filtering on items in 1.7
+	short grass, oak door, and sponge block have different textures
 
 	--- World ---
 	figure out why hurtTime is off by 1 tick in 1.7... this might also impact other aspects of the game
@@ -70,6 +68,12 @@ public class OldAnimations implements ClientModInitializer {
 	framed items are not centered - MC-8662
 	mobentity blockentity? WHAT THE HELL IS THIS SUPPOSED TO MEAN RAHHH
 	MC-5270 - suffocation screen order (buggy lava)
+	3D anaglyph is different apparently
+
+	-- Difficult / Impossible --
+	anisotrophic filtering on items in 1.7 - optifine interheres here
+	MC-195505 - mipmap blocks - optifine interferes here
+	fix weird fuzzy texture sizes of swords and stuff - THIS WAS MIP MAP - optifine again
 
 	*/
 

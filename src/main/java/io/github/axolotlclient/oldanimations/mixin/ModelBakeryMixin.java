@@ -72,8 +72,9 @@ public abstract class ModelBakeryMixin {
 
 
 		/* i really dont want to do this */
-		/* in order for 1.7 fast graphics leaves blocks, we need to have them on standby */
-		/* aka they need to actually exist as their own block*/
+		/* in order for 1.7 fast graphics leaves blocks to change on the fly, we need to have them on standby */
+		/* aka they need to actually exist as their own block */
+		/* if enough people complain ill change this system lol */
 		List<String> originalLeaves = itemVariants.get(Item.byBlock(Blocks.LEAVES));
 		List<String> opaqueLeaves = Arrays.asList("oak_leaves_opaque", "spruce_leaves_opaque", "birch_leaves_opaque", "jungle_leaves_opaque");
 		originalLeaves.addAll(opaqueLeaves);
@@ -212,7 +213,7 @@ public abstract class ModelBakeryMixin {
 			}
 		}
 
-		//todo: uhm..
+		//todo: dont delete this
 //		if (OldAnimationsConfig.instance.oldFastLeavesTextures.get()) {
 //			String search = "models/block/";
 //			String suffix = "_leaves.json";

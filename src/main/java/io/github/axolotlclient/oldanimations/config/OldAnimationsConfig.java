@@ -161,6 +161,7 @@ public class OldAnimationsConfig {
 	public final BooleanOption itemModelSideQuadRendering = new BooleanOption("itemModelSideQuadRendering", true);
 	public final BooleanOption oldFastLeaves = new BooleanOption("oldFastLeaves", true);
 	public final BooleanOption opaqueLeavesTextures = new BooleanOption("opaqueLeavesTextures", true);
+	public final BooleanOption guiBlockItemsMipmap = new BooleanOption("guiBlockItemsMipmap", true);
 
 	private final BooleanSupplier[] suppliers = new BooleanSupplier[]{
 		enabled::get,
@@ -173,7 +174,8 @@ public class OldAnimationsConfig {
 		fenceGateItemModel::get,
 		fenceGateWallMode::get,
 		itemModelSideQuadRendering::get,
-		opaqueLeavesTextures::get
+		opaqueLeavesTextures::get,
+		guiBlockItemsMipmap::get
 	};
 	private final boolean[] previousStates = {
 		enabled.get(),
@@ -186,7 +188,8 @@ public class OldAnimationsConfig {
 		fenceGateItemModel.get(),
 		fenceGateWallMode.get(),
 		itemModelSideQuadRendering.get(),
-		opaqueLeavesTextures.get()
+		opaqueLeavesTextures.get(),
+		guiBlockItemsMipmap.get()
 	};
 
 	public static boolean isEnabled() {
@@ -236,7 +239,8 @@ public class OldAnimationsConfig {
 			fenceGateItemModel,
 			itemModelSideQuadRendering,
 			oldFastLeaves,
-			opaqueLeavesTextures
+			opaqueLeavesTextures,
+			guiBlockItemsMipmap
 		);
 		category.add(categoryCombat);
 		categoryCombat.add(

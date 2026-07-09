@@ -60,11 +60,11 @@ public abstract class GameRendererMixin implements Sneaky {
 	private long lastWorldRenderTime;
 
 	@Shadow
-	private float lastFogBrightness;
-	@Shadow
 	private float fogBrightness;
+
 	@Shadow
 	private float renderDistance;
+
 	@Unique
 	private float lastCameraY;
 
